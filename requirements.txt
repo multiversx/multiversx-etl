@@ -1,0 +1,5 @@
+click
+requests==2.24.0
+blockchain-etl-common
+multiversx-sdk-core
+multiversx-sdk-network-providers
