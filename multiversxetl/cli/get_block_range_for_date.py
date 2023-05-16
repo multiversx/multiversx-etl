@@ -16,12 +16,12 @@ logging_basic_config()
 @click.option("-p", "--provider-uri", default="https://gateway.multiversx.com", show_default=True, type=str, help="The URI of the network provider (gateway).")
 @click.option("-d", "--date", required=True, type=str, help="The start UNIX timestamp (in seconds).")
 @click.option("-o", "--output", default="-", show_default=True, type=str, help="The output file. If not specified, 'stdout' is used.")
-def get_block_range_for_date(provider_uri: str, date: str, output: Any):
+def get_hyperblock_range_for_date(provider_uri: str, date: str, output: Any):
     """Outputs start and end blocks (hyperblocks) for a date."""
     provider = MultiversXNetworkProvider(provider_uri)
     service = MultiversXBlocksService(provider)
     date_parsed = datetime.datetime.strptime(date, '%Y-%m-%d')
-    start_block, end_block = service.get_block_range_for_date(date_parsed)
+    start_block, end_block = service.get_hyperblock_range_for_date(date_parsed)
 
     output_file: Any
     with smart_open(output, "w") as output_file:
