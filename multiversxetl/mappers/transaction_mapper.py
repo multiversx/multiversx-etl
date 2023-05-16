@@ -50,11 +50,13 @@ class MultiversXTransactionMapper:
 
     def to_json_dict(self, transaction: MultiversXTransaction) -> Dict[str, Any]:
         return {
+            "type": "transaction",
+
             "hash": transaction.hash,
             "previous_transaction_hash": transaction.previous_transaction_hash,
             "original_transaction_hash": transaction.original_transaction_hash,
 
-            "type": transaction.type,
+            "transaction_type": transaction.type,
             "processing_type_on_source": transaction.processing_type_on_source,
             "processing_type_on_destination": transaction.processing_type_on_destination,
 

@@ -13,8 +13,8 @@ class MultiversXHyperblockMapper:
         hyperblock = MultiversXHyperblock()
 
         hyperblock.hash = json_dict.get("hash", "")
-        hyperblock.previous_block_hash = json_dict.get("previous_block_hash", "")
-        hyperblock.state_root_hash = json_dict.get("state_root_hash", "")
+        hyperblock.previous_block_hash = json_dict.get("prevBlockHash", "")
+        hyperblock.state_root_hash = json_dict.get("stateRootHash", "")
 
         hyperblock.round = json_dict.get("round", 0)
         hyperblock.nonce = json_dict.get("nonce", 0)
@@ -32,6 +32,8 @@ class MultiversXHyperblockMapper:
 
     def to_json_dict(self, hyperblock: MultiversXHyperblock) -> Dict[str, Any]:
         return {
+            "type": "hyperblock",
+
             "hash": hyperblock.hash,
             "previous_block_hash": hyperblock.previous_block_hash,
             "state_root_hash": hyperblock.state_root_hash,

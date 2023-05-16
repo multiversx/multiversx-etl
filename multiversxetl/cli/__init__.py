@@ -2,6 +2,8 @@ from typing import Any
 
 import click
 
+from multiversxetl.cli.export_blocks_and_transactions import \
+    export_blocks_and_transactions
 from multiversxetl.cli.get_block_range_for_date import \
     get_hyperblock_range_for_date
 from multiversxetl.cli.get_block_range_for_timestamps import \
@@ -17,3 +19,4 @@ def cli(ctx: Any):
 
 cli.add_command(get_hyperblock_range_for_date, "get_block_range_for_date")
 cli.add_command(get_hyperblock_range_for_timestamps, "get_block_range_for_timestamps")
+cli.add_command(export_blocks_and_transactions, "export_blocks_and_transactions")

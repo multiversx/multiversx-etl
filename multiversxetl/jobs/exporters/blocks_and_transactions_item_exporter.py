@@ -3,7 +3,7 @@ from typing import Any
 from blockchainetl_common.jobs.exporters.composite_item_exporter import \
     CompositeItemExporter
 
-BLOCK_FIELDS_TO_EXPORT = [
+HYPERBLOCK_FIELDS_TO_EXPORT = [
     "hash",
     "previous_block_hash",
     "round",
@@ -17,7 +17,7 @@ TRANSACTION_FIELDS_TO_EXPORT = [
     "hash",
     "previous_transaction_hash",
     "original_transaction_hash",
-    "type",
+    "transaction_type",
     "processing_type_on_source",
     "processing_type_on_destination",
     "nonce",
@@ -49,11 +49,11 @@ TRANSACTION_FIELDS_TO_EXPORT = [
 def blocks_and_transactions_item_exporter(blocks_output: Any = None, transactions_output: Any = None) -> CompositeItemExporter:
     return CompositeItemExporter(
         filename_mapping={
-            "block": blocks_output,
+            "hyperblock": blocks_output,
             "transaction": transactions_output,
         },
         field_mapping={
-            "block": BLOCK_FIELDS_TO_EXPORT,
+            "hyperblock": HYPERBLOCK_FIELDS_TO_EXPORT,
             "transaction": TRANSACTION_FIELDS_TO_EXPORT,
         }
     )
