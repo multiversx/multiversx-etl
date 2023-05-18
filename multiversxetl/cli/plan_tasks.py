@@ -1,9 +1,12 @@
 import datetime
 import logging
+from pprint import pprint
 
 import click
 
-from multiversxetl.planner import TasksPlanner, TasksStorage
+from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
+                                   TasksWithoutIntervalStorage)
+from multiversxetl.planner.tasks import count_tasks_by_status
 
 SECONDS_IN_MINUTE = 60
 SECONDS_IN_DAY = 24 * 60 * SECONDS_IN_MINUTE
@@ -14,9 +17,17 @@ logging.basicConfig(level=logging.INFO)
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--gcp-project-id", type=str, help="The GCP project ID.")
 def inspect_tasks(gcp_project_id: str):
-    storage = TasksStorage(gcp_project_id)
+    storage = TasksWithIntervalStorage(gcp_project_id)
     tasks = storage.get_all_tasks()
-    print(f"Total tasks: {len(tasks)}")
+    print(f"Tasks with interval: {len(tasks)}")
+    grouped = count_tasks_by_status(tasks)
+    pprint(grouped)
+
+    storage = TasksWithoutIntervalStorage(gcp_project_id)
+    tasks = storage.get_all_tasks()
+    print(f"Tasks without interval: {len(tasks)}")
+    grouped = count_tasks_by_status(tasks)
+    pprint(grouped)
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -26,7 +37,7 @@ def inspect_tasks(gcp_project_id: str):
 @click.option("--end-timestamp", type=int, help="The end timestamp (e.g. a recent one).")
 @click.option("--granularity", type=int, default=SECONDS_IN_DAY, help="Task granularity, in seconds.")
 def plan_tasks_with_intervals(gcp_project_id: str, indexer_url: str, start_timestamp: int, end_timestamp: int, granularity: int):
-    storage = TasksStorage(gcp_project_id)
+    storage = TasksWithIntervalStorage(gcp_project_id)
     planner = TasksPlanner()
 
     if not end_timestamp:
@@ -47,7 +58,7 @@ def plan_tasks_with_intervals(gcp_project_id: str, indexer_url: str, start_times
 @click.option("--gcp-project-id", type=str, help="The GCP project ID.")
 @click.option("--indexer-url", type=str, help="The indexer URL (Elastic Search instance).")
 def plan_tasks_without_intervals(gcp_project_id: str, indexer_url: str):
-    storage = TasksStorage(gcp_project_id)
+    storage = TasksWithoutIntervalStorage(gcp_project_id)
     planner = TasksPlanner()
     new_tasks = planner.plan_tasks_without_intervals(indexer_url)
     storage.add_tasks(new_tasks)

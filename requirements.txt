@@ -1,6 +1,9 @@
+multiversx-sdk-network-providers
 six
 click
-requests==2.24.0
+requests
 blockchain-etl-common
 multiversx-sdk-core
-multiversx-sdk-network-providers
+elasticsearch
+google-cloud-bigquery
+google-cloud-firestore

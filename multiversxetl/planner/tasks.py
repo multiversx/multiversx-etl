@@ -1,13 +1,15 @@
 
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class TaskStatus(Enum):
-    PENDING = 0
-    ASSIGNED = 1
-    COMPLETED = 2
-    FAILED = 3
+    PENDING = "pending"
+    ASSIGNED = "assigned"
+    EXTRACTED = "extracted"
+    EXTRACTION_FAILED = "extraction_failed"
+    LOADED = "loaded"
+    LOADING_FAILED = "loading_failed"
 
 
 class Task:
@@ -59,10 +61,40 @@ class Task:
         return self.status == TaskStatus.PENDING
 
     def update_assign(self, worker_id: str) -> Dict[str, Any]:
+        self.worker_id = worker_id
+        self.status = TaskStatus.ASSIGNED
+
         return {
-            "worker_id": worker_id,
-            "status": TaskStatus.ASSIGNED.value
+            "worker_id": self.worker_id,
+            "status": self.status.value
         }
 
-    def is_same_as(self):
-        pass
+    def is_time_bound(self) -> bool:
+        return self.start_timestamp is not None and self.end_timestamp is not None
+
+    def get_extraction_filename(self) -> str:
+        return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}.json"
+
+
+def group_tasks_by_status(tasks: List[Task]) -> Dict[TaskStatus, List[Task]]:
+    tasks_by_status: Dict[TaskStatus, List[Task]] = {}
+
+    for status in TaskStatus:
+        tasks_by_status[status] = []
+
+    for task in tasks:
+        tasks_by_status[task.status].append(task)
+
+    return tasks_by_status
+
+
+def count_tasks_by_status(tasks: List[Task]) -> Dict[TaskStatus, int]:
+    tasks_by_status: Dict[TaskStatus, int] = {}
+
+    for status in TaskStatus:
+        tasks_by_status[status] = 0
+
+    for task in tasks:
+        tasks_by_status[task.status] += 1
+
+    return tasks_by_status

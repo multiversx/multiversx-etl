@@ -1,7 +1,9 @@
 from multiversxetl.planner.tasks_planner import TasksPlanner
-from multiversxetl.planner.tasks_storage import TasksStorage
+from multiversxetl.planner.tasks_storage import (TasksWithIntervalStorage,
+                                                 TasksWithoutIntervalStorage)
 
 __all__ = [
     "TasksPlanner",
-    "TasksStorage"
+    "TasksWithIntervalStorage",
+    "TasksWithoutIntervalStorage"
 ]
