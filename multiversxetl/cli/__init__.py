@@ -11,7 +11,8 @@ from multiversxetl.cli.get_block_range_for_timestamps import \
 from multiversxetl.cli.plan_tasks import (inspect_tasks,
                                           plan_tasks_with_intervals,
                                           plan_tasks_without_intervals)
-from multiversxetl.cli.work import do_extract_with_intervals
+from multiversxetl.cli.work import (do_extract_with_intervals,
+                                    do_extract_without_intervals)
 
 
 @click.group()
@@ -27,4 +28,5 @@ cli.add_command(export_blocks_and_transactions, "export_blocks_and_transactions"
 cli.add_command(inspect_tasks, "inspect_tasks")
 cli.add_command(plan_tasks_with_intervals, "plan_tasks_with_intervals")
 cli.add_command(plan_tasks_without_intervals, "plan_tasks_without_intervals")
-cli.add_command(do_extract_with_intervals, "do_work_with_intervals")
+cli.add_command(do_extract_with_intervals, "do_extract_with_intervals")
+cli.add_command(do_extract_without_intervals, "do_extract_without_intervals")

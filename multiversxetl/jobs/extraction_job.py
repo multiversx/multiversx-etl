@@ -62,8 +62,9 @@ class ExtractionJob:
                     print(f"Written {num_written} records to {filename}")
 
     def _jsonify_record(self, record: Dict[str, Any]) -> str:
-        source = record["_source"]
-        as_json = json.dumps(source)
+        data = record["_source"]
+        data["_id"] = record["_id"]
+        as_json = json.dumps(data)
         return as_json
 
     def _create_query(self) -> Any:

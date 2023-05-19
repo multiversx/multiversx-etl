@@ -4,7 +4,7 @@ from typing import List
 from multiversxetl.planner.tasks import Task
 
 INDEXES_WITH_INTERVALS = ["accountsesdt", "tokens", "blocks", "receipts", "transactions", "miniblocks", "rounds", "accountshistory", "scresults", "accountsesdthistory", "scdeploys", "logs", "operations"]
-INDEXES_WITHOUT_INTERVALS = ["accounts", "rating", "validators", "epochinfo", "tags", "delegators"]
+INDEXES_WITHOUT_INTERVALS = set(["accounts", "rating", "validators", "epochinfo", "tags", "delegators"]) - set(["rating", "validators", "tags"])
 
 
 class TasksPlanner:
