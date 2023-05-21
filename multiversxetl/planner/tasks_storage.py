@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Callable, List, Optional
 
 from google.cloud import firestore
 from google.cloud.firestore import transactional  # type: ignore
@@ -36,17 +36,30 @@ class TasksStorage:
 
             batch.commit()
 
-    def assign_next_task_to_worker(self, worker_id: str) -> Optional[Task]:
+    def start_any_extraction_task(self, worker_id: str) -> Optional[Task]:
         transaction: Any = self.db.transaction()  # type: ignore
         collection = self.db.collection(self.collection)
-        task = _transactional_assign_next_task_to_worker(transaction, collection, worker_id)
+        task = _transactional_start_any_extraction_task(transaction, collection, worker_id)
         return task
 
-    def update_task_status(self, task_id: str, status: TaskStatus):
+    def start_any_loading_task(self, worker_id: str) -> Optional[Task]:
+        transaction: Any = self.db.transaction()  # type: ignore
+        collection = self.db.collection(self.collection)
+        task = _transactional_start_any_loading_task(transaction, collection, worker_id)
+        return task
+
+    def update_task(self, task_id: str, update_func: Callable[[Task], Any]) -> Task:
         # We do not use a transaction, since, generally speaking,
-        # we do not expect concurrent updates of the same task.
+        # we do not expect concurrent updates of the same task (once assigned to a worker).
         task_ref: Any = self.db.collection(self.collection).document(task_id)
-        task_ref.update({"status": status.value})
+        snapshot = task_ref.get()
+        data = snapshot.to_dict()
+        assert data is not None
+
+        task = Task.from_dict(data)
+        partial_update = update_func(task)
+        task_ref.update(partial_update)
+        return task
 
 
 class TasksWithIntervalStorage(TasksStorage):
@@ -60,17 +73,38 @@ class TasksWithoutIntervalStorage(TasksStorage):
 
 
 @transactional
-def _transactional_assign_next_task_to_worker(transaction: Any, collection: CollectionReference, worker_id: str) -> Optional[Task]:
-    pending_tasks = collection.where("status", "==", TaskStatus.PENDING.value).stream(transaction=transaction)  # type: ignore
+def _transactional_start_any_extraction_task(transaction: Any, collection: CollectionReference, worker_id: str) -> Optional[Task]:
+    extraction_is_pending = ("extraction_status", "==", TaskStatus.PENDING.value)
+    pending_tasks = collection.where(*extraction_is_pending).stream(transaction=transaction)  # type: ignore
 
     for snapshot in pending_tasks:
         data = snapshot.to_dict()
         assert data is not None
 
         task = Task.from_dict(data)
-        if task.is_pending():
-            transaction.update(snapshot.reference, task.update_assign(worker_id))
+        if task.is_extraction_pending():
+            transaction.update(snapshot.reference, task.update_on_extraction_started(worker_id))
             return task
+
+    return None
+
+
+@transactional
+def _transactional_start_any_loading_task(transaction: Any, collection: CollectionReference, worker_id: str) -> Optional[Task]:
+    extraction_is_finished = ("extraction_status", "==", TaskStatus.FINISHED.value)
+    loading_is_pending = ("loading_status", "==", TaskStatus.PENDING.value)
+    pending_tasks = collection.where(*extraction_is_finished).where(*loading_is_pending).stream(transaction=transaction)  # type: ignore
+
+    for snapshot in pending_tasks:
+        data = snapshot.to_dict()
+        assert data is not None
+
+        task = Task.from_dict(data)
+        if task.is_loading_pending():
+            transaction.update(snapshot.reference, task.update_on_loading_started(worker_id))
+            return task
+
+    return None
 
 
 def ensure_document_exists(document_ref: Any, snapshot: Any) -> None:
