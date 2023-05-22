@@ -8,26 +8,21 @@ SCROLL_CONSISTENCY_TIME = "10m"
 SCAN_BATCH_SIZE = 1000
 
 
-class IExtractionTask(Protocol):
+class ITask(Protocol):
     @property
     def indexer_url(self) -> str: ...
-
     @property
     def index_name(self) -> str: ...
-
     def is_time_bound(self) -> bool: ...
-
     @property
     def start_timestamp(self) -> Optional[int]: ...
-
     @property
     def end_timestamp(self) -> Optional[int]: ...
-
     def get_extraction_filename(self) -> str: ...
 
 
-class ExtractionJob:
-    def __init__(self, task: IExtractionTask) -> None:
+class ExtractJob:
+    def __init__(self, task: ITask) -> None:
         self.task = task
         self.elastic_search_client = Elasticsearch(self.task.indexer_url)
 

@@ -3,29 +3,23 @@ from typing import Any, Optional, Protocol
 from google.cloud import bigquery
 
 
-class ILoadingTask(Protocol):
+class ITask(Protocol):
     @property
     def indexer_url(self) -> str: ...
-
     @property
     def index_name(self) -> str: ...
-
     @property
     def bq_dataset(self) -> str: ...
-
     def is_time_bound(self) -> bool: ...
-
     @property
     def start_timestamp(self) -> Optional[int]: ...
-
     @property
     def end_timestamp(self) -> Optional[int]: ...
+    def get_transformed_filename(self) -> str: ...
 
-    def get_extraction_filename(self) -> str: ...
 
-
-class LoadingJob:
-    def __init__(self, gcp_project_id: str, task: ILoadingTask) -> None:
+class LoadJob:
+    def __init__(self, gcp_project_id: str, task: ITask) -> None:
         self.gcp_project_id = gcp_project_id
         self.task = task
         self.bigquery_client = bigquery.Client()
@@ -36,7 +30,7 @@ class LoadingJob:
         file_path = self._get_file_path()
 
         job_config = bigquery.LoadJobConfig(
-            schema=[],
+            autodetect=True,
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
             write_disposition=write_disposition
         )
@@ -63,4 +57,4 @@ class LoadingJob:
         return "WRITE_TRUNCATE"
 
     def _get_file_path(self) -> str:
-        return self.task.get_extraction_filename()
+        return self.task.get_transformed_filename()

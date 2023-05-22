@@ -161,6 +161,9 @@ class Task:
     def get_extraction_filename(self) -> str:
         return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}.json"
 
+    def get_transformed_filename(self) -> str:
+        return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}_transformed.json"
+
 
 def group_tasks_by_status(tasks: List[Task]) -> Tuple[Dict[TaskStatus, List[Task]], Dict[TaskStatus, List[Task]]]:
     tasks_by_extraction_status: Dict[TaskStatus, List[Task]] = {}

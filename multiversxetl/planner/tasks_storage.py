@@ -36,16 +36,20 @@ class TasksStorage:
 
             batch.commit()
 
-    def start_any_extraction_task(self, worker_id: str) -> Optional[Task]:
+    def start_any_extraction_task(self,
+                                  worker_id: str,
+                                  index_name: Optional[str]) -> Optional[Task]:
         transaction: Any = self.db.transaction()  # type: ignore
         collection = self.db.collection(self.collection)
-        task = _transactional_start_any_extraction_task(transaction, collection, worker_id)
+        task = _transactional_start_any_extraction_task(transaction, collection, worker_id, index_name)
         return task
 
-    def start_any_loading_task(self, worker_id: str) -> Optional[Task]:
+    def start_any_loading_task(self,
+                               worker_id: str,
+                               index_name: Optional[str]) -> Optional[Task]:
         transaction: Any = self.db.transaction()  # type: ignore
         collection = self.db.collection(self.collection)
-        task = _transactional_start_any_loading_task(transaction, collection, worker_id)
+        task = _transactional_start_any_loading_task(transaction, collection, worker_id, index_name)
         return task
 
     def update_task(self, task_id: str, update_func: Callable[[Task], Any]) -> Task:
@@ -73,38 +77,60 @@ class TasksWithoutIntervalStorage(TasksStorage):
 
 
 @transactional
-def _transactional_start_any_extraction_task(transaction: Any, collection: CollectionReference, worker_id: str) -> Optional[Task]:
+def _transactional_start_any_extraction_task(
+        transaction: Any,
+        collection: CollectionReference,
+        worker_id: str,
+        index_name: Optional[str]
+) -> Optional[Task]:
     extraction_is_pending = ("extraction_status", "==", TaskStatus.PENDING.value)
-    pending_tasks = collection.where(*extraction_is_pending).stream(transaction=transaction)  # type: ignore
+    index_name_is = ("index_name", "==", index_name)
 
-    for snapshot in pending_tasks:
-        data = snapshot.to_dict()
-        assert data is not None
+    query = collection.where(*extraction_is_pending)  # type: ignore
+    if index_name:
+        query = query.where(*index_name_is)  # type: ignore
 
-        task = Task.from_dict(data)
-        if task.is_extraction_pending():
-            transaction.update(snapshot.reference, task.update_on_extraction_started(worker_id))
-            return task
+    pending_tasks = query.limit(1).stream(transaction=transaction)  # type: ignore
+    snapshot = next(pending_tasks, None)
 
-    return None
+    if not snapshot:
+        return None
+
+    data = snapshot.to_dict()
+    assert data is not None
+
+    task = Task.from_dict(data)
+    transaction.update(snapshot.reference, task.update_on_extraction_started(worker_id))
+    return task
 
 
 @transactional
-def _transactional_start_any_loading_task(transaction: Any, collection: CollectionReference, worker_id: str) -> Optional[Task]:
+def _transactional_start_any_loading_task(
+    transaction: Any,
+    collection: CollectionReference,
+    worker_id: str,
+    index_name: Optional[str]
+) -> Optional[Task]:
     extraction_is_finished = ("extraction_status", "==", TaskStatus.FINISHED.value)
     loading_is_pending = ("loading_status", "==", TaskStatus.PENDING.value)
-    pending_tasks = collection.where(*extraction_is_finished).where(*loading_is_pending).stream(transaction=transaction)  # type: ignore
+    index_name_is = ("index_name", "==", index_name)
 
-    for snapshot in pending_tasks:
-        data = snapshot.to_dict()
-        assert data is not None
+    query = collection.where(*extraction_is_finished).where(*loading_is_pending)  # type: ignore
+    if index_name:
+        query = query.where(*index_name_is)  # type: ignore
 
-        task = Task.from_dict(data)
-        if task.is_loading_pending():
-            transaction.update(snapshot.reference, task.update_on_loading_started(worker_id))
-            return task
+    pending_tasks = query.limit(1).stream()  # type: ignore
+    snapshot = next(pending_tasks, None)
 
-    return None
+    if not snapshot:
+        return None
+
+    data = snapshot.to_dict()
+    assert data is not None
+
+    task = Task.from_dict(data)
+    transaction.update(snapshot.reference, task.update_on_loading_started(worker_id))
+    return task
 
 
 def ensure_document_exists(document_ref: Any, snapshot: Any) -> None:
