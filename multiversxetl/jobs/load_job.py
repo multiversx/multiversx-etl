@@ -9,7 +9,7 @@ class ITask(Protocol):
     @property
     def index_name(self) -> str: ...
     @property
-    def bq_dataset(self) -> str: ...
+    def bq_dataset_fqn(self) -> str: ...
     def is_time_bound(self) -> bool: ...
     @property
     def start_timestamp(self) -> Optional[int]: ...
@@ -19,8 +19,7 @@ class ITask(Protocol):
 
 
 class LoadJob:
-    def __init__(self, gcp_project_id: str, task: ITask) -> None:
-        self.gcp_project_id = gcp_project_id
+    def __init__(self, task: ITask) -> None:
         self.task = task
         self.bigquery_client = bigquery.Client()
 
@@ -49,7 +48,7 @@ class LoadJob:
         )
 
     def _get_table_id(self) -> str:
-        return f"{self.gcp_project_id}.{self.task.bq_dataset}.{self.task.index_name}"
+        return f"{self.task.bq_dataset_fqn}.{self.task.index_name}"
 
     def _get_write_disposition(self) -> str:
         if self.task.is_time_bound():

@@ -15,24 +15,22 @@ class Task:
                  id: str,
                  indexer_url: str,
                  index_name: str,
-                 bq_dataset: str,
+                 bq_dataset_fqn: str,
                  start_timestamp: Optional[int] = None,
                  end_timestamp: Optional[int] = None):
         self.id = id
         self.indexer_url = indexer_url
         self.index_name = index_name
-        self.bq_dataset = bq_dataset
+        self.bq_dataset_fqn = bq_dataset_fqn
         self.start_timestamp = start_timestamp
         self.end_timestamp = end_timestamp
 
         self.extraction_status: TaskStatus = TaskStatus.PENDING
         self.extraction_worker_id: Optional[str] = None
-        self.extraction_progress: float = 0.0
         self.extraction_outcome: Any = None
 
         self.loading_status: TaskStatus = TaskStatus.PENDING
         self.loading_worker_id: Optional[str] = None
-        self.loading_progress: float = 0.0
         self.loading_outcome: Any = None
 
     @classmethod
@@ -41,19 +39,17 @@ class Task:
             id=data["id"],
             indexer_url=data["indexer_url"],
             index_name=data["index_name"],
-            bq_dataset=data["bq_dataset"],
+            bq_dataset_fqn=data["bq_dataset_fqn"],
             start_timestamp=data["start_timestamp"],
             end_timestamp=data["end_timestamp"]
         )
 
         task.extraction_status = TaskStatus(data["extraction_status"])
         task.extraction_worker_id = data["extraction_worker_id"]
-        task.extraction_progress = data["extraction_progress"]
         task.extraction_outcome = data["extraction_outcome"]
 
         task.loading_status = TaskStatus(data["loading_status"])
         task.loading_worker_id = data["loading_worker_id"]
-        task.loading_progress = data["loading_progress"]
         task.loading_outcome = data["loading_outcome"]
 
         return task
@@ -63,18 +59,16 @@ class Task:
             "id": self.id,
             "indexer_url": self.indexer_url,
             "index_name": self.index_name,
-            "bq_dataset": self.bq_dataset,
+            "bq_dataset_fqn": self.bq_dataset_fqn,
             "start_timestamp": self.start_timestamp,
             "end_timestamp": self.end_timestamp,
 
             "extraction_status": self.extraction_status.value,
             "extraction_worker_id": self.extraction_worker_id,
-            "extraction_progress": self.extraction_progress,
             "extraction_outcome": self.extraction_outcome,
 
             "loading_status": self.loading_status.value,
             "loading_worker_id": self.loading_worker_id,
-            "loading_progress": self.loading_progress,
             "loading_outcome": self.loading_outcome
         }
 
@@ -94,13 +88,6 @@ class Task:
         return {
             "extraction_worker_id": self.extraction_worker_id,
             "extraction_status": self.extraction_status.value
-        }
-
-    def update_on_extraction_progress(self, progress: float) -> Dict[str, Any]:
-        self.extraction_progress = progress
-
-        return {
-            "extraction_progress": self.extraction_progress
         }
 
     def update_on_extraction_failure(self, outcome: Any) -> Dict[str, Any]:
@@ -128,13 +115,6 @@ class Task:
         return {
             "loading_worker_id": self.loading_worker_id,
             "loading_status": self.loading_status.value
-        }
-
-    def update_on_loading_progress(self, progress: float) -> Dict[str, Any]:
-        self.loading_progress = progress
-
-        return {
-            "loading_progress": self.loading_progress
         }
 
     def update_on_loading_failure(self, outcome: Any) -> Dict[str, Any]:

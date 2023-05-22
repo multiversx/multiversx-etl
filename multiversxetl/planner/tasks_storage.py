@@ -36,20 +36,20 @@ class TasksStorage:
 
             batch.commit()
 
-    def start_any_extraction_task(self,
-                                  worker_id: str,
-                                  index_name: Optional[str]) -> Optional[Task]:
+    def take_any_extract_task(self,
+                              worker_id: str,
+                              index_name: Optional[str]) -> Optional[Task]:
         transaction: Any = self.db.transaction()  # type: ignore
         collection = self.db.collection(self.collection)
-        task = _transactional_start_any_extraction_task(transaction, collection, worker_id, index_name)
+        task = _transactional_take_any_extraction_task(transaction, collection, worker_id, index_name)
         return task
 
-    def start_any_loading_task(self,
-                               worker_id: str,
-                               index_name: Optional[str]) -> Optional[Task]:
+    def take_any_load_task(self,
+                           worker_id: str,
+                           index_name: Optional[str]) -> Optional[Task]:
         transaction: Any = self.db.transaction()  # type: ignore
         collection = self.db.collection(self.collection)
-        task = _transactional_start_any_loading_task(transaction, collection, worker_id, index_name)
+        task = _transactional_take_any_loading_task(transaction, collection, worker_id, index_name)
         return task
 
     def update_task(self, task_id: str, update_func: Callable[[Task], Any]) -> Task:
@@ -77,7 +77,7 @@ class TasksWithoutIntervalStorage(TasksStorage):
 
 
 @transactional
-def _transactional_start_any_extraction_task(
+def _transactional_take_any_extraction_task(
         transaction: Any,
         collection: CollectionReference,
         worker_id: str,
@@ -105,7 +105,7 @@ def _transactional_start_any_extraction_task(
 
 
 @transactional
-def _transactional_start_any_loading_task(
+def _transactional_take_any_loading_task(
     transaction: Any,
     collection: CollectionReference,
     worker_id: str,
