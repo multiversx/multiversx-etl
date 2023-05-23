@@ -1,0 +1,136 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "currentOwner",
+        "type": "STRING"
+    },
+    {
+        "name": "issuer",
+        "type": "STRING"
+    },
+    {
+        "name": "name",
+        "type": "STRING"
+    },
+    {
+        "name": "numDecimals",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "ownersHistory",
+        "fields": [
+            {
+                "name": "address",
+                "type": "STRING"
+            },
+            {
+                "name": "timestamp",
+                "type": "TIMESTAMP"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "properties",
+        "fields": [
+            {
+                "name": "canAddSpecialRoles",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canBurn",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canChangeOwner",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canCreateMultiShard",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canFreeze",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canMint",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canPause",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canTransferNFTCreateRole",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canUpgrade",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "canWipe",
+                "type": "BOOLEAN"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "roles",
+        "fields": [
+            {
+                "name": "ESDTRoleLocalBurn",
+                "type": "STRING"
+            },
+            {
+                "name": "ESDTRoleLocalMint",
+                "type": "STRING"
+            },
+            {
+                "name": "ESDTRoleNFTAddQuantity",
+                "type": "STRING"
+            },
+            {
+                "name": "ESDTRoleNFTAddURI",
+                "type": "STRING"
+            },
+            {
+                "name": "ESDTRoleNFTBurn",
+                "type": "STRING"
+            },
+            {
+                "name": "ESDTRoleNFTCreate",
+                "type": "STRING"
+            },
+            {
+                "name": "ESDTRoleNFTUpdateAttributes",
+                "type": "STRING"
+            },
+            {
+                "name": "ESDTTransferRole",
+                "type": "STRING"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "ticker",
+        "type": "STRING"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "token",
+        "type": "STRING"
+    },
+    {
+        "name": "type",
+        "type": "STRING"
+    }
+]

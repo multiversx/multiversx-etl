@@ -1,0 +1,14 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "accumulatedFees",
+        "type": "STRING"
+    },
+    {
+        "name": "developerFees",
+        "type": "STRING"
+    }
+]

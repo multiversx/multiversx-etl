@@ -1,0 +1,92 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "address",
+        "type": "STRING"
+    },
+    {
+        "name": "balance",
+        "type": "STRING"
+    },
+    {
+        "name": "balanceNum",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "currentOwner",
+        "type": "STRING"
+    },
+    {
+        "name": "data",
+        "fields": [
+            {
+                "name": "attributes",
+                "type": "STRING"
+            },
+            {
+                "name": "creator",
+                "type": "STRING"
+            },
+            {
+                "name": "hash",
+                "type": "STRING"
+            },
+            {
+                "name": "metadata",
+                "type": "STRING"
+            },
+            {
+                "name": "name",
+                "type": "STRING"
+            },
+            {
+                "name": "nonEmptyURIs",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "royalties",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "tags",
+                "type": "STRING"
+            },
+            {
+                "name": "uris",
+                "type": "STRING"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "identifier",
+        "type": "STRING"
+    },
+    {
+        "name": "properties",
+        "type": "STRING"
+    },
+    {
+        "name": "shardID",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "token",
+        "type": "STRING"
+    },
+    {
+        "name": "tokenNonce",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "type",
+        "type": "STRING"
+    }
+]

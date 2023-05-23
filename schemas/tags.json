@@ -1,0 +1,14 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "count",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "tag",
+        "type": "STRING"
+    }
+]

@@ -1,0 +1,44 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "activeStake",
+        "type": "STRING"
+    },
+    {
+        "name": "activeStakeNum",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "address",
+        "type": "STRING"
+    },
+    {
+        "name": "contract",
+        "type": "STRING"
+    },
+    {
+        "name": "unDelegateInfo",
+        "fields": [
+            {
+                "name": "id",
+                "type": "STRING"
+            },
+            {
+                "name": "timestamp",
+                "type": "TIMESTAMP"
+            },
+            {
+                "name": "value",
+                "type": "STRING"
+            },
+            {
+                "name": "valueNum",
+                "type": "NUMERIC"
+            }
+        ],
+        "type": "RECORD"
+    }
+]
