@@ -1,9 +1,5 @@
-multiversx-sdk-network-providers
 six
 click
-requests
-blockchain-etl-common
-multiversx-sdk-core
 elasticsearch
 google-cloud-bigquery
 google-cloud-firestore

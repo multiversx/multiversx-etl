@@ -37,13 +37,13 @@ def inspect_tasks(gcp_project_id: str):
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--gcp-project-id", type=str, help="The GCP project ID.")
 @click.option("--indexer-url", type=str, help="The indexer URL (Elastic Search instance).")
+@click.option("--gcp-project-id", type=str, help="The GCP project ID.")
 @click.option("--bq-dataset-fqn", type=str, required=True, help="The BigQuery dataset (destination).")
 @click.option("--start-timestamp", type=int, help="The start timestamp (e.g. genesis time).")
 @click.option("--end-timestamp", type=int, help="The end timestamp (e.g. a recent one).")
 @click.option("--granularity", type=int, default=SECONDS_IN_DAY, help="Task granularity, in seconds.")
-def plan_tasks_with_intervals(gcp_project_id: str, indexer_url: str, bq_dataset_fqn: str, start_timestamp: int, end_timestamp: int, granularity: int):
+def plan_tasks_with_intervals(indexer_url: str, gcp_project_id: str, bq_dataset_fqn: str, start_timestamp: int, end_timestamp: int, granularity: int):
     storage = TasksWithIntervalStorage(gcp_project_id)
     planner = TasksPlanner()
 
@@ -63,10 +63,10 @@ def plan_tasks_with_intervals(gcp_project_id: str, indexer_url: str, bq_dataset_
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--gcp-project-id", type=str, help="The GCP project ID.")
 @click.option("--indexer-url", type=str, help="The indexer URL (Elastic Search instance).")
-@click.option("--bq-dataset", type=str, help="The BigQuery dataset (destination).")
-def plan_tasks_without_intervals(gcp_project_id: str, indexer_url: str, bq_dataset_fqn: str):
+@click.option("--gcp-project-id", type=str, help="The GCP project ID.")
+@click.option("--bq-dataset-fqn", type=str, help="The BigQuery dataset (destination).")
+def plan_tasks_without_intervals(indexer_url: str, gcp_project_id: str, bq_dataset_fqn: str):
     storage = TasksWithoutIntervalStorage(gcp_project_id)
     planner = TasksPlanner()
     new_tasks = planner.plan_tasks_without_intervals(indexer_url, bq_dataset_fqn)
