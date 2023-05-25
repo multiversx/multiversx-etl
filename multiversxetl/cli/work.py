@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 @click.option("--index-name", type=str, help="Filter by index name.")
 def do_extract_with_intervals(workspace: str, gcp_project_id: str, worker_id: str, index_name: Optional[str]):
     storage = TasksWithIntervalStorage(gcp_project_id)
-    take_any_extract_task(workspace, storage, worker_id, index_name)
+    do_any_extract_task(workspace, storage, worker_id, index_name)
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -29,10 +29,10 @@ def do_extract_with_intervals(workspace: str, gcp_project_id: str, worker_id: st
 @click.option("--index-name", type=str, help="Filter by index name.")
 def do_extract_without_intervals(workspace: str, gcp_project_id: str, worker_id: str, index_name: Optional[str]):
     storage = TasksWithoutIntervalStorage(gcp_project_id)
-    take_any_extract_task(workspace, storage, worker_id, index_name)
+    do_any_extract_task(workspace, storage, worker_id, index_name)
 
 
-def take_any_extract_task(workspace: str, storage: TasksStorage, worker_id: str, index_name: Optional[str]):
+def do_any_extract_task(workspace: str, storage: TasksStorage, worker_id: str, index_name: Optional[str]):
     file_storage = FileStorage(Path(workspace))
     worker_id = worker_id or socket.gethostname()
 
@@ -44,10 +44,13 @@ def take_any_extract_task(workspace: str, storage: TasksStorage, worker_id: str,
     print(f"Assigned task: {task.id}")
     print(task.to_dict())
 
-    extract_job = ExtractJob(file_storage, task)
-    extract_job.run()
-
-    storage.update_task(task.id, lambda t: t.update_on_extraction_finished({}))
+    try:
+        extract_job = ExtractJob(file_storage, task)
+        extract_job.run()
+        storage.update_task(task.id, lambda t: t.update_on_extraction_finished({}))
+    except Exception as e:
+        logging.exception(e)
+        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(e))
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -58,7 +61,7 @@ def take_any_extract_task(workspace: str, storage: TasksStorage, worker_id: str,
 @click.option("--schema-folder", type=str, help="Folder with schema files.")
 def do_load_with_intervals(workspace: str, gcp_project_id: str, worker_id: str, index_name: Optional[str], schema_folder: str):
     storage = TasksWithIntervalStorage(gcp_project_id)
-    take_any_load_task(workspace, storage, worker_id, index_name, schema_folder)
+    do_any_load_task(workspace, storage, worker_id, index_name, schema_folder)
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -69,10 +72,10 @@ def do_load_with_intervals(workspace: str, gcp_project_id: str, worker_id: str, 
 @click.option("--schema-folder", type=str, help="Folder with schema files.")
 def do_load_without_intervals(workspace: str, gcp_project_id: str, worker_id: str, index_name: Optional[str], schema_folder: str):
     storage = TasksWithoutIntervalStorage(gcp_project_id)
-    take_any_load_task(workspace, storage, worker_id, index_name, schema_folder)
+    do_any_load_task(workspace, storage, worker_id, index_name, schema_folder)
 
 
-def take_any_load_task(workspace: str, storage: TasksStorage, worker_id: str, index_name: Optional[str], schema_folder: str):
+def do_any_load_task(workspace: str, storage: TasksStorage, worker_id: str, index_name: Optional[str], schema_folder: str):
     file_storage = FileStorage(Path(workspace))
     worker_id = worker_id or socket.gethostname()
 
@@ -84,8 +87,12 @@ def take_any_load_task(workspace: str, storage: TasksStorage, worker_id: str, in
     print(f"Assigned task: {task.id}")
     print(task.to_dict())
 
-    transform_job = TransformJob(file_storage, task)
-    transform_job.run()
+    try:
+        transform_job = TransformJob(file_storage, task)
+        transform_job.run()
 
-    load_job = LoadJob(file_storage, task, Path(schema_folder))
-    load_job.run()
+        load_job = LoadJob(file_storage, task, Path(schema_folder))
+        load_job.run()
+    except Exception as e:
+        logging.exception(e)
+        storage.update_task(task.id, lambda t: t.update_on_loading_failure(e))

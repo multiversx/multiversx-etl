@@ -83,10 +83,10 @@ def _transactional_take_any_extraction_task(
         worker_id: str,
         index_name: Optional[str]
 ) -> Optional[Task]:
-    extraction_is_pending = ("extraction_status", "==", TaskStatus.PENDING.value)
+    extraction_is_pending_or_failed = ("extraction_status", "in", [TaskStatus.PENDING.value, TaskStatus.FAILED.value])
     index_name_is = ("index_name", "==", index_name)
 
-    query = collection.where(*extraction_is_pending)  # type: ignore
+    query = collection.where(*extraction_is_pending_or_failed)  # type: ignore
     if index_name:
         query = query.where(*index_name_is)  # type: ignore
 
@@ -112,10 +112,10 @@ def _transactional_take_any_loading_task(
     index_name: Optional[str]
 ) -> Optional[Task]:
     extraction_is_finished = ("extraction_status", "==", TaskStatus.FINISHED.value)
-    loading_is_pending = ("loading_status", "==", TaskStatus.PENDING.value)
+    loading_is_pending_or_failed = ("loading_status", "in", [TaskStatus.PENDING.value, TaskStatus.FAILED.value])
     index_name_is = ("index_name", "==", index_name)
 
-    query = collection.where(*extraction_is_finished).where(*loading_is_pending)  # type: ignore
+    query = collection.where(*extraction_is_finished).where(*loading_is_pending_or_failed)  # type: ignore
     if index_name:
         query = query.where(*index_name_is)  # type: ignore
 
