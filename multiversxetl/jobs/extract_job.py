@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Protocol
 
 import elasticsearch.helpers
@@ -6,6 +7,10 @@ from elasticsearch import Elasticsearch
 
 SCROLL_CONSISTENCY_TIME = "10m"
 SCAN_BATCH_SIZE = 1000
+
+
+class IFileStorage(Protocol):
+    def get_extracted_path(self, task_pretty_name: str) -> Path: ...
 
 
 class ITask(Protocol):
@@ -18,11 +23,14 @@ class ITask(Protocol):
     def start_timestamp(self) -> Optional[int]: ...
     @property
     def end_timestamp(self) -> Optional[int]: ...
-    def get_extraction_filename(self) -> str: ...
+    def get_pretty_name(self) -> str: ...
 
 
 class ExtractJob:
-    def __init__(self, task: ITask) -> None:
+    def __init__(self,
+                 file_storage: IFileStorage,
+                 task: ITask) -> None:
+        self.file_storage = file_storage
         self.task = task
         self.elastic_search_client = Elasticsearch(self.task.indexer_url)
 
@@ -44,7 +52,7 @@ class ExtractJob:
         self._write_records_to_file(records)
 
     def _write_records_to_file(self, records: Iterable[Dict[str, Any]]) -> None:
-        filename = self.task.get_extraction_filename()
+        filename = self.file_storage.get_extracted_path(self.task.get_pretty_name())
         num_written = 0
 
         with open(filename, "a") as file:

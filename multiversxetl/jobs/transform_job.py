@@ -1,28 +1,31 @@
 import json
+from pathlib import Path
 from typing import Any, Dict, Protocol
+
+
+class IFileStorage(Protocol):
+    def get_extracted_path(self, task_pretty_name: str) -> Path: ...
+    def get_transformed_path(self, task_pretty_name: str) -> Path: ...
 
 
 class ITask(Protocol):
     @property
     def index_name(self) -> str: ...
-    def get_extraction_filename(self) -> str: ...
-    def get_transformed_filename(self) -> str: ...
+    def get_pretty_name(self) -> str: ...
 
 
 class TransformJob:
-    def __init__(self, task: ITask) -> None:
+    def __init__(self, file_storage: IFileStorage, task: ITask) -> None:
+        self.file_storage = file_storage
         self.task = task
         self.transformers: Dict[str, BlocksTransformer] = {
             "blocks": BlocksTransformer()
         }
 
     def run(self) -> None:
-        transformer = self.transformers.get(self.task.index_name)
-        if not transformer:
-            return
-
-        input_filename = self.task.get_extraction_filename()
-        output_filename = self.task.get_transformed_filename()
+        transformer = self.transformers.get(self.task.index_name, Transformer())
+        input_filename = self.file_storage.get_extracted_path(self.task.get_pretty_name())
+        output_filename = self.file_storage.get_transformed_path(self.task.get_pretty_name())
 
         with open(input_filename) as file:
             with open(output_filename, "w") as output_file:

@@ -138,11 +138,8 @@ class Task:
     def is_time_bound(self) -> bool:
         return self.start_timestamp is not None and self.end_timestamp is not None
 
-    def get_extraction_filename(self) -> str:
-        return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}.json"
-
-    def get_transformed_filename(self) -> str:
-        return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}_transformed.json"
+    def get_pretty_name(self) -> str:
+        return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}"
 
 
 def group_tasks_by_status(tasks: List[Task]) -> Tuple[Dict[TaskStatus, List[Task]], Dict[TaskStatus, List[Task]]]:

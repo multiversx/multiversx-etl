@@ -1,6 +1,11 @@
+from pathlib import Path
 from typing import Any, Optional, Protocol
 
 from google.cloud import bigquery
+
+
+class IFileStorage(Protocol):
+    def get_load_path(self, task_pretty_name: str) -> Path: ...
 
 
 class ITask(Protocol):
@@ -15,21 +20,29 @@ class ITask(Protocol):
     def start_timestamp(self) -> Optional[int]: ...
     @property
     def end_timestamp(self) -> Optional[int]: ...
-    def get_transformed_filename(self) -> str: ...
+    def get_pretty_name(self) -> str: ...
 
 
 class LoadJob:
-    def __init__(self, task: ITask) -> None:
+    def __init__(self,
+                 file_storage: IFileStorage,
+                 task: ITask,
+                 schema_folder: Path) -> None:
+        self.file_storage = file_storage
         self.task = task
+        self.schema_folder = schema_folder
         self.bigquery_client = bigquery.Client()
 
     def run(self) -> None:
         table_id = self._get_table_id()
         write_disposition = self._get_write_disposition()
-        file_path = self._get_file_path()
+        file_path = self.file_storage.get_load_path(self.task.get_pretty_name())
+
+        schema_path = self.schema_folder / f"{self.task.index_name}.json"
+        schema = self.bigquery_client.schema_from_json(schema_path)
 
         job_config = bigquery.LoadJobConfig(
-            autodetect=True,
+            schema=schema,
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
             write_disposition=write_disposition
         )
@@ -54,6 +67,3 @@ class LoadJob:
         if self.task.is_time_bound():
             return "WRITE_APPEND"
         return "WRITE_TRUNCATE"
-
-    def _get_file_path(self) -> str:
-        return self.task.get_transformed_filename()
