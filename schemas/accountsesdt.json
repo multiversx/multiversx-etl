@@ -44,6 +44,7 @@
             },
             {
                 "name": "nonEmptyURIs",
+                "mode": "REPEATED",
                 "type": "BOOLEAN"
             },
             {
@@ -52,10 +53,12 @@
             },
             {
                 "name": "tags",
+                "mode": "REPEATED",
                 "type": "STRING"
             },
             {
                 "name": "uris",
+                "mode": "REPEATED",
                 "type": "STRING"
             }
         ],

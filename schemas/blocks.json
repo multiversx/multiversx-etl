@@ -251,6 +251,7 @@
     },
     {
         "name": "validators",
+        "mode": "REPEATED",
         "type": "NUMERIC"
     }
 ]
