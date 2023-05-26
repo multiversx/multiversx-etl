@@ -57,14 +57,17 @@ def _map_input_properties_to_schema_fields(input_properties: Dict[str, Any]) -> 
         }
 
         input_type = input_property.get("type")
-        if not input_type:
+        is_array = input_property.get("isArray", False)
+        is_object = input_property.get("isObject", False)
+
+        if not input_type and not is_object:
             pprint(input_property)
             raise Exception(f"Missing type for property: {name}")
 
-        if input_property.get("isArray", False):
+        if is_array:
             output_property["mode"] = "REPEATED"
 
-        if input_type == "nested" or input_property.get("properties"):
+        if is_object:
             nested_properties = input_property["properties"]
             nested_output_properties = _map_input_properties_to_schema_fields(nested_properties)
             output_property["fields"] = nested_output_properties
