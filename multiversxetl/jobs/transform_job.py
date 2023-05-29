@@ -18,8 +18,9 @@ class TransformJob:
     def __init__(self, file_storage: IFileStorage, task: ITask) -> None:
         self.file_storage = file_storage
         self.task = task
-        self.transformers: Dict[str, BlocksTransformer] = {
-            "blocks": BlocksTransformer()
+        self.transformers: Dict[str, Transformer] = {
+            "blocks": BlocksTransformer(),
+            "tokens": TokensTransformer()
         }
 
     def run(self) -> None:
@@ -48,4 +49,12 @@ class Transformer:
 class BlocksTransformer(Transformer):
     def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
         del data["pubKeyBitmap"]
+        return data
+
+
+class TokensTransformer(Transformer):
+    def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        data.pop("nft_traitValues", None)
+        data.pop("nft_scamInfoType", None)
+        data.pop("nft_scamInfoDescription", None)
         return data
