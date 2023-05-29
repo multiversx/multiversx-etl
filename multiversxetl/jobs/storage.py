@@ -6,6 +6,9 @@ class FileStorage:
         self.extracted_folder = base_folder / "extracted"
         self.transformed_folder = base_folder / "transformed"
 
+        self.extracted_folder.mkdir(parents=True, exist_ok=True)
+        self.transformed_folder.mkdir(parents=True, exist_ok=True)
+
     def get_extracted_path(self, task_pretty_name: str) -> Path:
         return self.extracted_folder / f"{task_pretty_name}_extracted.json"
 

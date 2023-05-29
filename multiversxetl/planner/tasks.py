@@ -15,13 +15,13 @@ class Task:
                  id: str,
                  indexer_url: str,
                  index_name: str,
-                 bq_dataset_fqn: str,
+                 bq_dataset: str,
                  start_timestamp: Optional[int] = None,
                  end_timestamp: Optional[int] = None):
         self.id = id
         self.indexer_url = indexer_url
         self.index_name = index_name
-        self.bq_dataset_fqn = bq_dataset_fqn
+        self.bq_dataset = bq_dataset
         self.start_timestamp = start_timestamp
         self.end_timestamp = end_timestamp
 
@@ -39,7 +39,7 @@ class Task:
             id=data["id"],
             indexer_url=data["indexer_url"],
             index_name=data["index_name"],
-            bq_dataset_fqn=data["bq_dataset_fqn"],
+            bq_dataset=data["bq_dataset"],
             start_timestamp=data["start_timestamp"],
             end_timestamp=data["end_timestamp"]
         )
@@ -59,7 +59,7 @@ class Task:
             "id": self.id,
             "indexer_url": self.indexer_url,
             "index_name": self.index_name,
-            "bq_dataset_fqn": self.bq_dataset_fqn,
+            "bq_dataset": self.bq_dataset,
             "start_timestamp": self.start_timestamp,
             "end_timestamp": self.end_timestamp,
 
