@@ -27,11 +27,11 @@ class Task:
 
         self.extraction_status: TaskStatus = TaskStatus.PENDING
         self.extraction_worker_id: Optional[str] = None
-        self.extraction_outcome: Any = None
+        self.extraction_outcome: str = ""
 
         self.loading_status: TaskStatus = TaskStatus.PENDING
         self.loading_worker_id: Optional[str] = None
-        self.loading_outcome: Any = None
+        self.loading_outcome: str = ""
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]):
@@ -90,7 +90,7 @@ class Task:
             "extraction_status": self.extraction_status.value
         }
 
-    def update_on_extraction_failure(self, outcome: Any) -> Dict[str, Any]:
+    def update_on_extraction_failure(self, outcome: str) -> Dict[str, Any]:
         self.extraction_status = TaskStatus.FAILED
         self.extraction_outcome = outcome
 
@@ -99,7 +99,7 @@ class Task:
             "extraction_outcome": self.extraction_outcome
         }
 
-    def update_on_extraction_finished(self, outcome: Any) -> Dict[str, Any]:
+    def update_on_extraction_finished(self, outcome: str) -> Dict[str, Any]:
         self.extraction_status = TaskStatus.FINISHED
         self.extraction_outcome = outcome
 
@@ -117,16 +117,16 @@ class Task:
             "loading_status": self.loading_status.value
         }
 
-    def update_on_loading_failure(self, outcome: Any) -> Dict[str, Any]:
+    def update_on_loading_failure(self, outcome: str) -> Dict[str, Any]:
         self.loading_status = TaskStatus.FAILED
-        self.loading_outcome = outcome
+        self.loading_outcome = str(outcome)
 
         return {
             "loading_status": self.loading_status.value,
             "loading_outcome": self.loading_outcome
         }
 
-    def update_on_loading_finished(self, outcome: Any) -> Dict[str, Any]:
+    def update_on_loading_finished(self, outcome: str) -> Dict[str, Any]:
         self.loading_status = TaskStatus.FINISHED
         self.loading_outcome = outcome
 

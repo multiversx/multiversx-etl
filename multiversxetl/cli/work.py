@@ -47,10 +47,10 @@ def do_any_extract_task(workspace: str, storage: TasksStorage, worker_id: str, i
     try:
         extract_job = ExtractJob(file_storage, task)
         extract_job.run()
-        storage.update_task(task.id, lambda t: t.update_on_extraction_finished({}))
+        storage.update_task(task.id, lambda t: t.update_on_extraction_finished(""))
     except Exception as e:
         logging.exception(e)
-        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(e))
+        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(str(e)))
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -93,6 +93,7 @@ def do_any_load_task(workspace: str, storage: TasksStorage, worker_id: str, inde
 
         load_job = LoadJob(file_storage, task, Path(schema_folder))
         load_job.run()
+        storage.update_task(task.id, lambda t: t.update_on_loading_finished(""))
     except Exception as e:
         logging.exception(e)
-        storage.update_task(task.id, lambda t: t.update_on_loading_failure(e))
+        storage.update_task(task.id, lambda t: t.update_on_loading_failure(str(e)))
