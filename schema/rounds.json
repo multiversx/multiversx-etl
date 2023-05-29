@@ -21,6 +21,7 @@
     },
     {
         "name": "signersIndexes",
+        "mode": "REPEATED",
         "type": "NUMERIC"
     },
     {

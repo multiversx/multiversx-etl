@@ -17,6 +17,7 @@
     },
     {
         "name": "esdtValues",
+        "mode": "REPEATED",
         "type": "STRING"
     },
     {
@@ -33,6 +34,10 @@
     },
     {
         "name": "hasOperations",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "hasLogs",
         "type": "BOOLEAN"
     },
     {
@@ -69,10 +74,12 @@
     },
     {
         "name": "receivers",
+        "mode": "REPEATED",
         "type": "STRING"
     },
     {
         "name": "receiversShardIDs",
+        "mode": "REPEATED",
         "type": "NUMERIC"
     },
     {
@@ -101,6 +108,7 @@
     },
     {
         "name": "tokens",
+        "mode": "REPEATED",
         "type": "STRING"
     },
     {
@@ -113,6 +121,7 @@
     },
     {
         "name": "esdtValuesNum",
+        "mode": "REPEATED",
         "type": "FLOAT64"
     }
 ]

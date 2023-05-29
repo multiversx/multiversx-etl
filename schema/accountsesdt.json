@@ -44,7 +44,10 @@
             },
             {
                 "name": "nonEmptyURIs",
-                "mode": "REPEATED",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "whiteListedStorage",
                 "type": "BOOLEAN"
             },
             {
@@ -91,5 +94,13 @@
     {
         "name": "type",
         "type": "STRING"
+    },
+    {
+        "name": "frozen",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "paused",
+        "type": "BOOLEAN"
     }
 ]

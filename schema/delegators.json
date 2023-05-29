@@ -12,6 +12,10 @@
         "type": "FLOAT64"
     },
     {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
         "name": "address",
         "type": "STRING"
     },

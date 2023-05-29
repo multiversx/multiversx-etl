@@ -9,6 +9,7 @@
     },
     {
         "name": "events",
+        "mode": "REPEATED",
         "fields": [
             {
                 "name": "address",
@@ -24,7 +25,12 @@
             },
             {
                 "name": "topics",
+                "mode": "REPEATED",
                 "type": "STRING"
+            },
+            {
+                "name": "order",
+                "type": "NUMERIC"
             }
         ],
         "type": "RECORD"

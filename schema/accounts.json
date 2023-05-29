@@ -28,6 +28,10 @@
         "type": "TIMESTAMP"
     },
     {
+        "name": "developerRewards",
+        "type": "STRING"
+    },
+    {
         "name": "totalBalanceWithStake",
         "type": "STRING"
     },
