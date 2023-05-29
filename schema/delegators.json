@@ -9,7 +9,7 @@
     },
     {
         "name": "activeStakeNum",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "address",
@@ -36,7 +36,7 @@
             },
             {
                 "name": "valueNum",
-                "type": "NUMERIC"
+                "type": "FLOAT64"
             }
         ],
         "type": "RECORD"

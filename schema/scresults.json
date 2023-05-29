@@ -25,11 +25,11 @@
     },
     {
         "name": "gasLimit",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "gasPrice",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "hasOperations",
@@ -109,10 +109,10 @@
     },
     {
         "name": "valueNum",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "esdtValuesNum",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     }
 ]

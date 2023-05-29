@@ -5,6 +5,6 @@
     },
     {
         "name": "rating",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     }
 ]

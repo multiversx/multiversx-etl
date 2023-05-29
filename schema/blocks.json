@@ -59,6 +59,7 @@
     },
     {
         "name": "epochStartShardsData",
+        "mode": "REPEATED",
         "fields": [
             {
                 "name": "epoch",
@@ -82,6 +83,7 @@
             },
             {
                 "name": "pendingMiniBlockHeaders",
+                "mode": "REPEATED",
                 "fields": [
                     {
                         "name": "hash",
@@ -127,22 +129,23 @@
     },
     {
         "name": "gasPenalized",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "gasProvided",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "gasRefunded",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "maxGasLimit",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "miniBlocksDetails",
+        "mode": "REPEATED",
         "fields": [
             {
                 "name": "firstProcessedTx",
@@ -153,7 +156,33 @@
                 "type": "NUMERIC"
             },
             {
+                "name": "senderShard",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "receiverShard",
+                "type": "NUMERIC"
+            },
+            {
                 "name": "mbIndex",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "type",
+                "type": "STRING"
+            },
+            {
+                "name": "procType",
+                "type": "STRING"
+            },
+            {
+                "name": "txsHashes",
+                "mode": "REPEATED",
+                "type": "STRING"
+            },
+            {
+                "name": "executionOrderTxsIndices",
+                "mode": "REPEATED",
                 "type": "NUMERIC"
             }
         ],
@@ -161,6 +190,7 @@
     },
     {
         "name": "miniBlocksHashes",
+        "mode": "REPEATED",
         "type": "STRING"
     },
     {
@@ -169,6 +199,7 @@
     },
     {
         "name": "notarizedBlocksHashes",
+        "mode": "REPEATED",
         "type": "STRING"
     },
     {
@@ -204,15 +235,15 @@
             },
             {
                 "name": "gasProvided",
-                "type": "NUMERIC"
+                "type": "FLOAT64"
             },
             {
                 "name": "gasRefunded",
-                "type": "NUMERIC"
+                "type": "FLOAT64"
             },
             {
                 "name": "penalized",
-                "type": "NUMERIC"
+                "type": "FLOAT64"
             },
             {
                 "name": "rootHash",

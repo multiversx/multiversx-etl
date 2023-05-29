@@ -41,9 +41,9 @@ def _map_input_properties_to_schema_fields(input_properties: Dict[str, Any]) -> 
     type_mapping: Dict[str, str] = {
         "boolean": "BOOLEAN",
         "long": "NUMERIC",
-        "double": "NUMERIC",
+        "double": "FLOAT64",
         "integer": "NUMERIC",
-        "float": "NUMERIC",
+        "float": "FLOAT64",
         "keyword": "STRING",
         "text": "STRING",
         "date": "TIMESTAMP"

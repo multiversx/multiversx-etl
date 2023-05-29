@@ -17,23 +17,31 @@
         "type": "STRING"
     },
     {
+        "name": "feeNum",
+        "type": "FLOAT64"
+    },
+    {
         "name": "function",
         "type": "STRING"
     },
     {
         "name": "gasLimit",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "gasPrice",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "gasUsed",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "hasOperations",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "hasLogs",
         "type": "BOOLEAN"
     },
     {
@@ -129,10 +137,19 @@
     },
     {
         "name": "valueNum",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "esdtValuesNum",
-        "type": "NUMERIC"
+        "mode": "REPEATED",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "guardian",
+        "type": "STRING"
+    },
+    {
+        "name": "guardianSignature",
+        "type": "STRING"
     }
 ]

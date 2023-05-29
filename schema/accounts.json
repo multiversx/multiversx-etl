@@ -13,11 +13,11 @@
     },
     {
         "name": "balanceNum",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "nonce",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     },
     {
         "name": "shardID",
@@ -33,6 +33,6 @@
     },
     {
         "name": "totalBalanceWithStakeNum",
-        "type": "NUMERIC"
+        "type": "FLOAT64"
     }
 ]
