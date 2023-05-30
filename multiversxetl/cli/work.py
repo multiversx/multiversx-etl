@@ -7,10 +7,11 @@ from typing import Callable, Optional
 import click
 
 from multiversxetl.jobs import ExtractJob, FileStorage, LoadJob, TransformJob
+from multiversxetl.logger import CloudLogger
 from multiversxetl.planner import (TasksStorage, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 
-logging.basicConfig(level=logging.INFO)
+ERROR_INTERRUPTED = "interrupted"
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -31,7 +32,7 @@ def do_extract_with_intervals(
     storage = TasksWithIntervalStorage(gcp_project_id)
 
     do_continuously(
-        lambda: do_any_extract_task(workspace, storage, worker_id, index_name),
+        lambda: do_any_extract_task(workspace, gcp_project_id, storage, worker_id, index_name),
         continue_on_error,
         sleep_between_tasks
     )
@@ -55,7 +56,7 @@ def do_extract_without_intervals(
     storage = TasksWithoutIntervalStorage(gcp_project_id)
 
     do_continuously(
-        lambda: do_any_extract_task(workspace, storage, worker_id, index_name),
+        lambda: do_any_extract_task(workspace, gcp_project_id, storage, worker_id, index_name),
         continue_on_error,
         sleep_between_tasks
     )
@@ -63,27 +64,35 @@ def do_extract_without_intervals(
 
 def do_any_extract_task(
         workspace: str,
+        gcp_project_id: str,
         storage: TasksStorage,
         worker_id: str,
         index_name: Optional[str]
 ):
     file_storage = FileStorage(Path(workspace))
     worker_id = worker_id or socket.gethostname()
+    logger = CloudLogger(gcp_project_id, worker_id)
 
     task = storage.take_any_extract_task(worker_id, index_name)
     if not task:
-        print("No tasks left, try again later.")
+        logging.info("No tasks left, try again later.")
         return
 
-    print(f"Assigned task: {task.id}")
-    print(task.to_dict())
-
     try:
+        logger.log_info(f"Starting extraction, index = {task.index_name}, task = {task.id} ...", data=task.to_dict())
+
         extract_job = ExtractJob(file_storage, task)
         extract_job.run()
         storage.update_task(task.id, lambda t: t.update_on_extraction_finished(""))
+
+        logger.log_info(f"Extraction finished, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+    except KeyboardInterrupt:
+        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED))
+        logger.log_error(f"Extraction interrupted, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+        raise
     except Exception as e:
         storage.update_task(task.id, lambda t: t.update_on_extraction_failure(str(e)))
+        logger.log_error(f"Extraction failed, index = {task.index_name}, task = {task.id},", data=task.to_dict())
         raise
 
 
@@ -149,25 +158,32 @@ def do_any_load_task(
 ):
     file_storage = FileStorage(Path(workspace))
     worker_id = worker_id or socket.gethostname()
+    logger = CloudLogger(gcp_project_id, worker_id)
 
     task = storage.take_any_load_task(worker_id, index_name)
     if not task:
-        print("No tasks left, try again later.")
+        logging.info("No tasks left, try again later.")
         return
 
-    print(f"Assigned task: {task.id}")
-    print(task.to_dict())
-
     try:
+        logger.log_info(f"Starting transform & load, index = {task.index_name}, task = {task.id} ...", data=task.to_dict())
+
         transform_job = TransformJob(file_storage, task)
         transform_job.run()
 
         load_job = LoadJob(gcp_project_id, file_storage, task, Path(schema_folder))
         load_job.run()
+
+        logger.log_info(f"Transform & load finished, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+
         storage.update_task(task.id, lambda t: t.update_on_loading_finished(""))
+    except KeyboardInterrupt:
+        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED))
+        logger.log_error(f"Transform & load interrupted, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+        raise
     except Exception as e:
-        logging.exception(e)
         storage.update_task(task.id, lambda t: t.update_on_loading_failure(str(e)))
+        logger.log_error(f"Transform & load failed, index = {task.index_name}, task = {task.id},", data=task.to_dict())
         raise
 
 
@@ -179,5 +195,5 @@ def do_continuously(callable: Callable[[], None], continue_on_error: bool, sleep
             if not continue_on_error:
                 raise
 
-        print(f"Sleeping for {sleep_between_tasks} seconds...")
+        logging.info(f"Sleeping for {sleep_between_tasks} seconds...")
         time.sleep(sleep_between_tasks)
