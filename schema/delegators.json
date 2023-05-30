@@ -25,6 +25,7 @@
     },
     {
         "name": "unDelegateInfo",
+        "mode": "REPEATED",
         "fields": [
             {
                 "name": "id",

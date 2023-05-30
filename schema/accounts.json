@@ -8,6 +8,10 @@
         "type": "STRING"
     },
     {
+        "name": "userName",
+        "type": "STRING"
+    },
+    {
         "name": "balance",
         "type": "STRING"
     },
@@ -32,11 +36,19 @@
         "type": "STRING"
     },
     {
+        "name": "developerRewardsNum",
+        "type": "FLOAT64"
+    },
+    {
         "name": "totalBalanceWithStake",
         "type": "STRING"
     },
     {
         "name": "totalBalanceWithStakeNum",
         "type": "FLOAT64"
+    },
+    {
+        "name": "currentOwner",
+        "type": "STRING"
     }
 ]

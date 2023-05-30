@@ -5,6 +5,7 @@
     },
     {
         "name": "publicKeys",
+        "mode": "REPEATED",
         "type": "STRING"
     }
 ]

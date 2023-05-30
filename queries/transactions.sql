@@ -5,8 +5,8 @@ SELECT
     SUM(CAST(value AS BIGNUMERIC)) `rewards` 
 FROM `multiversx.transactions` 
 WHERE `operation` = "reward"
-GROUP BY DAY
-ORDER BY DAY DESC
+GROUP BY `day`
+ORDER BY `day` DESC
 
 -- Number of transactions, by day
 
@@ -14,5 +14,5 @@ SELECT
     DATE(`timestamp`) `day`, 
     COUNT(*) `transactions`
 FROM `multiversx.transactions`
-GROUP BY DAY
-ORDER BY DAY DESC
+GROUP BY `day`
+ORDER BY `day` DESC
