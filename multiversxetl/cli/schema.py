@@ -34,7 +34,7 @@ def generate_schema(input_folder: str, output_folder: str):
         }] + output_properties
 
         output_file_path = output_folder_path / input_file.name
-        output_file_path.write_text(json.dumps(output_schema, indent=4))
+        output_file_path.write_text(json.dumps(output_schema, indent=4) + "\n")
 
 
 def _map_input_properties_to_schema_fields(input_properties: Dict[str, Any]) -> List[Dict[str, Any]]:
