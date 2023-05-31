@@ -31,3 +31,28 @@ WHERE `isScCall` = true
 GROUP BY `day`, `contract`
 HAVING `day` >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
 ORDER BY `day` DESC, `num_users` DESC
+
+--
+-- Volume transferred, per contract address; (native, custom tokens), (in, out)
+--
+
+-- Native (EGLD), input volume
+
+WITH `contract_volumes_per_day` AS
+(
+  SELECT 
+    DATE(`timestamp`) `day`,
+    `receiver` `contract`,
+    SUM(CAST(`value` AS BIGNUMERIC)) `native_volume`, 
+  FROM `multiversx.transactions`
+  WHERE `isScCall` = true
+  AND `status` = 'success'
+  GROUP BY `day`, `contract`
+)
+SELECT `day`, `contract`, `native_volume`, `row_num` `top` FROM
+(
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY `day` ORDER BY `native_volume` DESC) AS `row_num`
+  FROM `contract_volumes_per_day`
+)
+WHERE `row_num` <= 3
+ORDER BY `day` DESC, `top` ASC
