@@ -63,11 +63,11 @@ class TokensTransformer(Transformer):
 
 class LogsTransformer(Transformer):
     def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        events = data.get("events", [])
+        events = data.get("events", []) or []
 
         for event in events:
-            topics = event.get("topics", [])
-            # Replace NULL values with empty strings.
+            topics = event.get("topics", []) or []
+            # Replace NULL values with empty strings, since BigQuery does not support NULL values in arrays (mode = REPEATED).
             event["topics"] = [topic if topic is not None else "" for topic in topics]
 
         # We've altered the data in-place.
