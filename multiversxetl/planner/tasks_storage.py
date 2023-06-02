@@ -6,6 +6,8 @@ from google.cloud.firestore import CollectionReference
 
 from multiversxetl.planner.tasks import Task, TaskStatus
 
+from multiversxetl.errors import TransientError
+
 CHUNK_SIZE = 100
 
 
@@ -41,7 +43,7 @@ class TasksStorage:
                               index_name: Optional[str]) -> Optional[Task]:
         transaction: Any = self.db.transaction()  # type: ignore
         collection = self.db.collection(self.collection)
-        task = _transactional_take_any_extraction_task(transaction, collection, worker_id, index_name)
+        task = _transactional_pessimistic_take_any_extraction_task(transaction, collection, worker_id, index_name)
         return task
 
     def take_any_load_task(self,
@@ -49,7 +51,7 @@ class TasksStorage:
                            index_name: Optional[str]) -> Optional[Task]:
         transaction: Any = self.db.transaction()  # type: ignore
         collection = self.db.collection(self.collection)
-        task = _transactional_take_any_loading_task(transaction, collection, worker_id, index_name)
+        task = _transactional_pessimistic_take_any_loading_task(transaction, collection, worker_id, index_name)
         return task
 
     def update_task(self, task_id: str, update_func: Callable[[Task], Any]) -> Task:
@@ -74,6 +76,20 @@ class TasksWithIntervalStorage(TasksStorage):
 class TasksWithoutIntervalStorage(TasksStorage):
     def __init__(self, project_id: str):
         super().__init__(project_id, "tasks_without_interval")
+
+
+def _transactional_pessimistic_take_any_extraction_task(
+        transaction: Any,
+        collection: CollectionReference,
+        worker_id: str,
+        index_name: Optional[str]
+) -> Optional[Task]:
+    try:
+        return _transactional_take_any_extraction_task(transaction, collection, worker_id, index_name)
+    except Exception as error:
+        if _is_transient_error(error):
+            raise TransientError() from error
+        raise
 
 
 @transactional
@@ -102,6 +118,20 @@ def _transactional_take_any_extraction_task(
     task = Task.from_dict(data)
     transaction.update(snapshot.reference, task.update_on_extraction_started(worker_id))
     return task
+
+
+def _transactional_pessimistic_take_any_loading_task(
+        transaction: Any,
+        collection: CollectionReference,
+        worker_id: str,
+        index_name: Optional[str]
+) -> Optional[Task]:
+    try:
+        return _transactional_take_any_loading_task(transaction, collection, worker_id, index_name)
+    except Exception as error:
+        if _is_transient_error(error):
+            raise TransientError() from error
+        raise
 
 
 @transactional
@@ -133,8 +163,17 @@ def _transactional_take_any_loading_task(
     return task
 
 
-def ensure_document_exists(document_ref: Any, snapshot: Any) -> None:
-    assert snapshot.exists, f"Document {document_ref.path} does not exist"
+def _is_transient_error(error: Exception) -> bool:
+    serialized = str(error).lower()
+
+    if "please try again" in serialized:
+        return True
+    if "aborted due to cross-transaction contention" in serialized:
+        return True
+    if "failed to commit transaction" in serialized:
+        return True
+
+    return False
 
 
 def split_to_chunks(items: List[Any], chunk_size: int) -> List[List[Any]]:
