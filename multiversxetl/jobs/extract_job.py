@@ -55,7 +55,7 @@ class ExtractJob:
         filename = self.file_storage.get_extracted_path(self.task.get_pretty_name())
         num_written = 0
 
-        with open(filename, "a") as file:
+        with open(filename, "w") as file:
             for record in records:
                 as_json = self._jsonify_record(record)
                 file.write(f"{as_json}\n")
