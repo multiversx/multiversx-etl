@@ -88,7 +88,7 @@ def _transactional_pessimistic_take_any_extraction_task(
         return _transactional_take_any_extraction_task(transaction, collection, worker_id, index_name)
     except Exception as error:
         if _is_transient_error(error):
-            raise TransientError() from error
+            raise TransientError(str(error)) from error
         raise
 
 
@@ -130,7 +130,7 @@ def _transactional_pessimistic_take_any_loading_task(
         return _transactional_take_any_loading_task(transaction, collection, worker_id, index_name)
     except Exception as error:
         if _is_transient_error(error):
-            raise TransientError() from error
+            raise TransientError(str(error)) from error
         raise
 
 

@@ -11,6 +11,8 @@ from multiversxetl.logger import CloudLogger
 from multiversxetl.planner import (TasksStorage, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 
+from multiversxetl.errors import TransientError
+
 ERROR_INTERRUPTED = "interrupted"
 
 
@@ -19,7 +21,7 @@ ERROR_INTERRUPTED = "interrupted"
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--index-name", type=str, help="Filter by index name.")
-@click.option("--continue-on-error", type=bool, help="Continue (with other tasks) on error.")
+@click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=5, help="Time to sleep between tasks (in seconds).")
 def do_extract_with_intervals(
         workspace: str,
@@ -43,7 +45,7 @@ def do_extract_with_intervals(
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--index-name", type=str, help="Filter by index name.")
-@click.option("--continue-on-error", type=bool, help="Continue (with other tasks) on error.")
+@click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=5, help="Time to sleep between tasks (in seconds).")
 def do_extract_without_intervals(
         workspace: str,
@@ -102,7 +104,7 @@ def do_any_extract_task(
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
-@click.option("--continue-on-error", type=bool, help="Continue (with other tasks) on error.")
+@click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=5, help="Time to sleep between tasks (in seconds).")
 def do_load_with_intervals(
         workspace: str,
@@ -128,7 +130,7 @@ def do_load_with_intervals(
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
-@click.option("--continue-on-error", type=bool, help="Continue (with other tasks) on error.")
+@click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=5, help="Time to sleep between tasks (in seconds).")
 def do_load_without_intervals(
     workspace: str,
@@ -189,6 +191,8 @@ def do_continuously(callable: Callable[[], None], continue_on_error: bool, sleep
     while True:
         try:
             callable()
+        except TransientError as error:
+            logging.info(f"Transient error, will try again later: {error}")
         except:
             if not continue_on_error:
                 raise
