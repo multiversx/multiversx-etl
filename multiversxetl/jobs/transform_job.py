@@ -20,7 +20,8 @@ class TransformJob:
         self.task = task
         self.transformers: Dict[str, Transformer] = {
             "blocks": BlocksTransformer(),
-            "tokens": TokensTransformer()
+            "tokens": TokensTransformer(),
+            "logs": LogsTransformer()
         }
 
     def run(self) -> None:
@@ -57,4 +58,17 @@ class TokensTransformer(Transformer):
         data.pop("nft_traitValues", None)
         data.pop("nft_scamInfoType", None)
         data.pop("nft_scamInfoDescription", None)
+        return data
+
+
+class LogsTransformer(Transformer):
+    def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        events = data.get("events", [])
+
+        for event in events:
+            topics = event.get("topics", [])
+            # Replace NULL values with empty strings.
+            event["topics"] = [topic if topic is not None else "" for topic in topics]
+
+        # We've altered the data in-place.
         return data
