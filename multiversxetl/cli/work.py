@@ -175,6 +175,7 @@ def do_any_load_task(
         load_job = LoadJob(gcp_project_id, file_storage, task, Path(schema_folder))
         load_job.run()
         storage.update_task(task.id, lambda t: t.update_on_loading_finished(""))
+        file_storage.remove_transformed_file(task.get_pretty_name())
 
         logger.log_info(f"Transform & load finished, index = {task.index_name}, task = {task.id},", data=task.to_dict())
     except KeyboardInterrupt:
