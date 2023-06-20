@@ -1,0 +1,54 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "address",
+        "type": "STRING"
+    },
+    {
+        "name": "userName",
+        "type": "STRING"
+    },
+    {
+        "name": "balance",
+        "type": "STRING"
+    },
+    {
+        "name": "balanceNum",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "nonce",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "shardID",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "developerRewards",
+        "type": "STRING"
+    },
+    {
+        "name": "developerRewardsNum",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "totalBalanceWithStake",
+        "type": "STRING"
+    },
+    {
+        "name": "totalBalanceWithStakeNum",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "currentOwner",
+        "type": "STRING"
+    }
+]

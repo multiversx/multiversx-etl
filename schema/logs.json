@@ -1,0 +1,46 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "address",
+        "type": "STRING"
+    },
+    {
+        "name": "events",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "name": "address",
+                "type": "STRING"
+            },
+            {
+                "name": "data",
+                "type": "STRING"
+            },
+            {
+                "name": "identifier",
+                "type": "STRING"
+            },
+            {
+                "name": "topics",
+                "mode": "REPEATED",
+                "type": "STRING"
+            },
+            {
+                "name": "order",
+                "type": "NUMERIC"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "originalTxHash",
+        "type": "STRING"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    }
+]
