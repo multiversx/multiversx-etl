@@ -1,0 +1,49 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "activeStake",
+        "type": "STRING"
+    },
+    {
+        "name": "activeStakeNum",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "address",
+        "type": "STRING"
+    },
+    {
+        "name": "contract",
+        "type": "STRING"
+    },
+    {
+        "name": "unDelegateInfo",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "name": "id",
+                "type": "STRING"
+            },
+            {
+                "name": "timestamp",
+                "type": "TIMESTAMP"
+            },
+            {
+                "name": "value",
+                "type": "STRING"
+            },
+            {
+                "name": "valueNum",
+                "type": "FLOAT64"
+            }
+        ],
+        "type": "RECORD"
+    }
+]

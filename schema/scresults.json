@@ -1,0 +1,127 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "callType",
+        "type": "STRING"
+    },
+    {
+        "name": "code",
+        "type": "STRING"
+    },
+    {
+        "name": "data",
+        "type": "STRING"
+    },
+    {
+        "name": "esdtValues",
+        "mode": "REPEATED",
+        "type": "STRING"
+    },
+    {
+        "name": "function",
+        "type": "STRING"
+    },
+    {
+        "name": "gasLimit",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "gasPrice",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "hasOperations",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "hasLogs",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "miniBlockHash",
+        "type": "STRING"
+    },
+    {
+        "name": "nonce",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "operation",
+        "type": "STRING"
+    },
+    {
+        "name": "originalSender",
+        "type": "STRING"
+    },
+    {
+        "name": "originalTxHash",
+        "type": "STRING"
+    },
+    {
+        "name": "prevTxHash",
+        "type": "STRING"
+    },
+    {
+        "name": "receiver",
+        "type": "STRING"
+    },
+    {
+        "name": "receiverShard",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "receivers",
+        "mode": "REPEATED",
+        "type": "STRING"
+    },
+    {
+        "name": "receiversShardIDs",
+        "mode": "REPEATED",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "relayedValue",
+        "type": "STRING"
+    },
+    {
+        "name": "relayerAddr",
+        "type": "STRING"
+    },
+    {
+        "name": "returnMessage",
+        "type": "STRING"
+    },
+    {
+        "name": "sender",
+        "type": "STRING"
+    },
+    {
+        "name": "senderShard",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "tokens",
+        "mode": "REPEATED",
+        "type": "STRING"
+    },
+    {
+        "name": "value",
+        "type": "STRING"
+    },
+    {
+        "name": "valueNum",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "esdtValuesNum",
+        "mode": "REPEATED",
+        "type": "FLOAT64"
+    }
+]

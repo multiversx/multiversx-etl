@@ -1,0 +1,106 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "address",
+        "type": "STRING"
+    },
+    {
+        "name": "balance",
+        "type": "STRING"
+    },
+    {
+        "name": "balanceNum",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "currentOwner",
+        "type": "STRING"
+    },
+    {
+        "name": "data",
+        "fields": [
+            {
+                "name": "attributes",
+                "type": "STRING"
+            },
+            {
+                "name": "creator",
+                "type": "STRING"
+            },
+            {
+                "name": "hash",
+                "type": "STRING"
+            },
+            {
+                "name": "metadata",
+                "type": "STRING"
+            },
+            {
+                "name": "name",
+                "type": "STRING"
+            },
+            {
+                "name": "nonEmptyURIs",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "whiteListedStorage",
+                "type": "BOOLEAN"
+            },
+            {
+                "name": "royalties",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "tags",
+                "mode": "REPEATED",
+                "type": "STRING"
+            },
+            {
+                "name": "uris",
+                "mode": "REPEATED",
+                "type": "STRING"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "identifier",
+        "type": "STRING"
+    },
+    {
+        "name": "properties",
+        "type": "STRING"
+    },
+    {
+        "name": "shardID",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "token",
+        "type": "STRING"
+    },
+    {
+        "name": "tokenNonce",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "type",
+        "type": "STRING"
+    },
+    {
+        "name": "frozen",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "paused",
+        "type": "BOOLEAN"
+    }
+]

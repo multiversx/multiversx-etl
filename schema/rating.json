@@ -1,0 +1,10 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "rating",
+        "type": "FLOAT64"
+    }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "procTypeD",
+        "type": "STRING"
+    },
+    {
+        "name": "procTypeS",
+        "type": "STRING"
+    },
+    {
+        "name": "receiverBlockHash",
+        "type": "STRING"
+    },
+    {
+        "name": "receiverShard",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "reserved",
+        "type": "STRING"
+    },
+    {
+        "name": "senderBlockHash",
+        "type": "STRING"
+    },
+    {
+        "name": "senderShard",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "type",
+        "type": "STRING"
+    }
+]

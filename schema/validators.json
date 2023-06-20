@@ -1,0 +1,11 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "publicKeys",
+        "mode": "REPEATED",
+        "type": "STRING"
+    }
+]

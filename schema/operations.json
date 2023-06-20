@@ -1,0 +1,195 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "callType",
+        "type": "STRING"
+    },
+    {
+        "name": "canBeIgnored",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "code",
+        "type": "STRING"
+    },
+    {
+        "name": "data",
+        "type": "STRING"
+    },
+    {
+        "name": "esdtValues",
+        "mode": "REPEATED",
+        "type": "STRING"
+    },
+    {
+        "name": "fee",
+        "type": "STRING"
+    },
+    {
+        "name": "feeNum",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "function",
+        "type": "STRING"
+    },
+    {
+        "name": "gasLimit",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "gasPrice",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "gasUsed",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "hasOperations",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "hasScResults",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "hasLogs",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "initialPaidFee",
+        "type": "STRING"
+    },
+    {
+        "name": "isRelayed",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "isScCall",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "miniBlockHash",
+        "type": "STRING"
+    },
+    {
+        "name": "nonce",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "operation",
+        "type": "STRING"
+    },
+    {
+        "name": "originalSender",
+        "type": "STRING"
+    },
+    {
+        "name": "originalTxHash",
+        "type": "STRING"
+    },
+    {
+        "name": "prevTxHash",
+        "type": "STRING"
+    },
+    {
+        "name": "receiver",
+        "type": "STRING"
+    },
+    {
+        "name": "receiverShard",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "receivers",
+        "mode": "REPEATED",
+        "type": "STRING"
+    },
+    {
+        "name": "receiversShardIDs",
+        "mode": "REPEATED",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "relayedValue",
+        "type": "STRING"
+    },
+    {
+        "name": "relayerAddr",
+        "type": "STRING"
+    },
+    {
+        "name": "returnMessage",
+        "type": "STRING"
+    },
+    {
+        "name": "round",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "searchOrder",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "sender",
+        "type": "STRING"
+    },
+    {
+        "name": "senderShard",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "senderUserName",
+        "type": "STRING"
+    },
+    {
+        "name": "signature",
+        "type": "STRING"
+    },
+    {
+        "name": "status",
+        "type": "STRING"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "tokens",
+        "mode": "REPEATED",
+        "type": "STRING"
+    },
+    {
+        "name": "type",
+        "type": "STRING"
+    },
+    {
+        "name": "value",
+        "type": "STRING"
+    },
+    {
+        "name": "version",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "valueNum",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "esdtValuesNum",
+        "mode": "REPEATED",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "guardian",
+        "type": "STRING"
+    },
+    {
+        "name": "guardianSignature",
+        "type": "STRING"
+    }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "address",
+        "type": "STRING"
+    },
+    {
+        "name": "balance",
+        "type": "STRING"
+    },
+    {
+        "name": "identifier",
+        "type": "STRING"
+    },
+    {
+        "name": "isSender",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "isSmartContract",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "shardID",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "token",
+        "type": "STRING"
+    },
+    {
+        "name": "tokenNonce",
+        "type": "FLOAT64"
+    }
+]

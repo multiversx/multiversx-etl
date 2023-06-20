@@ -1,0 +1,288 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "accumulatedFees",
+        "type": "STRING"
+    },
+    {
+        "name": "developerFees",
+        "type": "STRING"
+    },
+    {
+        "name": "epoch",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "epochStartBlock",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "epochStartInfo",
+        "fields": [
+            {
+                "name": "nodePrice",
+                "type": "STRING"
+            },
+            {
+                "name": "prevEpochStartHash",
+                "type": "STRING"
+            },
+            {
+                "name": "prevEpochStartRound",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "rewardsForProtocolSustainability",
+                "type": "STRING"
+            },
+            {
+                "name": "rewardsPerBlock",
+                "type": "STRING"
+            },
+            {
+                "name": "totalNewlyMinted",
+                "type": "STRING"
+            },
+            {
+                "name": "totalSupply",
+                "type": "STRING"
+            },
+            {
+                "name": "totalToDistribute",
+                "type": "STRING"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "epochStartShardsData",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "name": "epoch",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "firstPendingMetaBlock",
+                "type": "STRING"
+            },
+            {
+                "name": "headerHash",
+                "type": "STRING"
+            },
+            {
+                "name": "lastFinishedMetaBlock",
+                "type": "STRING"
+            },
+            {
+                "name": "nonce",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "pendingMiniBlockHeaders",
+                "mode": "REPEATED",
+                "fields": [
+                    {
+                        "name": "hash",
+                        "type": "STRING"
+                    },
+                    {
+                        "name": "receiverShard",
+                        "type": "NUMERIC"
+                    },
+                    {
+                        "name": "senderShard",
+                        "type": "NUMERIC"
+                    },
+                    {
+                        "name": "timestamp",
+                        "type": "TIMESTAMP"
+                    },
+                    {
+                        "name": "type",
+                        "type": "STRING"
+                    }
+                ],
+                "type": "RECORD"
+            },
+            {
+                "name": "rootHash",
+                "type": "STRING"
+            },
+            {
+                "name": "round",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "scheduledRootHash",
+                "type": "STRING"
+            },
+            {
+                "name": "shardID",
+                "type": "NUMERIC"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "gasPenalized",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "gasProvided",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "gasRefunded",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "maxGasLimit",
+        "type": "FLOAT64"
+    },
+    {
+        "name": "miniBlocksDetails",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "name": "firstProcessedTx",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "lastProcessedTx",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "senderShard",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "receiverShard",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "mbIndex",
+                "type": "NUMERIC"
+            },
+            {
+                "name": "type",
+                "type": "STRING"
+            },
+            {
+                "name": "procType",
+                "type": "STRING"
+            },
+            {
+                "name": "txsHashes",
+                "mode": "REPEATED",
+                "type": "STRING"
+            },
+            {
+                "name": "executionOrderTxsIndices",
+                "mode": "REPEATED",
+                "type": "NUMERIC"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "miniBlocksHashes",
+        "mode": "REPEATED",
+        "type": "STRING"
+    },
+    {
+        "name": "nonce",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "notarizedBlocksHashes",
+        "mode": "REPEATED",
+        "type": "STRING"
+    },
+    {
+        "name": "notarizedTxsCount",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "prevHash",
+        "type": "STRING"
+    },
+    {
+        "name": "proposer",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "pubKeyBitmap",
+        "type": "STRING"
+    },
+    {
+        "name": "round",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "scheduledData",
+        "fields": [
+            {
+                "name": "accumulatedFees",
+                "type": "STRING"
+            },
+            {
+                "name": "developerFees",
+                "type": "STRING"
+            },
+            {
+                "name": "gasProvided",
+                "type": "FLOAT64"
+            },
+            {
+                "name": "gasRefunded",
+                "type": "FLOAT64"
+            },
+            {
+                "name": "penalized",
+                "type": "FLOAT64"
+            },
+            {
+                "name": "rootHash",
+                "type": "STRING"
+            }
+        ],
+        "type": "RECORD"
+    },
+    {
+        "name": "searchOrder",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "shardId",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "size",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "sizeTxs",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "stateRootHash",
+        "type": "STRING"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "txCount",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "validators",
+        "mode": "REPEATED",
+        "type": "NUMERIC"
+    }
+]

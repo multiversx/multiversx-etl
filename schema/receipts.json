@@ -1,0 +1,26 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "data",
+        "type": "STRING"
+    },
+    {
+        "name": "sender",
+        "type": "STRING"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "txHash",
+        "type": "STRING"
+    },
+    {
+        "name": "value",
+        "type": "STRING"
+    }
+]

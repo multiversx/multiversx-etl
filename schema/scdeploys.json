@@ -1,0 +1,37 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "deployTxHash",
+        "type": "STRING"
+    },
+    {
+        "name": "deployer",
+        "type": "STRING"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "upgrades",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "TIMESTAMP"
+            },
+            {
+                "name": "upgradeTxHash",
+                "type": "STRING"
+            },
+            {
+                "name": "upgrader",
+                "type": "STRING"
+            }
+        ],
+        "type": "RECORD"
+    }
+]

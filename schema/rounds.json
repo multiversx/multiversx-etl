@@ -1,0 +1,31 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING"
+    },
+    {
+        "name": "blockWasProposed",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "epoch",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "round",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "shardId",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "signersIndexes",
+        "mode": "REPEATED",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    }
+]
