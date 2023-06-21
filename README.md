@@ -11,3 +11,9 @@ pip install -r ./requirements.txt --upgrade
 pip install -r ./requirements-dev.txt --upgrade
 ```
 
+## Generate schema files
+
+```
+python3 -m multiversxetl generate_schema --input-folder=~/mx-chain-tools-go/elasticreindexer/cmd/indices-creator/config/noKibana/ --output-folder=./schema
+```
+
