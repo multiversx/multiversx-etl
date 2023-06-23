@@ -1,9 +1,9 @@
 import uuid
 from typing import List
 
+from multiversxetl.constants import (INDEXES_WITH_INTERVALS,
+                                     INDEXES_WITHOUT_INTERVALS)
 from multiversxetl.planner.tasks import Task
-
-from multiversxetl.constants import INDEXES_WITH_INTERVALS, INDEXES_WITHOUT_INTERVALS
 
 
 class TasksPlanner:
@@ -23,7 +23,7 @@ class TasksPlanner:
         for index_name in INDEXES_WITH_INTERVALS:
             for start_timestamp in range(initial_start_timestamp, initial_end_timestamp, granularity_seconds):
                 id = self._next_task_id()
-                end_timestamp = start_timestamp + granularity_seconds
+                end_timestamp = min(start_timestamp + granularity_seconds, initial_end_timestamp)
                 task = Task(id, indexer_url, index_name, bq_dataset, start_timestamp, end_timestamp)
                 tasks.append(task)
 

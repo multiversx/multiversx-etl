@@ -4,12 +4,10 @@ from pprint import pprint
 
 import click
 
+from multiversxetl.constants import SECONDS_IN_DAY, SECONDS_IN_MINUTE
 from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 from multiversxetl.planner.tasks import count_tasks_by_status
-
-SECONDS_IN_MINUTE = 60
-SECONDS_IN_DAY = 24 * 60 * SECONDS_IN_MINUTE
 
 logging.basicConfig(level=logging.INFO)
 
