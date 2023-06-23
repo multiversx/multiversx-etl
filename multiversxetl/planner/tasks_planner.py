@@ -18,6 +18,11 @@ class TasksPlanner:
             initial_end_timestamp: int,
             granularity_seconds: int
     ) -> List[Task]:
+        """
+        Plans ETL tasks for Elastic Search indexes that support time intervals. 
+        Each task is time-bounded.
+        """
+
         tasks: List[Task] = []
 
         for index_name in INDEXES_WITH_INTERVALS:
@@ -30,6 +35,10 @@ class TasksPlanner:
         return tasks
 
     def plan_tasks_without_intervals(self, indexer_url: str, bq_dataset: str) -> List[Task]:
+        """
+        Plans ETL tasks for Elastic Search indexes that **do not support** time intervals.
+        """
+
         tasks: List[Task] = []
 
         for index_name in INDEXES_WITHOUT_INTERVALS:

@@ -4,6 +4,16 @@ from typing import Any, Dict, List, Optional, Tuple
 
 
 class TaskStatus(Enum):
+    """
+    Allows us to track the status of a task.
+
+    Ideally (if no errors occur), the status should go from "pending" to "finished", as follows:
+        - "pending extraction" with "pending loading"
+        - "started extraction" with "pending loading"
+        - "finished extraction" with "pending loading"
+        - "finished extraction" with "started loading"
+        - "finished extraction" with "finished loading"
+    """
     PENDING = "pending"
     STARTED = "started"
     FINISHED = "finished"
