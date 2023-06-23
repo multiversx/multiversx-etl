@@ -4,11 +4,11 @@ from google.cloud import firestore
 from google.cloud.firestore import transactional  # type: ignore
 from google.cloud.firestore import CollectionReference
 
+from multiversxetl.errors import TransientError
 from multiversxetl.planner.tasks import Task, TaskStatus
 
-from multiversxetl.errors import TransientError
-
-CHUNK_SIZE = 100
+INSERT_CHUNK_SIZE = 100
+DELETE_CHUNK_SIZE = 100
 
 
 class TasksStorage:
@@ -28,8 +28,22 @@ class TasksStorage:
 
         return tasks
 
+    def delete_all_tasks(self) -> None:
+        """
+        See https://firebase.google.com/docs/firestore/manage-data/delete-data#collections.
+        """
+        docs = self.db.collection(self.collection).list_documents(page_size=DELETE_CHUNK_SIZE)
+        num_deleted = 0
+
+        for doc in docs:
+            doc.delete()
+            num_deleted = num_deleted + 1
+
+        if num_deleted >= DELETE_CHUNK_SIZE:
+            return self.delete_all_tasks()
+
     def add_tasks(self, tasks: List[Task]):
-        for tasks_chunk in split_to_chunks(tasks, CHUNK_SIZE):
+        for tasks_chunk in _split_to_chunks(tasks, INSERT_CHUNK_SIZE):
             batch: Any = self.db.batch()  # type: ignore
 
             for task in tasks_chunk:
@@ -176,7 +190,7 @@ def _is_transient_error(error: Exception) -> bool:
     return False
 
 
-def split_to_chunks(items: List[Any], chunk_size: int) -> List[List[Any]]:
+def _split_to_chunks(items: List[Any], chunk_size: int) -> List[List[Any]]:
     chunks: List[List[Any]] = []
 
     for i in range(0, len(items), chunk_size):
