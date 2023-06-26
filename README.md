@@ -24,7 +24,7 @@ First, set the following environment variables:
 ```
 export WORKSPACE=${HOME}/multiversx-etl
 export INDEXER_URL=https://index.multiversx.com:443
-export GCP_PROJECT_ID=...
+export GCP_PROJECT_ID=multiversx-blockchain-etl
 export BQ_DATASET=multiversx_mainnet
 export START_TIMESTAMP=1672243200
 ```

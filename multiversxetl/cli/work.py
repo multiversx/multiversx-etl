@@ -6,23 +6,22 @@ from typing import Callable, Optional
 
 import click
 
+from multiversxetl.errors import TransientError
 from multiversxetl.jobs import ExtractJob, FileStorage, LoadJob, TransformJob
 from multiversxetl.logger import CloudLogger
 from multiversxetl.planner import (TasksStorage, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 
-from multiversxetl.errors import TransientError
-
-ERROR_INTERRUPTED = "interrupted"
+ERROR_INTERRUPTED_TASK = "interrupted task"
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
-@click.option("--index-name", type=str, help="Filter by index name.")
+@click.option("--index-name", type=str, help="Filter by Elasticsearch index name (if omitted, all indices are extracted).")
 @click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
-@click.option("--sleep-between-tasks", type=int, default=5, help="Time to sleep between tasks (in seconds).")
+@click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def do_extract_with_intervals(
         workspace: str,
         gcp_project_id: str,
@@ -31,6 +30,13 @@ def do_extract_with_intervals(
         continue_on_error: bool,
         sleep_between_tasks: int
 ):
+    """
+    This command runs continuously (until interrupted) and extracts **time-stamped indices** from Elasticsearch, 
+    then saves it (as JSON files) in the `workspace` folder.
+
+    Example of **time-stamped indices**: blocks, miniblocks, transactions etc.
+    """
+
     storage = TasksWithIntervalStorage(gcp_project_id)
 
     do_continuously(
@@ -46,7 +52,7 @@ def do_extract_with_intervals(
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
-@click.option("--sleep-between-tasks", type=int, default=5, help="Time to sleep between tasks (in seconds).")
+@click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def do_extract_without_intervals(
         workspace: str,
         gcp_project_id: str,
@@ -55,6 +61,13 @@ def do_extract_without_intervals(
         continue_on_error: bool,
         sleep_between_tasks: int
 ):
+    """
+    This command runs continuously (until interrupted) and extracts **not-time-stamped indices** from Elasticsearch,
+    then saves it (as JSON files) in the `workspace` folder.
+
+    Example of **not-time-stamped indices**: accounts, validators, delegators etc.
+    """
+
     storage = TasksWithoutIntervalStorage(gcp_project_id)
 
     do_continuously(
@@ -89,7 +102,7 @@ def do_any_extract_task(
 
         logger.log_info(f"Extraction finished, index = {task.index_name}, task = {task.id},", data=task.to_dict())
     except KeyboardInterrupt:
-        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED))
+        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED_TASK))
         logger.log_error(f"Extraction interrupted, index = {task.index_name}, task = {task.id},", data=task.to_dict())
         raise
     except Exception as e:
@@ -105,7 +118,7 @@ def do_any_extract_task(
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
 @click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
-@click.option("--sleep-between-tasks", type=int, default=5, help="Time to sleep between tasks (in seconds).")
+@click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def do_load_with_intervals(
         workspace: str,
         gcp_project_id: str,
@@ -115,6 +128,13 @@ def do_load_with_intervals(
         continue_on_error: bool,
         sleep_between_tasks: int
 ):
+    """
+    This command runs continuously (until interrupted) and loads **time-stamped indices** from the `workspace` folder
+    into a BigQuery dataset.
+
+    Before loading, the data suffers slight transformations (when needed).
+    """
+
     storage = TasksWithIntervalStorage(gcp_project_id)
 
     do_continuously(
@@ -131,7 +151,7 @@ def do_load_with_intervals(
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
 @click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
-@click.option("--sleep-between-tasks", type=int, default=5, help="Time to sleep between tasks (in seconds).")
+@click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def do_load_without_intervals(
     workspace: str,
     gcp_project_id: str,
@@ -141,6 +161,12 @@ def do_load_without_intervals(
     continue_on_error: bool,
     sleep_between_tasks: int
 ):
+    """
+    This command runs continuously (until interrupted) and loads **non-time-stamped indices** from the `workspace` folder
+    into a BigQuery dataset.
+
+    Before loading, the data suffers slight transformations (when needed).
+    """
     storage = TasksWithoutIntervalStorage(gcp_project_id)
 
     do_continuously(
@@ -179,7 +205,7 @@ def do_any_load_task(
 
         logger.log_info(f"Transform & load finished, index = {task.index_name}, task = {task.id},", data=task.to_dict())
     except KeyboardInterrupt:
-        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED))
+        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED_TASK))
         logger.log_error(f"Transform & load interrupted, index = {task.index_name}, task = {task.id},", data=task.to_dict())
         raise
     except Exception as e:
