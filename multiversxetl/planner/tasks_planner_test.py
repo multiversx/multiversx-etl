@@ -1,5 +1,5 @@
-from multiversxetl.constants import (INDEXES_WITH_INTERVALS,
-                                     INDEXES_WITHOUT_INTERVALS, SECONDS_IN_DAY)
+from multiversxetl.constants import (INDICES_WITH_INTERVALS,
+                                     INDICES_WITHOUT_INTERVALS, SECONDS_IN_DAY)
 from multiversxetl.planner.tasks import TaskStatus
 from multiversxetl.planner.tasks_planner import TasksPlanner
 
@@ -8,7 +8,7 @@ def test_plan_tasks_with_intervals_with_trivial_intervals():
     planner = TasksPlanner()
     tasks = planner.plan_tasks_with_intervals("https://example.com", "foobar", 0, 1, 1)
 
-    assert len(tasks) == len(INDEXES_WITH_INTERVALS)
+    assert len(tasks) == len(INDICES_WITH_INTERVALS)
     assert all([task.indexer_url == "https://example.com" for task in tasks])
     assert all([task.bq_dataset == "foobar" for task in tasks])
     assert all([task.start_timestamp == 0 for task in tasks])
@@ -25,7 +25,7 @@ def test_plan_tasks_with_intervals_with_day_intervals():
     num_expected_intervals = int((end_time - start_time) / SECONDS_IN_DAY) + 1
     tasks = planner.plan_tasks_with_intervals("https://example.com", "foobar", start_time, end_time, SECONDS_IN_DAY)
 
-    for index_name in INDEXES_WITH_INTERVALS:
+    for index_name in INDICES_WITH_INTERVALS:
         tasks_of_index = [task for task in tasks if task.index_name == index_name]
 
         assert len(tasks_of_index) == num_expected_intervals
@@ -40,7 +40,7 @@ def test_plan_tasks_with_intervals_without_intervals():
     planner = TasksPlanner()
     tasks = planner.plan_tasks_without_intervals("https://example.com", "foobar")
 
-    assert len(tasks) == len(INDEXES_WITHOUT_INTERVALS)
+    assert len(tasks) == len(INDICES_WITHOUT_INTERVALS)
     assert all([task.indexer_url == "https://example.com" for task in tasks])
     assert all([task.bq_dataset == "foobar" for task in tasks])
     assert all([task.start_timestamp == None for task in tasks])

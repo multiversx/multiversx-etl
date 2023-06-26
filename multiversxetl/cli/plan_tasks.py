@@ -35,7 +35,7 @@ def inspect_tasks(gcp_project_id: str):
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--indexer-url", type=str, help="The indexer URL (Elastic Search instance).")
+@click.option("--indexer-url", type=str, help="The indexer URL (Elasticsearch instance).")
 @click.option("--gcp-project-id", type=str, help="The GCP project ID.")
 @click.option("--bq-dataset", type=str, required=True, help="The BigQuery dataset (destination).")
 @click.option("--start-timestamp", type=int, help="The start timestamp (e.g. genesis time).")
@@ -61,7 +61,7 @@ def plan_tasks_with_intervals(indexer_url: str, gcp_project_id: str, bq_dataset:
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--indexer-url", type=str, help="The indexer URL (Elastic Search instance).")
+@click.option("--indexer-url", type=str, help="The indexer URL (Elasticsearch instance).")
 @click.option("--gcp-project-id", type=str, help="The GCP project ID.")
 @click.option("--bq-dataset", type=str, help="The BigQuery dataset (destination).")
 def plan_tasks_without_intervals(indexer_url: str, gcp_project_id: str, bq_dataset: str):
