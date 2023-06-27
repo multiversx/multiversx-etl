@@ -22,7 +22,7 @@ ERROR_INTERRUPTED_TASK = "interrupted task"
 @click.option("--index-name", type=str, help="Filter by Elasticsearch index name (if omitted, all indices are extracted).")
 @click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
-def do_extract_with_intervals(
+def extract_with_intervals(
         workspace: str,
         gcp_project_id: str,
         worker_id: str,
@@ -53,7 +53,7 @@ def do_extract_with_intervals(
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
-def do_extract_without_intervals(
+def extract_without_intervals(
         workspace: str,
         gcp_project_id: str,
         worker_id: str,
@@ -119,7 +119,7 @@ def do_any_extract_task(
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
 @click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
-def do_load_with_intervals(
+def load_with_intervals(
         workspace: str,
         gcp_project_id: str,
         worker_id: str,
@@ -152,7 +152,7 @@ def do_load_with_intervals(
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
 @click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
-def do_load_without_intervals(
+def load_without_intervals(
     workspace: str,
     gcp_project_id: str,
     worker_id: str,
