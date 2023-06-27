@@ -17,8 +17,9 @@ logging.basicConfig(level=logging.INFO)
 def inspect_tasks(gcp_project_id: str):
     storage = TasksWithIntervalStorage(gcp_project_id)
     tasks = storage.get_all_tasks()
-    print(f"Tasks with interval: {len(tasks)}")
     by_extraction_status, by_loading_status = count_tasks_by_status(tasks)
+
+    print(f"Tasks with interval: {len(tasks)}")
     print("\tBy extraction status:")
     pprint(by_extraction_status, indent=4)
     print("\tBy loading status:")
@@ -26,8 +27,9 @@ def inspect_tasks(gcp_project_id: str):
 
     storage = TasksWithoutIntervalStorage(gcp_project_id)
     tasks = storage.get_all_tasks()
-    print(f"Tasks without interval: {len(tasks)}")
     by_extraction_status, by_loading_status = count_tasks_by_status(tasks)
+
+    print(f"Tasks without interval: {len(tasks)}")
     print("\tBy extraction status:")
     pprint(by_extraction_status, indent=4)
     print("\tBy loading status:")

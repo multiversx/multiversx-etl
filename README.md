@@ -14,7 +14,7 @@ pip install -r ./requirements-dev.txt --upgrade
 ## Generate schema files
 
 ```
-python3 -m multiversxetl generate_schema --input-folder=~/mx-chain-tools-go/elasticreindexer/cmd/indices-creator/config/noKibana/ --output-folder=./schema
+python3 -m multiversxetl generate-schema --input-folder=~/mx-chain-tools-go/elasticreindexer/cmd/indices-creator/config/noKibana/ --output-folder=./schema
 ```
 
 ## Quickstart
@@ -32,11 +32,11 @@ export START_TIMESTAMP=1672243200
 Then, plan ETL tasks (will add records in a Firestore database):
 
 ```
-python3 -m multiversxetl plan_tasks_with_intervals --indexer-url=${INDEXER_URL} \
+python3 -m multiversxetl plan-tasks-with-intervals --indexer-url=${INDEXER_URL} \
     --gcp-project-id=${GCP_PROJECT_ID}  --bq-dataset=${BQ_DATASET} \
     --start-timestamp=${START_TIMESTAMP}
 
-python3 -m multiversxetl plan_tasks_without_intervals --indexer-url=${INDEXER_URL} \
+python3 -m multiversxetl plan-tasks-without-intervals --indexer-url=${INDEXER_URL} \
     --gcp-project-id=${GCP_PROJECT_ID}  --bq-dataset=${BQ_DATASET}
 ```
 
@@ -47,3 +47,19 @@ firebase firestore:delete --project=${GCP_PROJECT_ID} --recursive tasks_with_int
 firebase firestore:delete --project=${GCP_PROJECT_ID} --recursive tasks_without_interval
 ```
 
+Inspect the tasks:
+
+```
+python3 -m multiversxetl inspect-tasks --gcp-project-id=${GCP_PROJECT_ID}
+```
+
+Then, extract and load the data on _worker_ machines:
+
+```
+python3 -m multiversxetl extract-with-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID}
+python3 -m multiversxetl extract-without-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID}
+python3 -m multiversxetl load-with-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --schema-folder=./schema
+python3 -m multiversxetl load-without-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --schema-folder=./schema
+```
+
+From time to time, you may want to run `inspect-tasks` again to check the progress.
