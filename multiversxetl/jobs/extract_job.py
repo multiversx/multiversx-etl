@@ -2,11 +2,10 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Protocol
 
-import elasticsearch.helpers
-from elasticsearch import Elasticsearch
 
-SCROLL_CONSISTENCY_TIME = "10m"
-SCAN_BATCH_SIZE = 1000
+class IIndexer(Protocol):
+    def get_records_with_interval(self, index_name: str, start_timestamp: int, end_timestamp: int) -> Iterable[Dict[str, Any]]: ...
+    def get_records_without_interval(self, index_name: str) -> Iterable[Dict[str, Any]]: ...
 
 
 class IFileStorage(Protocol):
@@ -28,28 +27,29 @@ class ITask(Protocol):
 
 class ExtractJob:
     def __init__(self,
+                 indexer: IIndexer,
                  file_storage: IFileStorage,
                  task: ITask) -> None:
+        self.indexer = indexer
         self.file_storage = file_storage
         self.task = task
-        self.elastic_search_client = Elasticsearch(self.task.indexer_url)
 
     def run(self) -> None:
-        query = self._create_query()
-
-        records = elasticsearch.helpers.scan(
-            client=self.elastic_search_client,
-            index=self.task.index_name,
-            query=query,
-            scroll=SCROLL_CONSISTENCY_TIME,
-            raise_on_error=True,
-            preserve_order=False,
-            size=SCAN_BATCH_SIZE,
-            request_timeout=None,
-            scroll_kwargs=None
-        )
-
+        records = self._fetch_records()
         self._write_records_to_file(records)
+
+    def _fetch_records(self) -> Iterable[Dict[str, Any]]:
+        if self.task.is_time_bound():
+            assert self.task.start_timestamp is not None
+            assert self.task.end_timestamp is not None
+
+            return self.indexer.get_records_with_interval(
+                self.task.index_name,
+                self.task.start_timestamp,
+                self.task.end_timestamp
+            )
+
+        return self.indexer.get_records_without_interval(self.task.index_name)
 
     def _write_records_to_file(self, records: Iterable[Dict[str, Any]]) -> None:
         filename = self.file_storage.get_extracted_path(self.task.get_pretty_name())
@@ -69,22 +69,3 @@ class ExtractJob:
         data["_id"] = record["_id"]
         as_json = json.dumps(data)
         return as_json
-
-    def _create_query(self) -> Any:
-        if self.task.is_time_bound():
-            return {
-                "query": {
-                    "range": {
-                        "timestamp": {
-                            "gte": self.task.start_timestamp,
-                            "lte": self.task.end_timestamp,
-                        },
-                    }
-                }
-            }
-
-        return {
-            "query": {
-                "match_all": {},
-            }
-        }

@@ -7,6 +7,7 @@ from typing import Callable, Optional
 import click
 
 from multiversxetl.errors import TransientError
+from multiversxetl.indexer import Indexer
 from multiversxetl.jobs import ExtractJob, FileStorage, LoadJob, TransformJob
 from multiversxetl.logger import CloudLogger
 from multiversxetl.planner import (TasksStorage, TasksWithIntervalStorage,
@@ -96,7 +97,8 @@ def do_any_extract_task(
     try:
         logger.log_info(f"Starting extraction, index = {task.index_name}, task = {task.id} ...", data=task.to_dict())
 
-        extract_job = ExtractJob(file_storage, task)
+        indexer = Indexer(task.indexer_url)
+        extract_job = ExtractJob(indexer, file_storage, task)
         extract_job.run()
         storage.update_task(task.id, lambda t: t.update_on_extraction_finished(""))
 
