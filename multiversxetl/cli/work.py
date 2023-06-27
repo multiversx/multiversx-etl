@@ -32,7 +32,7 @@ def do_extract_with_intervals(
 ):
     """
     This command runs continuously (until interrupted) and extracts **time-stamped indices** from Elasticsearch, 
-    then saves it (as JSON files) in the `workspace` folder.
+    then saves them (as JSON files) in the `workspace` folder.
 
     Example of **time-stamped indices**: blocks, miniblocks, transactions etc.
     """
@@ -63,7 +63,7 @@ def do_extract_without_intervals(
 ):
     """
     This command runs continuously (until interrupted) and extracts **not-time-stamped indices** from Elasticsearch,
-    then saves it (as JSON files) in the `workspace` folder.
+    then saves them (as JSON files) in the `workspace` folder.
 
     Example of **not-time-stamped indices**: accounts, validators, delegators etc.
     """
@@ -100,14 +100,14 @@ def do_any_extract_task(
         extract_job.run()
         storage.update_task(task.id, lambda t: t.update_on_extraction_finished(""))
 
-        logger.log_info(f"Extraction finished, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+        logger.log_info(f"Extraction finished, index = {task.index_name}, task = {task.id}", data=task.to_dict())
     except KeyboardInterrupt:
         storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED_TASK))
-        logger.log_error(f"Extraction interrupted, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+        logger.log_error(f"Extraction interrupted, index = {task.index_name}, task = {task.id}", data=task.to_dict())
         raise
     except Exception as e:
         storage.update_task(task.id, lambda t: t.update_on_extraction_failure(str(e)))
-        logger.log_error(f"Extraction failed, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+        logger.log_error(f"Extraction failed, index = {task.index_name}, task = {task.id}", data=task.to_dict())
         raise
 
 
@@ -203,14 +203,14 @@ def do_any_load_task(
         storage.update_task(task.id, lambda t: t.update_on_loading_finished(""))
         file_storage.remove_transformed_file(task.get_pretty_name())
 
-        logger.log_info(f"Transform & load finished, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+        logger.log_info(f"Transform & load finished, index = {task.index_name}, task = {task.id}", data=task.to_dict())
     except KeyboardInterrupt:
         storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED_TASK))
-        logger.log_error(f"Transform & load interrupted, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+        logger.log_error(f"Transform & load interrupted, index = {task.index_name}, task = {task.id}", data=task.to_dict())
         raise
     except Exception as e:
         storage.update_task(task.id, lambda t: t.update_on_loading_failure(str(e)))
-        logger.log_error(f"Transform & load failed, index = {task.index_name}, task = {task.id},", data=task.to_dict())
+        logger.log_error(f"Transform & load failed, index = {task.index_name}, task = {task.id}", data=task.to_dict())
         raise
 
 
