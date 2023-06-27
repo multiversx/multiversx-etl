@@ -25,8 +25,9 @@ First, set the following environment variables:
 export WORKSPACE=${HOME}/multiversx-etl
 export INDEXER_URL=https://index.multiversx.com:443
 export GCP_PROJECT_ID=multiversx-blockchain-etl
-export BQ_DATASET=multiversx_mainnet
-export START_TIMESTAMP=1672243200
+export BQ_DATASET=mainnet
+export START_TIMESTAMP=1596117600
+export END_TIMESTAMP=1687880000
 ```
 
 Then, plan ETL tasks (will add records in a Firestore database):
@@ -34,7 +35,7 @@ Then, plan ETL tasks (will add records in a Firestore database):
 ```
 python3 -m multiversxetl plan-tasks-with-intervals --indexer-url=${INDEXER_URL} \
     --gcp-project-id=${GCP_PROJECT_ID}  --bq-dataset=${BQ_DATASET} \
-    --start-timestamp=${START_TIMESTAMP}
+    --start-timestamp=${START_TIMESTAMP} --end-timestamp=${END_TIMESTAMP}
 
 python3 -m multiversxetl plan-tasks-without-intervals --indexer-url=${INDEXER_URL} \
     --gcp-project-id=${GCP_PROJECT_ID}  --bq-dataset=${BQ_DATASET}
