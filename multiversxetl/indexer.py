@@ -4,7 +4,7 @@ import elasticsearch.helpers
 from elasticsearch import Elasticsearch
 
 SCROLL_CONSISTENCY_TIME = "10m"
-SCAN_BATCH_SIZE = 1000
+SCAN_BATCH_SIZE = 9999
 
 
 class Indexer:
@@ -38,7 +38,8 @@ class Indexer:
             preserve_order=False,
             size=SCAN_BATCH_SIZE,
             request_timeout=None,
-            scroll_kwargs=None
+            scroll_kwargs=None,
+            clear_scroll=True
         )
 
         return records
@@ -59,7 +60,8 @@ class Indexer:
             preserve_order=False,
             size=SCAN_BATCH_SIZE,
             request_timeout=None,
-            scroll_kwargs=None
+            scroll_kwargs=None,
+            clear_scroll=True
         )
 
         return records
