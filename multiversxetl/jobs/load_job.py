@@ -10,8 +10,6 @@ class IFileStorage(Protocol):
 
 class ITask(Protocol):
     @property
-    def indexer_url(self) -> str: ...
-    @property
     def index_name(self) -> str: ...
     @property
     def bq_dataset(self) -> str: ...
@@ -36,17 +34,8 @@ class LoadJob:
 
     def run(self) -> None:
         table_id = self._get_table_id()
-        write_disposition = self._get_write_disposition()
         file_path = self.file_storage.get_load_path(self.task.get_pretty_name())
-
-        schema_path = self.schema_folder / f"{self.task.index_name}.json"
-        schema = self.bigquery_client.schema_from_json(schema_path)
-
-        job_config = bigquery.LoadJobConfig(
-            schema=schema,
-            source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-            write_disposition=write_disposition
-        )
+        job_config = self._prepare_job_config()
 
         with open(file_path, "rb") as source_file:
             job = self.bigquery_client.load_table_from_file(source_file, table_id, job_config=job_config)
@@ -63,6 +52,17 @@ class LoadJob:
 
     def _get_table_id(self) -> str:
         return f"{self.task.bq_dataset}.{self.task.index_name}"
+
+    def _prepare_job_config(self) -> bigquery.LoadJobConfig:
+        schema_path = self.schema_folder / f"{self.task.index_name}.json"
+        schema = self.bigquery_client.schema_from_json(schema_path)
+        write_disposition = self._get_write_disposition()
+
+        return bigquery.LoadJobConfig(
+            schema=schema,
+            source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+            write_disposition=write_disposition
+        )
 
     def _get_write_disposition(self) -> str:
         if self.task.is_time_bound():
