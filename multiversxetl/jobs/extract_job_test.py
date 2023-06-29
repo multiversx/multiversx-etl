@@ -32,7 +32,7 @@ class IndexerMock:
 
 class FileStorageMock:
     def get_extracted_path(self, task_pretty_name: str) -> Path:
-        return Path(__file__).parent / f"extracted_{task_pretty_name}.json"
+        return Path(__file__).parent.parent / "testdata" / f"extracted_{task_pretty_name}.json"
 
 
 def test_run_task_with_interval():
