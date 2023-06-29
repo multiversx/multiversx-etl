@@ -18,11 +18,14 @@ class TransformJob:
     def __init__(self, file_storage: IFileStorage, task: ITask) -> None:
         self.file_storage = file_storage
         self.task = task
-        self.transformers: Dict[str, Transformer] = {
-            "blocks": BlocksTransformer(),
-            "tokens": TokensTransformer(),
-            "logs": LogsTransformer()
-        }
+        self.transformers: Dict[str, Transformer] = dict()
+
+        self._register_transformer("blocks", BlocksTransformer())
+        self._register_transformer("tokens", TokensTransformer())
+        self._register_transformer("logs", LogsTransformer())
+
+    def _register_transformer(self, index_name: str, transformer: 'Transformer') -> None:
+        self.transformers[index_name] = transformer
 
     def run(self) -> None:
         transformer = self.transformers.get(self.task.index_name, Transformer())
