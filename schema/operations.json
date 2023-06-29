@@ -115,6 +115,10 @@
         "type": "NUMERIC"
     },
     {
+        "name": "receiverUserName",
+        "type": "STRING"
+    },
+    {
         "name": "relayedValue",
         "type": "STRING"
     },
