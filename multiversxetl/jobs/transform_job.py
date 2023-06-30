@@ -52,7 +52,7 @@ class Transformer:
 
 class BlocksTransformer(Transformer):
     def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        del data["pubKeyBitmap"]
+        data.pop("pubKeyBitmap", None)
         return data
 
 

@@ -3,6 +3,9 @@ from typing import Any, Optional, Protocol
 
 from google.cloud import bigquery
 
+WRITE_DISPOSITION_APPEND = "WRITE_APPEND"
+WRITE_DISPOSITION_TRUNCATE = "WRITE_TRUNCATE"
+
 
 class IFileStorage(Protocol):
     def get_load_path(self, task_pretty_name: str) -> Path: ...
@@ -66,5 +69,5 @@ class LoadJob:
 
     def _get_write_disposition(self) -> str:
         if self.task.is_time_bound():
-            return "WRITE_APPEND"
-        return "WRITE_TRUNCATE"
+            return WRITE_DISPOSITION_APPEND
+        return WRITE_DISPOSITION_TRUNCATE
