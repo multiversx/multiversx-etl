@@ -6,7 +6,7 @@ from multiversxetl.planner.tasks_planner import TasksPlanner
 
 def test_plan_tasks_with_intervals_with_trivial_intervals():
     planner = TasksPlanner()
-    tasks = planner.plan_tasks_with_intervals("https://example.com", "foobar", 0, 1, 1)
+    tasks = planner.plan_tasks_with_intervals("https://example.com", INDICES_WITH_INTERVALS, "foobar", 0, 1, 1)
 
     assert len(tasks) == len(INDICES_WITH_INTERVALS)
     assert all([task.indexer_url == "https://example.com" for task in tasks])
@@ -23,7 +23,7 @@ def test_plan_tasks_with_intervals_with_day_intervals():
     start_time = 1596117600
     end_time = 1687508546
     num_expected_intervals = int((end_time - start_time) / SECONDS_IN_DAY) + 1
-    tasks = planner.plan_tasks_with_intervals("https://example.com", "foobar", start_time, end_time, SECONDS_IN_DAY)
+    tasks = planner.plan_tasks_with_intervals("https://example.com", INDICES_WITH_INTERVALS, "foobar", start_time, end_time, SECONDS_IN_DAY)
 
     for index_name in INDICES_WITH_INTERVALS:
         tasks_of_index = [task for task in tasks if task.index_name == index_name]
@@ -38,7 +38,7 @@ def test_plan_tasks_with_intervals_with_day_intervals():
 
 def test_plan_tasks_with_intervals_without_intervals():
     planner = TasksPlanner()
-    tasks = planner.plan_tasks_without_intervals("https://example.com", "foobar")
+    tasks = planner.plan_tasks_without_intervals("https://example.com", INDICES_WITHOUT_INTERVALS, "foobar")
 
     assert len(tasks) == len(INDICES_WITHOUT_INTERVALS)
     assert all([task.indexer_url == "https://example.com" for task in tasks])
