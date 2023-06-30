@@ -91,6 +91,10 @@
         "type": "NUMERIC"
     },
     {
+        "name": "receiverUserName",
+        "type": "STRING"
+    },
+    {
         "name": "round",
         "type": "NUMERIC"
     },
