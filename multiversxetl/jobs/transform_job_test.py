@@ -17,7 +17,7 @@ class FileStorageMock:
 
 class DummyTransformer(Transformer):
     def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        del data["a"]
+        data.pop("a", None)
         return data
 
 
