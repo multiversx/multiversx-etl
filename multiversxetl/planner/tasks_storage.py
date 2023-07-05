@@ -2,7 +2,7 @@ from typing import Any, Callable, List, Optional
 
 from google.cloud import firestore
 from google.cloud.firestore import transactional  # type: ignore
-from google.cloud.firestore import CollectionReference
+from google.cloud.firestore import CollectionReference, FieldFilter
 
 from multiversxetl.errors import TransientError
 from multiversxetl.planner.tasks import Task, TaskStatus
@@ -113,12 +113,12 @@ def _transactional_take_any_extraction_task(
         worker_id: str,
         index_name: Optional[str]
 ) -> Optional[Task]:
-    extraction_is_pending_or_failed = ("extraction_status", "in", [TaskStatus.PENDING.value, TaskStatus.FAILED.value])
-    index_name_is = ("index_name", "==", index_name)
+    extraction_is_pending_or_failed = FieldFilter("extraction_status", "in", [TaskStatus.PENDING.value, TaskStatus.FAILED.value])
+    index_name_is = FieldFilter("index_name", "==", index_name)
 
-    query = collection.where(*extraction_is_pending_or_failed)  # type: ignore
+    query = collection.where(filter=extraction_is_pending_or_failed)  # type: ignore
     if index_name:
-        query = query.where(*index_name_is)  # type: ignore
+        query = query.where(filter=index_name_is)  # type: ignore
 
     pending_tasks = query.limit(1).stream(transaction=transaction)  # type: ignore
     snapshot = next(pending_tasks, None)
@@ -155,13 +155,13 @@ def _transactional_take_any_loading_task(
     worker_id: str,
     index_name: Optional[str]
 ) -> Optional[Task]:
-    extraction_is_finished = ("extraction_status", "==", TaskStatus.FINISHED.value)
-    loading_is_pending_or_failed = ("loading_status", "in", [TaskStatus.PENDING.value, TaskStatus.FAILED.value])
-    index_name_is = ("index_name", "==", index_name)
+    extraction_is_finished = FieldFilter("extraction_status", "==", TaskStatus.FINISHED.value)
+    loading_is_pending_or_failed = FieldFilter("loading_status", "in", [TaskStatus.PENDING.value, TaskStatus.FAILED.value])
+    index_name_is = FieldFilter("index_name", "==", index_name)
 
-    query = collection.where(*extraction_is_finished).where(*loading_is_pending_or_failed)  # type: ignore
+    query = collection.where(filter=extraction_is_finished).where(filter=loading_is_pending_or_failed)  # type: ignore
     if index_name:
-        query = query.where(*index_name_is)  # type: ignore
+        query = query.where(filter=index_name_is)  # type: ignore
 
     pending_tasks = query.limit(1).stream()  # type: ignore
     snapshot = next(pending_tasks, None)
