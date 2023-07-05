@@ -1,4 +1,3 @@
-
 import logging
 import socket
 import threading
@@ -238,9 +237,9 @@ def do_continuously(callable: Callable[[], None], sleep_between_tasks: int, num_
         time.sleep(i)
         thread.start()
 
+        if should_stop_all_threads.is_set():
+            break
+
     for thread in threads:
-        try:
+        if thread.is_alive():
             thread.join()
-        except (KeyboardInterrupt, SystemExit):
-            logging.info("KeyboardInterrupt, stopping...")
-            should_stop_all_threads.set()
