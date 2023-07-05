@@ -57,10 +57,10 @@ python3 -m multiversxetl inspect-tasks --gcp-project-id=${GCP_PROJECT_ID}
 Then, extract and load the data on _worker_ machines:
 
 ```
-python3 -m multiversxetl extract-with-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID}
-python3 -m multiversxetl extract-without-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID}
-python3 -m multiversxetl load-with-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --schema-folder=./schema
-python3 -m multiversxetl load-without-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --schema-folder=./schema
+python3 -m multiversxetl extract-with-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --num-threads=4
+python3 -m multiversxetl extract-without-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --num-threads=4
+python3 -m multiversxetl load-with-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --schema-folder=./schema --num-threads=4
+python3 -m multiversxetl load-without-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --schema-folder=./schema --num-threads=4
 ```
 
 From time to time, you may want to run `inspect-tasks` again to check the progress.
