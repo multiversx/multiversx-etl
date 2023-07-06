@@ -1,5 +1,4 @@
 import datetime
-import logging
 from pprint import pprint
 from typing import Tuple
 
@@ -11,8 +10,6 @@ from multiversxetl.constants import (INDICES_WITH_INTERVALS,
 from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 from multiversxetl.planner.tasks import count_tasks_by_status
-
-logging.basicConfig(level=logging.INFO)
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
