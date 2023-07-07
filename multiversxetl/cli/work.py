@@ -207,13 +207,13 @@ def do_any_load_task(
         raise
 
 
-def do_continuously(callable: Callable[[], None], sleep_between_tasks: int, num_threads: int):
+def do_continuously(callable: Callable[[], None], sleep_between_tasks: int, num_threads: int, thread_start_delay: int = 1):
     threads: List[threading.Thread] = []
     should_stop_all_threads = threading.Event()
 
     for i in range(num_threads):
         # Start threads with a small delay between them.
-        time.sleep(i)
+        time.sleep(thread_start_delay)
 
         thread = threading.Thread(
             name=f"Thread-{i}",
@@ -244,6 +244,7 @@ def do_continuously_in_thread(callable: Callable[[], None], sleep_between_tasks:
             should_stop.set()
             raise
 
+        # Other threads may have set the stop flag (e.g. due to an exception).
         if should_stop.is_set():
             break
 
