@@ -1,5 +1,6 @@
 import logging
 import socket
+import threading
 import time
 from pathlib import Path
 from typing import Callable, Optional
@@ -13,22 +14,20 @@ from multiversxetl.logger import CloudLogger
 from multiversxetl.planner import (TasksStorage, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 
-ERROR_INTERRUPTED_TASK = "interrupted task"
-
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
+@click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by Elasticsearch index name (if omitted, all indices are extracted).")
-@click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def extract_with_intervals(
         workspace: str,
         gcp_project_id: str,
         worker_id: str,
+        num_threads: int,
         index_name: Optional[str],
-        continue_on_error: bool,
         sleep_between_tasks: int
 ):
     """
@@ -42,8 +41,8 @@ def extract_with_intervals(
 
     do_continuously(
         lambda: do_any_extract_task(workspace, gcp_project_id, storage, worker_id, index_name),
-        continue_on_error,
-        sleep_between_tasks
+        sleep_between_tasks,
+        num_threads
     )
 
 
@@ -51,15 +50,15 @@ def extract_with_intervals(
 @click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
+@click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by index name.")
-@click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def extract_without_intervals(
         workspace: str,
         gcp_project_id: str,
         worker_id: str,
+        num_threads: int,
         index_name: Optional[str],
-        continue_on_error: bool,
         sleep_between_tasks: int
 ):
     """
@@ -73,8 +72,8 @@ def extract_without_intervals(
 
     do_continuously(
         lambda: do_any_extract_task(workspace, gcp_project_id, storage, worker_id, index_name),
-        continue_on_error,
-        sleep_between_tasks
+        sleep_between_tasks,
+        num_threads
     )
 
 
@@ -103,10 +102,6 @@ def do_any_extract_task(
         storage.update_task(task.id, lambda t: t.update_on_extraction_finished(""))
 
         logger.log_info(f"Extraction finished, index = {task.index_name}, task = {task.id}", data=task.to_dict())
-    except KeyboardInterrupt:
-        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED_TASK))
-        logger.log_error(f"Extraction interrupted, index = {task.index_name}, task = {task.id}", data=task.to_dict())
-        raise
     except Exception as e:
         storage.update_task(task.id, lambda t: t.update_on_extraction_failure(str(e)))
         logger.log_error(f"Extraction failed, index = {task.index_name}, task = {task.id}", data=task.to_dict())
@@ -117,17 +112,17 @@ def do_any_extract_task(
 @click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
+@click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
-@click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def load_with_intervals(
         workspace: str,
         gcp_project_id: str,
         worker_id: str,
+        num_threads: int,
         index_name: Optional[str],
         schema_folder: str,
-        continue_on_error: bool,
         sleep_between_tasks: int
 ):
     """
@@ -141,8 +136,8 @@ def load_with_intervals(
 
     do_continuously(
         lambda: do_any_load_task(workspace, gcp_project_id, storage, worker_id, index_name, schema_folder),
-        continue_on_error,
-        sleep_between_tasks
+        sleep_between_tasks,
+        num_threads
     )
 
 
@@ -150,17 +145,17 @@ def load_with_intervals(
 @click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
+@click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
-@click.option("--continue-on-error", is_flag=True, type=bool, help="Continue (with other tasks) on error.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def load_without_intervals(
     workspace: str,
     gcp_project_id: str,
     worker_id: str,
+    num_threads: int,
     index_name: Optional[str],
     schema_folder: str,
-    continue_on_error: bool,
     sleep_between_tasks: int
 ):
     """
@@ -173,8 +168,8 @@ def load_without_intervals(
 
     do_continuously(
         lambda: do_any_load_task(workspace, gcp_project_id, storage, worker_id, index_name, schema_folder),
-        continue_on_error,
-        sleep_between_tasks
+        sleep_between_tasks,
+        num_threads
     )
 
 
@@ -206,25 +201,45 @@ def do_any_load_task(
         file_storage.remove_transformed_file(task.get_pretty_name())
 
         logger.log_info(f"Transform & load finished, index = {task.index_name}, task = {task.id}", data=task.to_dict())
-    except KeyboardInterrupt:
-        storage.update_task(task.id, lambda t: t.update_on_extraction_failure(ERROR_INTERRUPTED_TASK))
-        logger.log_error(f"Transform & load interrupted, index = {task.index_name}, task = {task.id}", data=task.to_dict())
-        raise
     except Exception as e:
         storage.update_task(task.id, lambda t: t.update_on_loading_failure(str(e)))
         logger.log_error(f"Transform & load failed, index = {task.index_name}, task = {task.id}", data=task.to_dict())
         raise
 
 
-def do_continuously(callable: Callable[[], None], continue_on_error: bool, sleep_between_tasks: int):
-    while True:
-        try:
-            callable()
-        except TransientError as error:
-            logging.info(f"Transient error, will try again later: {error}")
-        except:
-            if not continue_on_error:
+def do_continuously(callable: Callable[[], None], sleep_between_tasks: int, num_threads: int):
+    should_stop_all_threads = threading.Event()
+
+    def _do():
+        logging.info(f"Thread started.")
+
+        while not should_stop_all_threads.is_set():
+            try:
+                callable()
+            except TransientError as error:
+                logging.info(f"Transient error, will try again later: {error}")
+            except:
+                should_stop_all_threads.set()
                 raise
 
-        logging.info(f"Sleeping for {sleep_between_tasks} seconds...")
-        time.sleep(sleep_between_tasks)
+            if should_stop_all_threads.is_set():
+                break
+
+            logging.info(f"Sleeping for {sleep_between_tasks} seconds...")
+            time.sleep(sleep_between_tasks)
+
+        logging.info(f"Thread stopped.")
+
+    threads = [threading.Thread(target=_do) for _ in range(num_threads)]
+
+    for i, thread in enumerate(threads):
+        # Do not start all threads at once, but with a small delay between them.
+        time.sleep(i)
+        thread.start()
+
+        if should_stop_all_threads.is_set():
+            break
+
+    for thread in threads:
+        if thread.is_alive():
+            thread.join()
