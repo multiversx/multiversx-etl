@@ -3,7 +3,7 @@ import socket
 import threading
 import time
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 import click
 
@@ -208,34 +208,21 @@ def do_any_load_task(
 
 
 def do_continuously(callable: Callable[[], None], sleep_between_tasks: int, num_threads: int):
+    threads: List[threading.Thread] = []
     should_stop_all_threads = threading.Event()
 
-    def _do():
-        logging.info(f"Thread started.")
-
-        while not should_stop_all_threads.is_set():
-            try:
-                callable()
-            except TransientError as error:
-                logging.info(f"Transient error, will try again later: {error}")
-            except:
-                should_stop_all_threads.set()
-                raise
-
-            if should_stop_all_threads.is_set():
-                break
-
-            logging.info(f"Sleeping for {sleep_between_tasks} seconds...")
-            time.sleep(sleep_between_tasks)
-
-        logging.info(f"Thread stopped.")
-
-    threads = [threading.Thread(target=_do) for _ in range(num_threads)]
-
-    for i, thread in enumerate(threads):
-        # Do not start all threads at once, but with a small delay between them.
+    for i in range(num_threads):
+        # Start threads with a small delay between them.
         time.sleep(i)
+
+        thread = threading.Thread(
+            name=f"Thread-{i}",
+            target=do_continuously_in_thread,
+            args=[callable, sleep_between_tasks, should_stop_all_threads]
+        )
+
         thread.start()
+        threads.append(thread)
 
         if should_stop_all_threads.is_set():
             break
@@ -243,3 +230,24 @@ def do_continuously(callable: Callable[[], None], sleep_between_tasks: int, num_
     for thread in threads:
         if thread.is_alive():
             thread.join()
+
+
+def do_continuously_in_thread(callable: Callable[[], None], sleep_between_tasks: int, should_stop: threading.Event):
+    logging.info(f"Thread started.")
+
+    while not should_stop.is_set():
+        try:
+            callable()
+        except TransientError as error:
+            logging.info(f"Transient error, will try again later: {error}")
+        except:
+            should_stop.set()
+            raise
+
+        if should_stop.is_set():
+            break
+
+        logging.info(f"Sleeping for {sleep_between_tasks} seconds...")
+        time.sleep(sleep_between_tasks)
+
+    logging.info(f"Thread stopped.")
