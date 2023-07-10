@@ -5,8 +5,10 @@ from typing import Tuple
 import click
 
 from multiversxetl.constants import (INDICES_WITH_INTERVALS,
-                                     INDICES_WITHOUT_INTERVALS, SECONDS_IN_DAY,
-                                     SECONDS_IN_MINUTE)
+                                     INDICES_WITHOUT_INTERVALS,
+                                     MIN_TIME_DELTA_FROM_NOW_FOR_EXTRACTION,
+                                     SECONDS_IN_DAY)
+from multiversxetl.errors import UsageError
 from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 from multiversxetl.planner.tasks import count_tasks_by_status
@@ -48,9 +50,7 @@ def plan_tasks_with_intervals(indexer_url: str, indices: Tuple[str, ...], gcp_pr
     storage = TasksWithIntervalStorage(gcp_project_id)
     planner = TasksPlanner()
 
-    if not end_timestamp:
-        now = int(datetime.datetime.utcnow().timestamp())
-        end_timestamp = now - 25 * SECONDS_IN_MINUTE
+    end_timestamp = decide_end_timestamp(end_timestamp)
 
     new_tasks = planner.plan_tasks_with_intervals(
         indexer_url,
@@ -62,6 +62,18 @@ def plan_tasks_with_intervals(indexer_url: str, indices: Tuple[str, ...], gcp_pr
     )
 
     storage.add_tasks(new_tasks)
+
+
+def decide_end_timestamp(end_timestamp: int):
+    now = int(datetime.datetime.utcnow().timestamp())
+    max_end_timestamp = now - MIN_TIME_DELTA_FROM_NOW_FOR_EXTRACTION
+
+    if not end_timestamp:
+        end_timestamp = max_end_timestamp
+    elif end_timestamp > max_end_timestamp:
+        raise UsageError(f"End timestamp {end_timestamp} is too recent. It should be at most {max_end_timestamp} (current time - {MIN_TIME_DELTA_FROM_NOW_FOR_EXTRACTION} seconds).")
+
+    return end_timestamp
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
