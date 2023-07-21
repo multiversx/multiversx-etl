@@ -53,6 +53,12 @@ class Transformer:
 class BlocksTransformer(Transformer):
     def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
         data.pop("pubKeyBitmap", None)
+
+        # Remove "epochStartShardsData.pendingMiniBlockHeaders.reserved".
+        for shard_data in data.get("epochStartShardsData", []):
+            for miniblock_header in shard_data.get("pendingMiniBlockHeaders", []):
+                miniblock_header.pop("reserved", None)
+
         return data
 
 
@@ -61,6 +67,10 @@ class TokensTransformer(Transformer):
         data.pop("nft_traitValues", None)
         data.pop("nft_scamInfoType", None)
         data.pop("nft_scamInfoDescription", None)
+        data.pop("nft_scamInfoVersion", None)
+        data.pop("nft_rarity_score", None)
+        data.pop("nft_rarity_rank", None)
+        data.pop("nft_traitTypes", None)
         return data
 
 
