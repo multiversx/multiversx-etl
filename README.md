@@ -30,11 +30,11 @@ First, set the following environment variables:
 
 ```
 export GCP_PROJECT_ID=multiversx-blockchain-etl
-export GROUP=devnet_1648551600
+export GROUP=mainnet
 export WORKSPACE=${HOME}/multiversx-etl
-export INDEXER_URL=https://devnet-index.multiversx.com:443
-export BQ_DATASET=devnet_1648551600
-export START_TIMESTAMP=1648551600
+export INDEXER_URL=https://index.multiversx.com:443
+export BQ_DATASET=mainnet
+export START_TIMESTAMP=1596117600
 export END_TIMESTAMP=1689920000
 ```
 
