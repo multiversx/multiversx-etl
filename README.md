@@ -11,6 +11,13 @@ pip install -r ./requirements.txt --upgrade
 pip install -r ./requirements-dev.txt --upgrade
 ```
 
+## Run the tests
+
+```
+export PYTHONPATH=.
+pytest -m "not integration"
+```
+
 ## Generate schema files
 
 ```
