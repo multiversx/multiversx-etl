@@ -30,11 +30,11 @@ First, set the following environment variables:
 
 ```
 export GCP_PROJECT_ID=multiversx-blockchain-etl
-export GROUP=mainnet
+export GROUP=devnet_1648551600
 export WORKSPACE=${HOME}/multiversx-etl
-export INDEXER_URL=https://index.multiversx.com:443
-export BQ_DATASET=mainnet
-export START_TIMESTAMP=1596117600
+export INDEXER_URL=https://devnet-index.multiversx.com:443
+export BQ_DATASET=devnet_1648551600
+export START_TIMESTAMP=1648551600
 export END_TIMESTAMP=1689920000
 ```
 
@@ -73,3 +73,4 @@ Below are a few links useful for managing the ETL process. They are only accessi
  - [Firestore Dashboard](https://console.cloud.google.com/firestore/databases/-default-/data/panel?project=multiversx-blockchain-etl): inspect and manage the Firestore collections that store the metadata of the ETL tasks.
  - [BigQuery Workspace](https://console.cloud.google.com/bigquery?project=multiversx-blockchain-etl): inspect and manage the BigQuery datasets and tables.
  - [Analytics Hub](https://console.cloud.google.com/bigquery/analytics-hub/exchanges?project=multiversx-blockchain-etl): create and publish data listings.
+ - [Logs Explorer](https://console.cloud.google.com/logs/query?project=multiversx-blockchain-etl): inspect logs.
