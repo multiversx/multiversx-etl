@@ -33,34 +33,27 @@ export END_TIMESTAMP=1687880000
 Then, plan ETL tasks (will add records in a Firestore database):
 
 ```
-python3 -m multiversxetl plan-tasks-with-intervals --indexer-url=${INDEXER_URL} \
-    --gcp-project-id=${GCP_PROJECT_ID}  --bq-dataset=${BQ_DATASET} \
+python3 -m multiversxetl plan-tasks-with-intervals --gcp-project-id=${GCP_PROJECT_ID} --group=${GROUP} \
+    --indexer-url=${INDEXER_URL} --bq-dataset=${BQ_DATASET} \
     --start-timestamp=${START_TIMESTAMP} --end-timestamp=${END_TIMESTAMP}
 
-python3 -m multiversxetl plan-tasks-without-intervals --indexer-url=${INDEXER_URL} \
-    --gcp-project-id=${GCP_PROJECT_ID}  --bq-dataset=${BQ_DATASET}
-```
-
-**Note:** in order to remove all previously planned tasks, run the following commands:
-
-```
-firebase firestore:delete --project=${GCP_PROJECT_ID} --recursive tasks_with_interval
-firebase firestore:delete --project=${GCP_PROJECT_ID} --recursive tasks_without_interval
+python3 -m multiversxetl plan-tasks-without-intervals --gcp-project-id=${GCP_PROJECT_ID} --group=${GROUP} \
+    --indexer-url=${INDEXER_URL} --bq-dataset=${BQ_DATASET}
 ```
 
 Inspect the tasks:
 
 ```
-python3 -m multiversxetl inspect-tasks --gcp-project-id=${GCP_PROJECT_ID}
+python3 -m multiversxetl inspect-tasks --group=${GROUP} --gcp-project-id=${GCP_PROJECT_ID}
 ```
 
 Then, extract and load the data on _worker_ machines:
 
 ```
-python3 -m multiversxetl extract-with-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --num-threads=4
-python3 -m multiversxetl extract-without-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --num-threads=4
-python3 -m multiversxetl load-with-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --schema-folder=./schema --num-threads=4
-python3 -m multiversxetl load-without-intervals --workspace=${WORKSPACE} --gcp-project-id=${GCP_PROJECT_ID} --schema-folder=./schema --num-threads=4
+python3 -m multiversxetl extract-with-intervals --gcp-project-id=${GCP_PROJECT_ID} --workspace=${WORKSPACE} --group=${GROUP}  --num-threads=4
+python3 -m multiversxetl extract-without-intervals --gcp-project-id=${GCP_PROJECT_ID} --workspace=${WORKSPACE} --group=${GROUP} --num-threads=4
+python3 -m multiversxetl load-with-intervals --gcp-project-id=${GCP_PROJECT_ID} --workspace=${WORKSPACE} --group=${GROUP} --schema-folder=./schema --num-threads=4
+python3 -m multiversxetl load-without-intervals --gcp-project-id=${GCP_PROJECT_ID} --workspace=${WORKSPACE} --group=${GROUP} --schema-folder=./schema --num-threads=4
 ```
 
 From time to time, you may want to run `inspect-tasks` again to check the progress.
