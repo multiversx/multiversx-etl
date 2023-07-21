@@ -29,12 +29,13 @@ python3 -m multiversxetl generate-schema --input-folder=~/mx-chain-tools-go/elas
 First, set the following environment variables:
 
 ```
+export GCP_PROJECT_ID=multiversx-blockchain-etl
+export GROUP=mainnet
 export WORKSPACE=${HOME}/multiversx-etl
 export INDEXER_URL=https://index.multiversx.com:443
-export GCP_PROJECT_ID=multiversx-blockchain-etl
 export BQ_DATASET=mainnet
 export START_TIMESTAMP=1596117600
-export END_TIMESTAMP=1687880000
+export END_TIMESTAMP=1689920000
 ```
 
 Then, plan ETL tasks (will add records in a Firestore database):
