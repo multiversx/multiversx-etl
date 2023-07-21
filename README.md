@@ -64,3 +64,11 @@ python3 -m multiversxetl load-without-intervals --gcp-project-id=${GCP_PROJECT_I
 ```
 
 From time to time, you may want to run `inspect-tasks` again to check the progress.
+
+## Management (Google Cloud Console)
+
+Below are a few links useful for managing the ETL process. They are only accessible to the MultiversX team.
+
+ - [Firestore dashboard](https://console.cloud.google.com/firestore/databases/-default-/data/panel?project=multiversx-blockchain-etl): inspect and manage the Firestore collections that store the metadata of the ETL tasks.
+ - [BigQuery Workspace](https://console.cloud.google.com/bigquery?project=multiversx-blockchain-etl): inspect and manage the BigQuery datasets and tables.
+ - [Analytics Hub](https://console.cloud.google.com/bigquery/analytics-hub/exchanges?project=multiversx-blockchain-etl): create and publish data listings.
