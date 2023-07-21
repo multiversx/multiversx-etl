@@ -33,6 +33,8 @@ class LoadJob:
         self.file_storage = file_storage
         self.task = task
         self.schema_folder = schema_folder
+
+        # TODO: Possibly decouple from "bigquery.Client". Currently, constructor raises an exception when host machine is not authenticated to GCP.
         self.bigquery_client = bigquery.Client(project=gcp_project_id)
 
     def run(self) -> None:

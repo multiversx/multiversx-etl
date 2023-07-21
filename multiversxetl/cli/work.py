@@ -16,15 +16,17 @@ from multiversxetl.planner import (TasksStorage, TasksWithIntervalStorage,
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
+@click.option("--workspace", required=True, type=str, help="Workspace path.")
+@click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix, as workspace subfolder.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by Elasticsearch index name (if omitted, all indices are extracted).")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def extract_with_intervals(
-        workspace: str,
         gcp_project_id: str,
+        workspace: str,
+        group: str,
         worker_id: str,
         num_threads: int,
         index_name: Optional[str],
@@ -37,25 +39,27 @@ def extract_with_intervals(
     Example of **time-stamped indices**: blocks, miniblocks, transactions etc.
     """
 
-    storage = TasksWithIntervalStorage(gcp_project_id)
+    storage = TasksWithIntervalStorage(gcp_project_id, group)
 
     do_continuously(
-        lambda: do_any_extract_task(workspace, gcp_project_id, storage, worker_id, index_name),
+        lambda: do_any_extract_task(gcp_project_id, workspace, group, storage, worker_id, index_name),
         sleep_between_tasks,
         num_threads
     )
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
+@click.option("--workspace", required=True, type=str, help="Workspace path.")
+@click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix, as workspace subfolder.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def extract_without_intervals(
-        workspace: str,
         gcp_project_id: str,
+        workspace: str,
+        group: str,
         worker_id: str,
         num_threads: int,
         index_name: Optional[str],
@@ -68,23 +72,24 @@ def extract_without_intervals(
     Example of **not-time-stamped indices**: accounts, validators, delegators etc.
     """
 
-    storage = TasksWithoutIntervalStorage(gcp_project_id)
+    storage = TasksWithoutIntervalStorage(gcp_project_id, group)
 
     do_continuously(
-        lambda: do_any_extract_task(workspace, gcp_project_id, storage, worker_id, index_name),
+        lambda: do_any_extract_task(workspace, gcp_project_id, group, storage, worker_id, index_name),
         sleep_between_tasks,
         num_threads
     )
 
 
 def do_any_extract_task(
-        workspace: str,
         gcp_project_id: str,
+        workspace: str,
+        group: str,
         storage: TasksStorage,
         worker_id: str,
         index_name: Optional[str]
 ):
-    file_storage = FileStorage(Path(workspace))
+    file_storage = FileStorage(Path(workspace) / group)
     worker_id = worker_id or socket.gethostname()
     logger = CloudLogger(gcp_project_id, worker_id)
 
@@ -109,16 +114,18 @@ def do_any_extract_task(
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
+@click.option("--workspace", required=True, type=str, help="Workspace path.")
+@click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix, as workspace subfolder.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def load_with_intervals(
-        workspace: str,
         gcp_project_id: str,
+        workspace: str,
+        group: str,
         worker_id: str,
         num_threads: int,
         index_name: Optional[str],
@@ -132,26 +139,28 @@ def load_with_intervals(
     Before loading, the data suffers slight transformations (when needed).
     """
 
-    storage = TasksWithIntervalStorage(gcp_project_id)
+    storage = TasksWithIntervalStorage(gcp_project_id, group)
 
     do_continuously(
-        lambda: do_any_load_task(workspace, gcp_project_id, storage, worker_id, index_name, schema_folder),
+        lambda: do_any_load_task(gcp_project_id, workspace, group, storage, worker_id, index_name, schema_folder),
         sleep_between_tasks,
         num_threads
     )
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
+@click.option("--workspace", required=True, type=str, help="Workspace path.")
+@click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix, as workspace subfolder.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by index name.")
 @click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
 def load_without_intervals(
-    workspace: str,
     gcp_project_id: str,
+    workspace: str,
+    group: str,
     worker_id: str,
     num_threads: int,
     index_name: Optional[str],
@@ -164,24 +173,25 @@ def load_without_intervals(
 
     Before loading, the data suffers slight transformations (when needed).
     """
-    storage = TasksWithoutIntervalStorage(gcp_project_id)
+    storage = TasksWithoutIntervalStorage(gcp_project_id, group)
 
     do_continuously(
-        lambda: do_any_load_task(workspace, gcp_project_id, storage, worker_id, index_name, schema_folder),
+        lambda: do_any_load_task(gcp_project_id, workspace, group, storage, worker_id, index_name, schema_folder),
         sleep_between_tasks,
         num_threads
     )
 
 
 def do_any_load_task(
-        workspace: str,
         gcp_project_id: str,
+        workspace: str,
+        group: str,
         storage: TasksStorage,
         worker_id: str,
         index_name: Optional[str],
         schema_folder: str
 ):
-    file_storage = FileStorage(Path(workspace))
+    file_storage = FileStorage(Path(workspace) / group)
     worker_id = worker_id or socket.gethostname()
     logger = CloudLogger(gcp_project_id, worker_id)
 

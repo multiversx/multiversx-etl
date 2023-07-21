@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Callable, List, Optional
 
 from google.cloud import firestore
@@ -9,6 +10,8 @@ from multiversxetl.planner.tasks import Task, TaskStatus
 
 INSERT_CHUNK_SIZE = 100
 DELETE_CHUNK_SIZE = 100
+COLLECTION_NAME_TASKS_WITH_INTERVAL = "tasks_with_interval"
+COLLECTION_NAME_TASKS_WITHOUT_INTERVAL = "tasks_without_interval"
 
 
 class TasksStorage:
@@ -51,6 +54,7 @@ class TasksStorage:
                 batch.set(task_ref, task.to_dict())
 
             batch.commit()
+            logging.info(f"Added {len(tasks_chunk)} tasks to {self.collection}.")
 
     def take_any_extract_task(self,
                               worker_id: str,
@@ -83,13 +87,15 @@ class TasksStorage:
 
 
 class TasksWithIntervalStorage(TasksStorage):
-    def __init__(self, project_id: str):
-        super().__init__(project_id, "tasks_with_interval")
+    def __init__(self, project_id: str, group: str):
+        collection = f"{group}_{COLLECTION_NAME_TASKS_WITH_INTERVAL}"
+        super().__init__(project_id, collection)
 
 
 class TasksWithoutIntervalStorage(TasksStorage):
-    def __init__(self, project_id: str):
-        super().__init__(project_id, "tasks_without_interval")
+    def __init__(self, project_id: str, group: str):
+        collection = f"{group}_{COLLECTION_NAME_TASKS_WITHOUT_INTERVAL}"
+        super().__init__(project_id, collection)
 
 
 def _transactional_pessimistic_take_any_extraction_task(
@@ -121,7 +127,7 @@ def _transactional_take_any_extraction_task(
         query = query.where(filter=index_name_is)  # type: ignore
 
     pending_tasks = query.limit(1).stream(transaction=transaction)  # type: ignore
-    snapshot = next(pending_tasks, None)
+    snapshot: Any = next(pending_tasks, None)
 
     if not snapshot:
         return None
@@ -164,7 +170,7 @@ def _transactional_take_any_loading_task(
         query = query.where(filter=index_name_is)  # type: ignore
 
     pending_tasks = query.limit(1).stream()  # type: ignore
-    snapshot = next(pending_tasks, None)
+    snapshot: Any = next(pending_tasks, None)
 
     if not snapshot:
         return None

@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Any
 
+import pytest
 from google.cloud import bigquery
 
 from multiversxetl.jobs.load_job import (WRITE_DISPOSITION_APPEND,
@@ -17,6 +18,7 @@ class FileStorageMock:
         return Path(__file__).parent / f"transformed_{task_pretty_name}.json"
 
 
+@pytest.mark.integration
 def test_get_table_id():
     file_storage = FileStorageMock()
     task = Task("test", "", "test_index_name", "test_dataset", 0, 1)
@@ -25,6 +27,7 @@ def test_get_table_id():
     assert job._get_table_id() == "test_dataset.test_index_name"
 
 
+@pytest.mark.integration
 def test_prepare_job_config():
     file_storage = FileStorageMock()
 
