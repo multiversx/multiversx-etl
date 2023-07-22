@@ -75,7 +75,7 @@ def extract_without_intervals(
     storage = TasksWithoutIntervalStorage(gcp_project_id, group)
 
     do_continuously(
-        lambda: do_any_extract_task(workspace, gcp_project_id, group, storage, worker_id, index_name),
+        lambda: do_any_extract_task(gcp_project_id, workspace, group, storage, worker_id, index_name),
         sleep_between_tasks,
         num_threads
     )
