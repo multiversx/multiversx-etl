@@ -3,9 +3,9 @@ from typing import Any, Dict, List
 BQ_TYPE_BY_ES_TYPE: Dict[str, str] = {
     "boolean": "BOOLEAN",
     "long": "NUMERIC",
-    "double": "FLOAT64",
+    "double": "FLOAT",
     "integer": "NUMERIC",
-    "float": "FLOAT64",
+    "float": "FLOAT",
     "keyword": "STRING",
     "text": "STRING",
     "date": "TIMESTAMP"

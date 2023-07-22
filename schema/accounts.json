@@ -17,11 +17,11 @@
     },
     {
         "name": "balanceNum",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "nonce",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "shardID",
@@ -37,7 +37,7 @@
     },
     {
         "name": "developerRewardsNum",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "totalBalanceWithStake",
@@ -45,7 +45,7 @@
     },
     {
         "name": "totalBalanceWithStakeNum",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "currentOwner",

@@ -37,6 +37,6 @@
     },
     {
         "name": "tokenNonce",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     }
 ]

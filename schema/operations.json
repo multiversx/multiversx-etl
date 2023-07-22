@@ -30,7 +30,7 @@
     },
     {
         "name": "feeNum",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "function",
@@ -38,15 +38,15 @@
     },
     {
         "name": "gasLimit",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "gasPrice",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "gasUsed",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "hasOperations",
@@ -181,12 +181,12 @@
     },
     {
         "name": "valueNum",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "esdtValuesNum",
         "mode": "REPEATED",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "guardian",

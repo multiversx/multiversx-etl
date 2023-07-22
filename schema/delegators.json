@@ -9,7 +9,7 @@
     },
     {
         "name": "activeStakeNum",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "timestamp",
@@ -41,7 +41,7 @@
             },
             {
                 "name": "valueNum",
-                "type": "FLOAT64"
+                "type": "FLOAT"
             }
         ],
         "type": "RECORD"
