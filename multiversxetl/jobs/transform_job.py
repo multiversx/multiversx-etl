@@ -35,23 +35,23 @@ class TransformJob:
         with open(input_filename) as file:
             with open(output_filename, "w") as output_file:
                 for line in file:
-                    transformed_line = transformer.transform(line)
+                    transformed_line = transformer.transform_json(line)
                     output_file.write(transformed_line + "\n")
 
 
 class Transformer:
-    def transform(self, raw_json: str) -> str:
+    def transform_json(self, raw_json: str) -> str:
         data = json.loads(raw_json)
-        data = self._do_transform(data)
+        data = self.transform(data)
         output = json.dumps(data)
         return output
 
-    def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 
 
 class BlocksTransformer(Transformer):
-    def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
         data.pop("pubKeyBitmap", None)
 
         # Remove "epochStartShardsData.pendingMiniBlockHeaders.reserved".
@@ -63,19 +63,19 @@ class BlocksTransformer(Transformer):
 
 
 class TokensTransformer(Transformer):
-    def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        data.pop("nft_traitValues", None)
-        data.pop("nft_scamInfoType", None)
-        data.pop("nft_scamInfoDescription", None)
-        data.pop("nft_scamInfoVersion", None)
-        data.pop("nft_rarity_score", None)
-        data.pop("nft_rarity_rank", None)
-        data.pop("nft_traitTypes", None)
+    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        for key in list(data.keys()):
+            is_volatile_field_nft = key.startswith("nft_")
+            is_volatile_field_api = key.startswith("api_")
+
+            if is_volatile_field_nft or is_volatile_field_api:
+                data.pop(key)
+
         return data
 
 
 class LogsTransformer(Transformer):
-    def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
         events = data.get("events", []) or []
 
         for event in events:
