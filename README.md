@@ -74,7 +74,13 @@ python3 -m multiversxetl load-with-intervals --gcp-project-id=${GCP_PROJECT_ID} 
 python3 -m multiversxetl load-without-intervals --gcp-project-id=${GCP_PROJECT_ID} --workspace=${WORKSPACE} --group=${GROUP} --schema-folder=./schema --num-threads=4
 ```
 
-From time to time, you may want to run `inspect-tasks` again to check the progress.
+While the tasks are running, you may want to regularly execute `inspect-tasks` again to check the progress.
+
+At times, the _load_ step could fail due to, say, new fields added to Elasticsearch indices (of which the BigQuery schema was not aware). In this case, re-generate the schema files (see above), then update the BigQuery with the `bq` command (example below is for the `tokens` table):
+
+```
+bq update ${GCP_PROJECT_ID}:${BQ_DATASET}.tokens schema/tokens.json
+```
 
 ## Management (Google Cloud Console)
 
