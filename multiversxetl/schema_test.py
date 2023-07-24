@@ -26,7 +26,7 @@ def test_map_elastic_search_schema_to_bigquery_schema_basic():
         },
         {
             "name": "bar",
-            "type": "FLOAT64"
+            "type": "FLOAT"
         }
     ]
 
@@ -97,7 +97,7 @@ def test_map_elastic_search_schema_to_bigquery_schema_with_record():
                 },
                 {
                     "name": "bar",
-                    "type": "FLOAT64"
+                    "type": "FLOAT"
                 }
             ],
             "type": "RECORD"
@@ -173,11 +173,11 @@ def test_map_elastic_search_schema_to_bigquery_schema_on_accounts():
         },
         {
             "name": "balanceNum",
-            "type": "FLOAT64"
+            "type": "FLOAT"
         },
         {
             "name": "nonce",
-            "type": "FLOAT64"
+            "type": "FLOAT"
         },
         {
             "name": "shardID",
@@ -193,7 +193,7 @@ def test_map_elastic_search_schema_to_bigquery_schema_on_accounts():
         },
         {
             "name": "developerRewardsNum",
-            "type": "FLOAT64"
+            "type": "FLOAT"
         },
         {
             "name": "totalBalanceWithStake",
@@ -201,7 +201,7 @@ def test_map_elastic_search_schema_to_bigquery_schema_on_accounts():
         },
         {
             "name": "totalBalanceWithStakeNum",
-            "type": "FLOAT64"
+            "type": "FLOAT"
         },
         {
             "name": "currentOwner",
