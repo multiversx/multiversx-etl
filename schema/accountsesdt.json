@@ -13,7 +13,7 @@
     },
     {
         "name": "balanceNum",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "currentOwner",
@@ -89,7 +89,7 @@
     },
     {
         "name": "tokenNonce",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "type",

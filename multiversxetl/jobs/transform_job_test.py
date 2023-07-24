@@ -3,7 +3,8 @@
 from pathlib import Path
 from typing import Any, Dict
 
-from multiversxetl.jobs.transform_job import Transformer, TransformJob
+from multiversxetl.jobs.transform_job import (TokensTransformer, Transformer,
+                                              TransformJob)
 from multiversxetl.planner.tasks import Task
 
 
@@ -16,7 +17,7 @@ class FileStorageMock:
 
 
 class DummyTransformer(Transformer):
-    def _do_transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
         data.pop("a", None)
         return data
 
@@ -69,3 +70,23 @@ def test_run_with_proper_transform():
 
     input_file.unlink(missing_ok=True)
     output_file.unlink(missing_ok=True)
+
+
+def test_tokens_transformer():
+    transformer = TokensTransformer()
+
+    data = {
+        "x": "foo",
+        "y": 42,
+        "nft_a": "a",
+        "nft_b": "b",
+        "api_c": "c",
+        "api_d": "d"
+    }
+
+    output = transformer.transform(data)
+
+    assert output == {
+        "x": "foo",
+        "y": 42
+    }

@@ -1,3 +1,13 @@
+# MultiversX ETL
+
+ETL (extract, transform and load) tools for publishing MultiversX blockchain data (extracted from a standard MultiversX Elasticsearch instance) on Google BigQuery.
+
+## Published data
+
+ - [Mainnet](https://console.cloud.google.com/bigquery?page=dataset&d=mainnet&p=multiversx-blockchain-etl)
+ - [Devnet (new)](https://console.cloud.google.com/bigquery?page=dataset&d=devnet&p=multiversx-blockchain-etl)
+ - [Devnet (old)](https://console.cloud.google.com/bigquery?page=dataset&d=devnet_1648551600&p=multiversx-blockchain-etl)
+ - [Testnet](https://console.cloud.google.com/bigquery?page=dataset&d=testnet&p=multiversx-blockchain-etl)
 
 ## Setup virtual environment
 
@@ -64,7 +74,13 @@ python3 -m multiversxetl load-with-intervals --gcp-project-id=${GCP_PROJECT_ID} 
 python3 -m multiversxetl load-without-intervals --gcp-project-id=${GCP_PROJECT_ID} --workspace=${WORKSPACE} --group=${GROUP} --schema-folder=./schema --num-threads=4
 ```
 
-From time to time, you may want to run `inspect-tasks` again to check the progress.
+While the tasks are running, you may want to regularly execute `inspect-tasks` again to check the progress.
+
+At times, the _load_ step could fail due to, say, new fields added to Elasticsearch indices (of which the BigQuery schema was not aware). In this case, re-generate the schema files (see above), then update the BigQuery with the `bq` command (example below is for the `tokens` table):
+
+```
+bq update ${GCP_PROJECT_ID}:${BQ_DATASET}.tokens schema/tokens.json
+```
 
 ## Management (Google Cloud Console)
 
@@ -73,3 +89,4 @@ Below are a few links useful for managing the ETL process. They are only accessi
  - [Firestore Dashboard](https://console.cloud.google.com/firestore/databases/-default-/data/panel?project=multiversx-blockchain-etl): inspect and manage the Firestore collections that store the metadata of the ETL tasks.
  - [BigQuery Workspace](https://console.cloud.google.com/bigquery?project=multiversx-blockchain-etl): inspect and manage the BigQuery datasets and tables.
  - [Analytics Hub](https://console.cloud.google.com/bigquery/analytics-hub/exchanges?project=multiversx-blockchain-etl): create and publish data listings.
+ - [Logs Explorer](https://console.cloud.google.com/logs/query?project=multiversx-blockchain-etl): inspect logs.

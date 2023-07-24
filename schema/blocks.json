@@ -129,19 +129,19 @@
     },
     {
         "name": "gasPenalized",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "gasProvided",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "gasRefunded",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "maxGasLimit",
-        "type": "FLOAT64"
+        "type": "FLOAT"
     },
     {
         "name": "miniBlocksDetails",
@@ -235,15 +235,15 @@
             },
             {
                 "name": "gasProvided",
-                "type": "FLOAT64"
+                "type": "FLOAT"
             },
             {
                 "name": "gasRefunded",
-                "type": "FLOAT64"
+                "type": "FLOAT"
             },
             {
                 "name": "penalized",
-                "type": "FLOAT64"
+                "type": "FLOAT"
             },
             {
                 "name": "rootHash",
