@@ -11,23 +11,15 @@ class Indexer:
     def __init__(self, url: str):
         self.elastic_search_client = Elasticsearch(url)
 
-    def count_records_with_interval(self, index_name: str) -> int:
-        return self.elastic_search_client.count(index=index_name)["count"]
+    def count_records_with_interval(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int:
+        query = self._get_query_object_with_interval(start_timestamp, end_timestamp)
+        return self.elastic_search_client.count(index=index_name, query=query["query"])["count"]
 
     def count_records_without_interval(self, index_name: str) -> int:
         return self.elastic_search_client.count(index=index_name)["count"]
 
     def get_records_with_interval(self, index_name: str, start_timestamp: int, end_timestamp: int) -> Iterable[Dict[str, Any]]:
-        query = {
-            "query": {
-                "range": {
-                    "timestamp": {
-                        "gte": start_timestamp,
-                        "lte": end_timestamp,
-                    },
-                }
-            }
-        }
+        query = self._get_query_object_with_interval(start_timestamp, end_timestamp)
 
         records = elasticsearch.helpers.scan(
             client=self.elastic_search_client,
@@ -65,3 +57,15 @@ class Indexer:
         )
 
         return records
+
+    def _get_query_object_with_interval(self, start_timestamp: int, end_timestamp: int) -> Dict[str, Any]:
+        return {
+            "query": {
+                "range": {
+                    "timestamp": {
+                        "gte": start_timestamp,
+                        "lt": end_timestamp,
+                    },
+                }
+            }
+        }
