@@ -82,6 +82,13 @@ At times, the _load_ step could fail due to, say, new fields added to Elasticsea
 bq update ${GCP_PROJECT_ID}:${BQ_DATASET}.tokens schema/tokens.json
 ```
 
+## Check loaded data
+
+```
+python3 -m multiversxetl check-loaded-data --gcp-project-id=${GCP_PROJECT_ID} --bq-dataset=${BQ_DATASET} --indexer-url=${INDEXER_URL} \
+    --start-timestamp=${START_TIMESTAMP} --end-timestamp=${END_TIMESTAMP}
+```
+
 ## Management (Google Cloud Console)
 
 Below are a few links useful for managing the ETL process. They are only accessible to the MultiversX team.

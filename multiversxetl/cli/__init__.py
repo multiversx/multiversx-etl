@@ -2,6 +2,7 @@ from typing import Any
 
 import click
 
+from multiversxetl.cli.checks import check_loaded_data
 from multiversxetl.cli.plan_tasks import (inspect_tasks,
                                           plan_tasks_with_intervals,
                                           plan_tasks_without_intervals)
@@ -27,3 +28,4 @@ cli.add_command(extract_without_intervals, "extract-without-intervals")
 cli.add_command(load_with_intervals, "load-with-intervals")
 cli.add_command(load_without_intervals, "load-without-intervals")
 cli.add_command(generate_schema, "generate-schema")
+cli.add_command(check_loaded_data, "check-loaded-data")
