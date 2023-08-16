@@ -89,6 +89,12 @@ python3 -m multiversxetl check-loaded-data --gcp-project-id=${GCP_PROJECT_ID} --
     --start-timestamp=${START_TIMESTAMP} --end-timestamp=${END_TIMESTAMP}
 ```
 
+## De-duplicate data
+
+```
+python3 -m multiversxetl deduplicate-loaded-data --gcp-project-id=${GCP_PROJECT_ID} --bq-dataset=${BQ_DATASET}
+```
+
 ## Management (Google Cloud Console)
 
 Below are a few links useful for managing the ETL process. They are only accessible to the MultiversX team.
