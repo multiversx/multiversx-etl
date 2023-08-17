@@ -1,6 +1,6 @@
 import datetime
 from pprint import pprint
-from typing import Tuple
+from typing import List, Optional, Tuple
 
 import click
 
@@ -57,7 +57,7 @@ def display_tasks(tasks: List[Task]):
 @click.option("--indexer-url", type=str, required=True, help="The indexer URL (Elasticsearch instance).")
 @click.option("--indices", multiple=True, default=INDICES_WITH_INTERVALS)
 @click.option("--bq-dataset", type=str, required=True, help="The BigQuery dataset (destination).")
-@click.option("--start-timestamp", type=int, required=True, help="The start timestamp (e.g. genesis time).")
+@click.option("--start-timestamp", type=int, help="The start timestamp (e.g. genesis time).")
 @click.option("--end-timestamp", type=int, help="The end timestamp (e.g. a recent one).")
 @click.option("--granularity", type=int, default=SECONDS_IN_DAY, help="Task granularity, in seconds.")
 def plan_tasks_with_intervals(
@@ -66,12 +66,13 @@ def plan_tasks_with_intervals(
     indexer_url: str,
     indices: Tuple[str, ...],
     bq_dataset: str,
-    start_timestamp: int,
-    end_timestamp: int,
+    start_timestamp: Optional[int],
+    end_timestamp: Optional[int],
     granularity: int
 ):
     storage = TasksWithIntervalStorage(gcp_project_id, group)
     planner = TasksPlanner()
+    newly_planned_tasks: List[Task] = []
 
     end_timestamp = decide_end_timestamp(end_timestamp)
 
@@ -96,9 +97,20 @@ def plan_tasks_with_intervals(
     storage.add_tasks(newly_planned_tasks)
 
 
+def decide_start_timestamp(storage: TasksWithIntervalStorage, index_name: str, start_timestamp: Optional[int]) -> int:
+    if start_timestamp is not None:
+        return start_timestamp
+
+    latest_task = storage.find_latest_task(index_name)
+    if not latest_task:
+        raise UsageError(f"Cannot find any previous task for index = {index_name}. Please specify a start timestamp explicitly.")
+
+    latest_task_end_timestamp = latest_task.end_timestamp
+    assert latest_task_end_timestamp is not None
+    return latest_task_end_timestamp
 
 
-def decide_end_timestamp(end_timestamp: int):
+def decide_end_timestamp(end_timestamp: Optional[int]):
     now = int(datetime.datetime.utcnow().timestamp())
     max_end_timestamp = now - MIN_TIME_DELTA_FROM_NOW_FOR_EXTRACTION
 
