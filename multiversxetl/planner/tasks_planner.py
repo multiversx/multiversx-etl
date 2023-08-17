@@ -11,7 +11,7 @@ class TasksPlanner:
     def plan_tasks_with_intervals(
             self,
             indexer_url: str,
-            indices: List[str],
+            index_name: str,
             bq_dataset: str,
             initial_start_timestamp: int,
             initial_end_timestamp: int,
@@ -24,19 +24,18 @@ class TasksPlanner:
 
         tasks: List[Task] = []
 
-        for index_name in indices:
-            for start_timestamp in range(initial_start_timestamp, initial_end_timestamp, granularity_seconds):
-                id = self._next_task_id()
-                end_timestamp = min(start_timestamp + granularity_seconds, initial_end_timestamp)
-                task = Task(id, indexer_url, index_name, bq_dataset, start_timestamp, end_timestamp)
-                tasks.append(task)
+        for start_timestamp in range(initial_start_timestamp, initial_end_timestamp, granularity_seconds):
+            id = self._next_task_id()
+            end_timestamp = min(start_timestamp + granularity_seconds, initial_end_timestamp)
+            task = Task(id, indexer_url, index_name, bq_dataset, start_timestamp, end_timestamp)
+            tasks.append(task)
 
         return tasks
 
     def plan_tasks_without_intervals(
             self,
             indexer_url: str,
-            indices: List[str],
+            index_name: str,
             bq_dataset: str
     ) -> List[Task]:
         """
@@ -45,10 +44,9 @@ class TasksPlanner:
 
         tasks: List[Task] = []
 
-        for index_name in indices:
-            id = self._next_task_id()
-            task = Task(id, indexer_url, index_name, bq_dataset)
-            tasks.append(task)
+        id = self._next_task_id()
+        task = Task(id, indexer_url, index_name, bq_dataset)
+        tasks.append(task)
 
         return tasks
 

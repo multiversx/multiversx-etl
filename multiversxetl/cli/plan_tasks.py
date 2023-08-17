@@ -63,16 +63,27 @@ def plan_tasks_with_intervals(
 
     end_timestamp = decide_end_timestamp(end_timestamp)
 
-    new_tasks = planner.plan_tasks_with_intervals(
-        indexer_url,
-        list(indices),
-        bq_dataset,
-        start_timestamp,
-        end_timestamp,
-        granularity
-    )
+    for index_name in list(indices):
+        start_timestamp_of_index = decide_start_timestamp(storage, index_name, start_timestamp)
 
-    storage.add_tasks(new_tasks)
+        start = datetime.datetime.utcfromtimestamp(start_timestamp_of_index)
+        end = datetime.datetime.utcfromtimestamp(end_timestamp)
+        print(f"Planning tasks for index = {index_name}, start = {start}, end = {end} ...")
+
+        tasks = planner.plan_tasks_with_intervals(
+            indexer_url,
+            index_name,
+            bq_dataset,
+            start_timestamp_of_index,
+            end_timestamp,
+            granularity
+        )
+
+        newly_planned_tasks.extend(tasks)
+
+    storage.add_tasks(newly_planned_tasks)
+
+
 
 
 def decide_end_timestamp(end_timestamp: int):
@@ -102,5 +113,10 @@ def plan_tasks_without_intervals(
 ):
     storage = TasksWithoutIntervalStorage(gcp_project_id, group)
     planner = TasksPlanner()
-    new_tasks = planner.plan_tasks_without_intervals(indexer_url, list(indices), bq_dataset)
-    storage.add_tasks(new_tasks)
+    newly_planned_tasks: List[Task] = []
+
+    for index_name in list(indices):
+        new_tasks = planner.plan_tasks_without_intervals(indexer_url, index_name, bq_dataset)
+        newly_planned_tasks.extend(new_tasks)
+
+    storage.add_tasks(newly_planned_tasks)
