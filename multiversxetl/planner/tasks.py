@@ -180,3 +180,19 @@ def count_tasks_by_status(tasks: List[Task]) -> Tuple[Dict[TaskStatus, int], Dic
         tasks_by_loading_status[task.loading_status] += 1
 
     return tasks_by_extraction_status, tasks_by_loading_status
+
+
+def group_tasks_by_index_name(tasks: List[Task]) -> Dict[str, List[Task]]:
+    groups: Dict[str, List[Task]] = {}
+
+    for task in tasks:
+        index_name = task.index_name
+        if index_name not in groups:
+            groups[index_name] = []
+
+        groups[index_name].append(task)
+
+    for group in groups.values():
+        group.sort(key=lambda task: task.start_timestamp or 0)
+
+    return groups

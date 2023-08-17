@@ -11,7 +11,8 @@ from multiversxetl.constants import (INDICES_WITH_INTERVALS,
 from multiversxetl.errors import UsageError
 from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
-from multiversxetl.planner.tasks import count_tasks_by_status
+from multiversxetl.planner.tasks import (Task, count_tasks_by_status,
+                                         group_tasks_by_index_name)
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -20,23 +21,34 @@ from multiversxetl.planner.tasks import count_tasks_by_status
 def inspect_tasks(gcp_project_id: str, group: str):
     storage = TasksWithIntervalStorage(gcp_project_id, group)
     tasks = storage.get_all_tasks()
-    by_extraction_status, by_loading_status = count_tasks_by_status(tasks)
 
     print(f"Tasks with interval: {len(tasks)}")
-    print("\tBy extraction status:")
-    pprint(by_extraction_status, indent=4)
-    print("\tBy loading status:")
-    pprint(by_loading_status, indent=4)
+    display_tasks(tasks)
 
     storage = TasksWithoutIntervalStorage(gcp_project_id, group)
     tasks = storage.get_all_tasks()
-    by_extraction_status, by_loading_status = count_tasks_by_status(tasks)
 
     print(f"Tasks without interval: {len(tasks)}")
-    print("\tBy extraction status:")
-    pprint(by_extraction_status, indent=4)
-    print("\tBy loading status:")
-    pprint(by_loading_status, indent=4)
+    display_tasks(tasks)
+
+
+def display_tasks(tasks: List[Task]):
+    counts_by_extraction_status, counts_by_loading_status = count_tasks_by_status(tasks)
+    tasks_by_index_name = group_tasks_by_index_name(tasks)
+
+    print("By extraction status:")
+    pprint(counts_by_extraction_status, indent=4)
+    print("By loading status:")
+    pprint(counts_by_loading_status, indent=4)
+
+    print("Details:")
+
+    for tasks in tasks_by_index_name.values():
+        for task in tasks:
+            start = datetime.datetime.utcfromtimestamp(task.start_timestamp) if task.start_timestamp else None
+            end = datetime.datetime.utcfromtimestamp(task.end_timestamp) if task.end_timestamp else None
+
+            print(f"ID = {task.id}, index = {task.index_name}, start = {start}, end = {end}, status = [{task.loading_status}, {task.extraction_status}]")
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
