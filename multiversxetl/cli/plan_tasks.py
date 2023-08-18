@@ -47,10 +47,10 @@ def plan_tasks(
     tasks_with_interval_storage = TasksWithIntervalStorage(gcp_project_id, group)
     tasks_without_interval_storage = TasksWithoutIntervalStorage(gcp_project_id, group)
 
-    newly_planned_tasks_with_interval: List[Task] = []
-    newly_planned_tasks_without_interval: List[Task] = []
-
     for i in range(num_repeats):
+        newly_planned_tasks_with_interval: List[Task] = []
+        newly_planned_tasks_without_interval: List[Task] = []
+
         # Handle indices with intervals
         for index_name in indices_with_intervals:
             # Each index has its own start timestamp (generally speaking, they will be the same)
