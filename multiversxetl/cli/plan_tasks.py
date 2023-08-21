@@ -54,7 +54,7 @@ def plan_tasks(
         # Handle indices with intervals
         for index_name in indices_with_intervals:
             # Each index has its own start timestamp (generally speaking, they will be the same)
-            start_timestamp = decide_start_timestamp(tasks_with_interval_storage, index_name, initial_start_timestamp if i == 0 else None)
+            start_timestamp = decide_start_timestamp(existing_tasks_with_interval, index_name, initial_start_timestamp if i == 0 else None)
             # End timestamp is shared among all indices
             end_timestamp = decide_end_timestamp(initial_end_timestamp if i == 0 else None)
 
@@ -82,11 +82,14 @@ def plan_tasks(
         time.sleep(sleep_between_repeats)
 
 
-def decide_start_timestamp(storage: TasksStorage, index_name: str, explicit_start_timestamp: Optional[int]) -> int:
+def decide_start_timestamp(existing_tasks: List[Task], index_name: str, explicit_start_timestamp: Optional[int]) -> int:
     if explicit_start_timestamp:
         return explicit_start_timestamp
 
-    latest_task = storage.find_latest_task(index_name)
+    sorted_tasks = sorted(existing_tasks, key=lambda task: task.end_timestamp or 0, reverse=True)
+    filtered_tasks = [task for task in sorted_tasks if task.index_name == index_name]
+    latest_task = filtered_tasks[0] if filtered_tasks else None
+
     if not latest_task:
         raise UsageError(f"Cannot find any previous task for index = {index_name}. Please specify a start timestamp explicitly.")
 

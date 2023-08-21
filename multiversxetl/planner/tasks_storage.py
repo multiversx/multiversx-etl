@@ -85,23 +85,6 @@ class TasksStorage:
         task_ref.update(partial_update)
         return task
 
-    def find_latest_task(self, index_name: str) -> Optional[Task]:
-        index_name_is = FieldFilter("index_name", "==", index_name)
-        query = self.db.collection(self.collection).where(filter=index_name_is)  # type: ignore
-        stream = query.stream()  # type: ignore
-        records = list(stream)
-
-        if len(records) == 0:
-            return None
-
-        records.sort(key=lambda record: record.get("end_timestamp"), reverse=True)
-        snapshot = records[0]
-        data = snapshot.to_dict()
-        assert data is not None
-
-        task = Task.from_dict(data)
-        return task
-
 
 class TasksWithIntervalStorage(TasksStorage):
     def __init__(self, project_id: str, group: str):
