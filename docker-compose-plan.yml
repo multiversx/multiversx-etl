@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  multiversx-etl-plan-tasks:
+    ulimits:
+      nproc: 65535
+    image: multiversx-etl:latest
+    container_name: multiversx-etl-plan-tasks
+    volumes:
+      - ${WORKSPACE}:/workspace
+    environment:
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GROUP=${GROUP}
+      - INDEXER_URL=${INDEXER_URL}
+      - BQ_DATASET=${BQ_DATASET}
+      - START_TIMESTAMP=${START_TIMESTAMP}
+      - SLEEP_INTERVAL=${SLEEP_INTERVAL}
+    entrypoint:
+      [
+        "python3.10",
+        "-m",
+        "multiversxetl",
+        "plan-tasks",
+        "--gcp-project-id",
+        "${GCP_PROJECT_ID}",
+        "--workspace",
+        "/workspace",
+        "--group",
+        "${GROUP}",
+        "--indexer-url",
+        "${INDEXER_URL}",
+        "--bq-dataset",
+        "${BQ_DATASET}",
+        "--start-timestamp",
+        "${START_TIMESTAMP}",
+        "--sleep-interval",
+        "${SLEEP_INTERVAL}"
+      ]
