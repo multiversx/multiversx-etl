@@ -2,6 +2,8 @@
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
+from multiversxetl.constants import SECONDS_IN_DAY
+
 
 class TaskStatus(Enum):
     """
@@ -42,6 +44,7 @@ class Task:
         self.loading_status: TaskStatus = TaskStatus.PENDING
         self.loading_worker_id: Optional[str] = None
         self.loading_outcome: str = ""
+        self.loading_finished_on: Optional[int] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]):
@@ -136,9 +139,10 @@ class Task:
             "loading_outcome": self.loading_outcome
         }
 
-    def update_on_loading_finished(self, outcome: str) -> Dict[str, Any]:
+    def update_on_loading_finished(self, outcome: str, now: int) -> Dict[str, Any]:
         self.loading_status = TaskStatus.FINISHED
         self.loading_outcome = outcome
+        self.loading_finished_on = now
 
         return {
             "loading_status": self.loading_status.value,
@@ -150,6 +154,9 @@ class Task:
 
     def get_pretty_name(self) -> str:
         return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}"
+
+    def is_finished_long_time_ago(self, now: int):
+        return self.loading_finished_on is not None and self.loading_finished_on < now - SECONDS_IN_DAY
 
 
 def group_tasks_by_status(tasks: List[Task]) -> Tuple[Dict[TaskStatus, List[Task]], Dict[TaskStatus, List[Task]]]:

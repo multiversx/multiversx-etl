@@ -48,6 +48,10 @@ def plan_tasks(
     tasks_without_interval_storage = TasksWithoutIntervalStorage(gcp_project_id, group)
 
     for i in range(num_repeats):
+        now = int(datetime.datetime.utcnow().timestamp())
+        existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
+        existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
+
         newly_planned_tasks_with_interval: List[Task] = []
         newly_planned_tasks_without_interval: List[Task] = []
 
@@ -77,6 +81,15 @@ def plan_tasks(
         # Store the newly planned tasks
         tasks_with_interval_storage.add_tasks(newly_planned_tasks_with_interval)
         tasks_without_interval_storage.add_tasks(newly_planned_tasks_without_interval)
+
+        # Cleanup old tasks
+        for task in existing_tasks_with_interval:
+            if task.is_finished_long_time_ago(now):
+                tasks_with_interval_storage.delete_task(task.id)
+
+        for task in existing_tasks_without_interval:
+            if task.is_finished_long_time_ago(now):
+                tasks_without_interval_storage.delete_task(task.id)
 
         logging.info(f"Sleeping for {sleep_between_repeats} seconds...")
         time.sleep(sleep_between_repeats)

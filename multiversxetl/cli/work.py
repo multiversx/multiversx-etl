@@ -1,3 +1,4 @@
+import datetime
 import logging
 import socket
 import threading
@@ -207,7 +208,7 @@ def do_any_load_task(
         transform_job.run()
         load_job = LoadJob(gcp_project_id, file_storage, task, Path(schema_folder))
         load_job.run()
-        storage.update_task(task.id, lambda t: t.update_on_loading_finished(""))
+        storage.update_task(task.id, lambda t: t.update_on_loading_finished("", get_now()))
 
         file_storage.remove_extracted_file(task.get_pretty_name())
         file_storage.remove_transformed_file(task.get_pretty_name())
@@ -264,3 +265,7 @@ def do_continuously_in_thread(callable: Callable[[], None], sleep_between_tasks:
         time.sleep(sleep_between_tasks)
 
     logging.info(f"Thread stopped.")
+
+
+def get_now():
+    return int(datetime.datetime.utcnow().timestamp())

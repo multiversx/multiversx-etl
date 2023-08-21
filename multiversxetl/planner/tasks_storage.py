@@ -45,6 +45,10 @@ class TasksStorage:
         if num_deleted >= DELETE_CHUNK_SIZE:
             return self.delete_all_tasks()
 
+    def delete_task(self, task_id: str) -> None:
+        task_ref = self.db.collection(self.collection).document(task_id)
+        task_ref.delete()
+
     def add_tasks(self, tasks: List[Task]):
         for tasks_chunk in _split_to_chunks(tasks, INSERT_CHUNK_SIZE):
             batch: Any = self.db.batch()  # type: ignore
