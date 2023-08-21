@@ -51,12 +51,10 @@ export END_TIMESTAMP=1689920000
 Then, plan ETL tasks (will add records in a Firestore database):
 
 ```
-python3 -m multiversxetl plan-tasks-with-intervals --gcp-project-id=${GCP_PROJECT_ID} --group=${GROUP} \
+python3 -m multiversxetl plan-tasks --gcp-project-id=${GCP_PROJECT_ID} \
+    --workspace=${WORKSPACE} --group=${GROUP} \
     --indexer-url=${INDEXER_URL} --bq-dataset=${BQ_DATASET} \
-    --start-timestamp=${START_TIMESTAMP} --end-timestamp=${END_TIMESTAMP}
-
-python3 -m multiversxetl plan-tasks-without-intervals --gcp-project-id=${GCP_PROJECT_ID} --group=${GROUP} \
-    --indexer-url=${INDEXER_URL} --bq-dataset=${BQ_DATASET}
+    --initial-start-timestamp=${START_TIMESTAMP} --num-repeats=1024
 ```
 
 Inspect the tasks:

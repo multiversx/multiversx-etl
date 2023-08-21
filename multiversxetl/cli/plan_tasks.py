@@ -24,7 +24,7 @@ from multiversxetl.planner.tasks_reporter import TasksReporter
 @click.option("--indexer-url", type=str, required=True, help="The indexer URL (Elasticsearch instance).")
 @click.option("--indices", multiple=True, default=INDICES_WITH_INTERVALS + INDICES_WITHOUT_INTERVALS)
 @click.option("--bq-dataset", type=str, required=True, help="The BigQuery dataset (destination).")
-@click.option("--initial_start-timestamp", type=int, help="The start timestamp (e.g. genesis time).")
+@click.option("--initial-start-timestamp", type=int, help="The start timestamp (e.g. genesis time).")
 @click.option("--initial-end-timestamp", type=int, help="The end timestamp (e.g. a recent one).")
 @click.option("--granularity", type=int, default=SECONDS_IN_DAY, help="Task granularity, in seconds.")
 @click.option("--num-repeats", type=int, default=1, help="Number of repeats.")

@@ -50,6 +50,8 @@ class TasksStorage:
         task_ref.delete()
 
     def add_tasks(self, tasks: List[Task]):
+        logging.info(f"Adding {len(tasks)} tasks to {self.collection}...")
+
         for tasks_chunk in _split_to_chunks(tasks, INSERT_CHUNK_SIZE):
             batch: Any = self.db.batch()  # type: ignore
 
@@ -58,7 +60,7 @@ class TasksStorage:
                 batch.set(task_ref, task.to_dict())
 
             batch.commit()
-            logging.info(f"Added {len(tasks_chunk)} tasks to {self.collection}.")
+            logging.debug(f"Added {len(tasks_chunk)} tasks to {self.collection}.")
 
     def take_any_extract_task(self,
                               worker_id: str,

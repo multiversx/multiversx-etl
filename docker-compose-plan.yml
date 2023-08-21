@@ -8,13 +8,17 @@ services:
     container_name: multiversx-etl-plan-tasks
     volumes:
       - ${WORKSPACE}:/workspace
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/secrets/credentials.json
     environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
+      - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
       - GCP_PROJECT_ID=${GCP_PROJECT_ID}
       - GROUP=${GROUP}
       - INDEXER_URL=${INDEXER_URL}
       - BQ_DATASET=${BQ_DATASET}
-      - START_TIMESTAMP=${START_TIMESTAMP}
-      - SLEEP_INTERVAL=${SLEEP_INTERVAL}
+      - INITIAL_START_TIMESTAMP=${INITIAL_START_TIMESTAMP}
+      - NUM_REPEATS=${NUM_REPEATS}
+      - SLEEP_BETWEEN_REPEATS=${SLEEP_BETWEEN_REPEATS}
     entrypoint:
       [
         "python3.10",
@@ -31,8 +35,10 @@ services:
         "${INDEXER_URL}",
         "--bq-dataset",
         "${BQ_DATASET}",
-        "--start-timestamp",
-        "${START_TIMESTAMP}",
-        "--sleep-interval",
-        "${SLEEP_INTERVAL}"
+        "--initial-start-timestamp",
+        "${INITIAL_START_TIMESTAMP}",
+        "--num-repeats",
+        "${NUM_REPEATS}",
+        "--sleep-between-repeats",
+        "${SLEEP_BETWEEN_REPEATS}"
       ]

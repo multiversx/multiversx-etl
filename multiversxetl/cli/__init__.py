@@ -3,7 +3,7 @@ from typing import Any
 import click
 
 from multiversxetl.cli.checks import check_loaded_data, deduplicate_loaded_data
-from multiversxetl.cli.plan_tasks import inspect_tasks, plan_tasks
+from multiversxetl.cli.plan_tasks import plan_tasks
 from multiversxetl.cli.schema import generate_schema
 from multiversxetl.cli.work import (extract_with_intervals,
                                     extract_without_intervals,
@@ -18,7 +18,6 @@ def cli(ctx: Any):
     pass
 
 
-cli.add_command(inspect_tasks, "inspect-tasks")
 cli.add_command(plan_tasks, "plan-tasks")
 cli.add_command(extract_with_intervals, "extract-with-intervals")
 cli.add_command(extract_without_intervals, "extract-without-intervals")
