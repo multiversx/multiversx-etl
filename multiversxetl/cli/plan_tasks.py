@@ -1,7 +1,7 @@
 import datetime
 import logging
 import time
-from pprint import pprint
+from pathlib import Path
 from typing import List, Optional, Tuple
 
 import click
@@ -13,13 +13,13 @@ from multiversxetl.constants import (INDICES_WITH_INTERVALS,
 from multiversxetl.errors import UsageError
 from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
-from multiversxetl.planner.tasks import (Task, count_tasks_by_status,
-                                         group_tasks_by_index_name)
-from multiversxetl.planner.tasks_storage import TasksStorage
+from multiversxetl.planner.tasks import Task
+from multiversxetl.planner.tasks_reporter import TasksReporter
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("--gcp-project-id", type=str, required=True, help="The GCP project ID.")
+@click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix.")
 @click.option("--indexer-url", type=str, required=True, help="The indexer URL (Elasticsearch instance).")
 @click.option("--indices", multiple=True, default=INDICES_WITH_INTERVALS + INDICES_WITHOUT_INTERVALS)
@@ -31,6 +31,7 @@ from multiversxetl.planner.tasks_storage import TasksStorage
 @click.option("--sleep-between-repeats", type=int, default=SECONDS_IN_DAY, help="Time to sleep between planning sessions (repeats).")
 def plan_tasks(
     gcp_project_id: str,
+    workspace: str,
     group: str,
     indexer_url: str,
     indices: Tuple[str, ...],
@@ -42,6 +43,7 @@ def plan_tasks(
     sleep_between_repeats: int
 ):
     planner = TasksPlanner()
+    reporter = TasksReporter(Path(workspace) / group)
     indices_with_intervals = set(INDICES_WITH_INTERVALS) & set(indices)
     indices_without_intervals = set(INDICES_WITHOUT_INTERVALS) & set(indices)
     tasks_with_interval_storage = TasksWithIntervalStorage(gcp_project_id, group)
@@ -60,7 +62,7 @@ def plan_tasks(
             # Each index has its own start timestamp (generally speaking, they will be the same)
             start_timestamp = decide_start_timestamp(existing_tasks_with_interval, index_name, initial_start_timestamp if i == 0 else None)
             # End timestamp is shared among all indices
-            end_timestamp = decide_end_timestamp(initial_end_timestamp if i == 0 else None)
+            end_timestamp = decide_end_timestamp(initial_end_timestamp if i == 0 else None, now)
 
             new_tasks = planner.plan_tasks_with_intervals(
                 indexer_url,
@@ -91,6 +93,12 @@ def plan_tasks(
             if task.is_finished_long_time_ago(now):
                 tasks_without_interval_storage.delete_task(task.id)
 
+        reporter.generate_report(
+            f"after_planning_{i:08}",
+            tasks_with_interval_storage.get_all_tasks(),
+            tasks_without_interval_storage.get_all_tasks()
+        )
+
         logging.info(f"Sleeping for {sleep_between_repeats} seconds...")
         time.sleep(sleep_between_repeats)
 
@@ -111,8 +119,7 @@ def decide_start_timestamp(existing_tasks: List[Task], index_name: str, explicit
     return latest_task_end_timestamp
 
 
-def decide_end_timestamp(explicit_end_timestamp: Optional[int]):
-    now = int(datetime.datetime.utcnow().timestamp())
+def decide_end_timestamp(explicit_end_timestamp: Optional[int], now: int):
     max_end_timestamp = now - MIN_TIME_DELTA_FROM_NOW_FOR_EXTRACTION
 
     if not explicit_end_timestamp:
@@ -121,40 +128,3 @@ def decide_end_timestamp(explicit_end_timestamp: Optional[int]):
         raise UsageError(f"End timestamp {explicit_end_timestamp} is too recent. It should be at most {max_end_timestamp} (current time - {MIN_TIME_DELTA_FROM_NOW_FOR_EXTRACTION} seconds).")
 
     return explicit_end_timestamp
-
-
-@click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--gcp-project-id", type=str, help="The GCP project ID.")
-@click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix.")
-@click.option("--sleep-interval", type=int, default=SECONDS_IN_DAY, help="Time to sleep between planning sessions.")
-def inspect_tasks(gcp_project_id: str, group: str, sleep_interval: int):
-    storage = TasksWithIntervalStorage(gcp_project_id, group)
-    tasks = storage.get_all_tasks()
-
-    print(f"Tasks with interval: {len(tasks)}")
-    display_tasks(tasks)
-
-    storage = TasksWithoutIntervalStorage(gcp_project_id, group)
-    tasks = storage.get_all_tasks()
-
-    print(f"Tasks without interval: {len(tasks)}")
-    display_tasks(tasks)
-
-
-def display_tasks(tasks: List[Task]):
-    counts_by_extraction_status, counts_by_loading_status = count_tasks_by_status(tasks)
-    tasks_by_index_name = group_tasks_by_index_name(tasks)
-
-    print("By extraction status:")
-    pprint(counts_by_extraction_status, indent=4)
-    print("By loading status:")
-    pprint(counts_by_loading_status, indent=4)
-
-    print("Details:")
-
-    for tasks in tasks_by_index_name.values():
-        for task in tasks:
-            start = datetime.datetime.utcfromtimestamp(task.start_timestamp) if task.start_timestamp else None
-            end = datetime.datetime.utcfromtimestamp(task.end_timestamp) if task.end_timestamp else None
-
-            print(f"ID = {task.id}, index = {task.index_name}, start = {start}, end = {end}, status = [{task.loading_status}, {task.extraction_status}]")
