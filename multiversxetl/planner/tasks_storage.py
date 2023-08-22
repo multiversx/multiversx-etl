@@ -20,6 +20,8 @@ class TasksStorage:
         self.collection = collection
 
     def get_all_tasks(self) -> List[Task]:
+        logging.info(f"Getting all tasks from {self.collection}...")
+
         snapshots = self.db.collection(self.collection).stream()
         tasks: List[Task] = []
 
@@ -29,12 +31,16 @@ class TasksStorage:
             task = Task.from_dict(snapshot_dict)
             tasks.append(task)
 
+        logging.info(f"Got {len(tasks)} tasks from {self.collection}.")
+
         return tasks
 
     def delete_all_tasks(self) -> None:
         """
         See https://firebase.google.com/docs/firestore/manage-data/delete-data#collections.
         """
+        logging.info(f"Deleting all tasks from {self.collection}...")
+
         docs = self.db.collection(self.collection).list_documents(page_size=DELETE_CHUNK_SIZE)
         num_deleted = 0
 
@@ -46,8 +52,23 @@ class TasksStorage:
             return self.delete_all_tasks()
 
     def delete_task(self, task_id: str) -> None:
+        logging.info(f"Deleting task {task_id} from {self.collection}...")
+
         task_ref = self.db.collection(self.collection).document(task_id)
         task_ref.delete()
+
+    def delete_tasks(self, tasks: List[Task]) -> None:
+        logging.info(f"Deleting {len(tasks)} tasks from {self.collection}...")
+
+        for tasks_chunk in _split_to_chunks(tasks, DELETE_CHUNK_SIZE):
+            batch: Any = self.db.batch()
+
+            for task in tasks_chunk:
+                task_ref = self.db.collection(self.collection).document(task.id)
+                batch.delete(task_ref)
+
+            batch.commit()
+            logging.debug(f"Deleted {len(tasks_chunk)} tasks from {self.collection}.")
 
     def add_tasks(self, tasks: List[Task]):
         logging.info(f"Adding {len(tasks)} tasks to {self.collection}...")

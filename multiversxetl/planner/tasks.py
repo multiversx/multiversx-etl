@@ -158,6 +158,29 @@ class Task:
     def is_finished_long_time_ago(self, now: int):
         return self.loading_finished_on is not None and self.loading_finished_on < now - SECONDS_IN_DAY
 
+    def __eq__(self, other: Any):
+        return self.id == other.id
+
+    def is_duplicate_of(self, other: "Task"):
+        if self.id == other.id:
+            return False
+
+        has_same_status = self.has_same_status_as(other)
+        has_same_payload = self.has_same_payload_as(other)
+
+        return has_same_status and has_same_payload
+
+    def has_same_status_as(self, other: "Task"):
+        return (self.extraction_status == other.extraction_status
+                and self.loading_status == other.loading_status)
+
+    def has_same_payload_as(self, other: "Task"):
+        return (self.index_name == other.index_name
+                and self.indexer_url == other.indexer_url
+                and self.bq_dataset == other.bq_dataset
+                and self.start_timestamp == other.start_timestamp
+                and self.end_timestamp == other.end_timestamp)
+
 
 def group_tasks_by_status(tasks: List[Task]) -> Tuple[Dict[TaskStatus, List[Task]], Dict[TaskStatus, List[Task]]]:
     tasks_by_extraction_status: Dict[TaskStatus, List[Task]] = {}
@@ -203,3 +226,32 @@ def group_tasks_by_index_name(tasks: List[Task]) -> Dict[str, List[Task]]:
         group.sort(key=lambda task: task.start_timestamp or 0)
 
     return groups
+
+
+def exclude_tasks_duplicates_within(tasks: List[Task]) -> List[Task]:
+    filtered_tasks: List[Task] = []
+
+    for i, task in enumerate(tasks):
+        if not any_task_duplicate(task, tasks[:i]):
+            filtered_tasks.append(task)
+
+    return filtered_tasks
+
+
+def exclude_tasks_duplicates_against(tasks_to_filter: List[Task], maybe_tasks_duplicates: List[Task]) -> List[Task]:
+    return [task_i for task_i in tasks_to_filter if not any_task_duplicate(task_i, maybe_tasks_duplicates)]
+
+
+def find_tasks_duplicates_within(tasks: List[Task]) -> List[Task]:
+    duplicates: List[Task] = []
+
+    for i, task in enumerate(tasks):
+        if any_task_duplicate(task, tasks[:i]):
+            duplicates.append(task)
+
+    print("Duplicates within:", len(duplicates))
+    return duplicates
+
+
+def any_task_duplicate(task: Task, maybe_tasks_duplicates: List[Task]) -> bool:
+    return any(task.is_duplicate_of(task_i) for task_i in maybe_tasks_duplicates)

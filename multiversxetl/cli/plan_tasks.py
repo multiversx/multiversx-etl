@@ -13,7 +13,9 @@ from multiversxetl.constants import (INDICES_WITH_INTERVALS,
 from multiversxetl.errors import UsageError
 from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
-from multiversxetl.planner.tasks import Task
+from multiversxetl.planner.tasks import (Task,
+                                         exclude_tasks_duplicates_against,
+                                         find_tasks_duplicates_within)
 from multiversxetl.planner.tasks_reporter import TasksReporter
 
 
@@ -51,6 +53,18 @@ def plan_tasks(
 
     for i in range(num_repeats):
         now = int(datetime.datetime.utcnow().timestamp())
+
+        existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
+        existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
+
+        # Remove duplicated tasks
+        tasks_to_remove = find_tasks_duplicates_within(existing_tasks_with_interval)
+        tasks_with_interval_storage.delete_tasks(tasks_to_remove)
+
+        tasks_to_remove = find_tasks_duplicates_within(existing_tasks_without_interval)
+        tasks_without_interval_storage.delete_tasks(tasks_to_remove)
+
+        # Re-fetch tasks
         existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
         existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
 
@@ -81,10 +95,16 @@ def plan_tasks(
             newly_planned_tasks_without_interval.extend(new_tasks)
 
         # Store the newly planned tasks
+        newly_planned_tasks_with_interval = exclude_tasks_duplicates_against(newly_planned_tasks_with_interval, existing_tasks_with_interval)
+        newly_planned_tasks_without_interval = exclude_tasks_duplicates_against(newly_planned_tasks_without_interval, existing_tasks_without_interval)
+
         tasks_with_interval_storage.add_tasks(newly_planned_tasks_with_interval)
         tasks_without_interval_storage.add_tasks(newly_planned_tasks_without_interval)
 
-        # Cleanup old tasks
+        # Cleanup tasks
+        existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
+        existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
+
         for task in existing_tasks_with_interval:
             if task.is_finished_long_time_ago(now):
                 tasks_with_interval_storage.delete_task(task.id)
@@ -93,10 +113,13 @@ def plan_tasks(
             if task.is_finished_long_time_ago(now):
                 tasks_without_interval_storage.delete_task(task.id)
 
+        existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
+        existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
+
         reporter.generate_report(
-            f"after_planning_{i:08}",
-            tasks_with_interval_storage.get_all_tasks(),
-            tasks_without_interval_storage.get_all_tasks()
+            f"after_planning_{i:08}_{now}",
+            existing_tasks_with_interval,
+            existing_tasks_without_interval
         )
 
         logging.info(f"Sleeping for {sleep_between_repeats} seconds...")
