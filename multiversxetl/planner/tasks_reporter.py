@@ -1,5 +1,6 @@
 
 import datetime
+import logging
 import pprint
 from io import TextIOWrapper
 from pathlib import Path
@@ -14,6 +15,8 @@ class TasksReporter:
         self.output_folder = output_folder
 
     def generate_report(self, name: str, tasks_with_intervals: List[Task], tasks_without_intervals: List[Task]):
+        logging.info(f"Generate report for {name}...")
+
         self.output_folder.mkdir(parents=True, exist_ok=True)
 
         with open(self.output_folder / f"report_tasks_with_intervals_summary_{name}.txt", "w") as file:

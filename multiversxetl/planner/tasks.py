@@ -1,4 +1,5 @@
 
+import sys
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -170,6 +171,21 @@ class Task:
 
         return has_same_status and has_same_payload
 
+    def includes_other(self, other: "Task"):
+        if self.id == other.id:
+            return False
+
+        has_same_status = self.has_same_status_as(other)
+        has_same_payload = self.has_same_payload_as(other)
+        includes_start = (self.start_timestamp or 0) <= (other.start_timestamp or 0)
+        includes_end = (self.end_timestamp or sys.maxsize) >= (other.end_timestamp or sys.maxsize)
+        includes_interval = includes_start and includes_end
+
+        return has_same_status and has_same_payload and includes_interval
+
+    def is_included_within_other(self, other: "Task"):
+        return other.includes_other(self)
+
     def has_same_status_as(self, other: "Task"):
         return (self.extraction_status == other.extraction_status
                 and self.loading_status == other.loading_status)
@@ -228,30 +244,19 @@ def group_tasks_by_index_name(tasks: List[Task]) -> Dict[str, List[Task]]:
     return groups
 
 
-def exclude_tasks_duplicates_within(tasks: List[Task]) -> List[Task]:
-    filtered_tasks: List[Task] = []
+def exclude_redundant_task_against(tasks_to_filter: List[Task], maybe_including_tasks: List[Task]) -> List[Task]:
+    return [task_i for task_i in tasks_to_filter if not any_including_task(task_i, maybe_including_tasks)]
+
+
+def find_redundant_tasks(tasks: List[Task]) -> List[Task]:
+    redundant_tasks: List[Task] = []
 
     for i, task in enumerate(tasks):
-        if not any_task_duplicate(task, tasks[:i]):
-            filtered_tasks.append(task)
+        if any_including_task(task, tasks[:i]):
+            redundant_tasks.append(task)
 
-    return filtered_tasks
-
-
-def exclude_tasks_duplicates_against(tasks_to_filter: List[Task], maybe_tasks_duplicates: List[Task]) -> List[Task]:
-    return [task_i for task_i in tasks_to_filter if not any_task_duplicate(task_i, maybe_tasks_duplicates)]
+    return redundant_tasks
 
 
-def find_tasks_duplicates_within(tasks: List[Task]) -> List[Task]:
-    duplicates: List[Task] = []
-
-    for i, task in enumerate(tasks):
-        if any_task_duplicate(task, tasks[:i]):
-            duplicates.append(task)
-
-    print("Duplicates within:", len(duplicates))
-    return duplicates
-
-
-def any_task_duplicate(task: Task, maybe_tasks_duplicates: List[Task]) -> bool:
-    return any(task.is_duplicate_of(task_i) for task_i in maybe_tasks_duplicates)
+def any_including_task(task: Task, maybe_including_tasks: List[Task]) -> bool:
+    return any(task.is_included_within_other(task_i) for task_i in maybe_including_tasks)
