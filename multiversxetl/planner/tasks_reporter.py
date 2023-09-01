@@ -45,10 +45,15 @@ class TasksReporter:
 
         for tasks in tasks_by_index_name.values():
             for task in tasks:
-                start = datetime.datetime.utcfromtimestamp(task.start_timestamp) if task.start_timestamp else None
-                end = datetime.datetime.utcfromtimestamp(task.end_timestamp) if task.end_timestamp else None
                 loading_status = task.loading_status.value
                 extraction_status = task.extraction_status.value
 
-                line = f"ID = {task.id}, index = {task.index_name}, start = {start}, end = {end}, status = [{loading_status}, {extraction_status}]"
+                if task.is_time_bound():
+                    assert task.start_timestamp is not None
+                    assert task.end_timestamp is not None
+                    start = datetime.datetime.utcfromtimestamp(task.start_timestamp)
+                    end = datetime.datetime.utcfromtimestamp(task.end_timestamp)
+                    line = f"ID = {task.id}, index = {task.index_name}, start = {start}, end = {end}, interval = {task.get_interval_duration()}, status = [{loading_status}, {extraction_status}]"
+                else:
+                    line = f"ID = {task.id}, index = {task.index_name}, status = [{loading_status}, {extraction_status}]"
                 print(line, file=file)

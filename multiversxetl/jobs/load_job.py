@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Any, Optional, Protocol
 
@@ -49,11 +50,7 @@ class LoadJob:
         job.result()
 
         table: Any = self.bigquery_client.get_table(table_id)
-        print(
-            "Loaded {} rows and {} columns to {}".format(
-                table.num_rows, len(table.schema), table_id
-            )
-        )
+        logging.info(f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_id}")
 
     def _get_table_id(self) -> str:
         return f"{self.task.bq_dataset}.{self.task.index_name}"

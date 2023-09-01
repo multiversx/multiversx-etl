@@ -142,7 +142,7 @@ def plan_tasks(
 
 
 def decide_start_timestamp(existing_tasks: List[Task], index_name: str, explicit_start_timestamp: Optional[int]) -> int:
-    if explicit_start_timestamp:
+    if explicit_start_timestamp is not None:
         return explicit_start_timestamp
 
     sorted_tasks = sorted(existing_tasks, key=lambda task: task.end_timestamp or 0, reverse=True)

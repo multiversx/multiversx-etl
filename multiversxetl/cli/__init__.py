@@ -8,7 +8,7 @@ from multiversxetl.cli.schema import generate_schema
 from multiversxetl.cli.work import (extract_with_intervals,
                                     extract_without_intervals,
                                     load_with_intervals,
-                                    load_without_intervals)
+                                    load_without_intervals, work_on_tasks)
 
 
 @click.group()
@@ -19,6 +19,7 @@ def cli(ctx: Any):
 
 
 cli.add_command(plan_tasks, "plan-tasks")
+cli.add_command(work_on_tasks, "work-on-tasks")
 cli.add_command(extract_with_intervals, "extract-with-intervals")
 cli.add_command(extract_without_intervals, "extract-without-intervals")
 cli.add_command(load_with_intervals, "load-with-intervals")

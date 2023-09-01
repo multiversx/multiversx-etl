@@ -23,6 +23,7 @@ class TaskStatus(Enum):
     FAILED = "failed"
 
 
+# TODO: Split into "TaskWithInterval" and "TaskWithoutInterval".
 class Task:
     def __init__(self,
                  id: str,
@@ -152,6 +153,9 @@ class Task:
 
     def is_time_bound(self) -> bool:
         return self.start_timestamp is not None and self.end_timestamp is not None
+
+    def get_interval_duration(self) -> int:
+        return (self.end_timestamp or 0) - (self.start_timestamp or 0)
 
     def get_pretty_name(self) -> str:
         return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}"

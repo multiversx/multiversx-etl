@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Protocol
 
@@ -60,7 +61,7 @@ class ExtractJob:
 
                 num_written += 1
                 if num_written % 1000 == 0:
-                    print(f"Written {num_written} records to {filename}")
+                    logging.info(f"Written {num_written} records to {filename}")
 
     def _jsonify_record(self, record: Dict[str, Any]) -> str:
         data = record["_source"]
