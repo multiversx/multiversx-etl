@@ -93,6 +93,20 @@ python3 -m multiversxetl check-loaded-data --gcp-project-id=${GCP_PROJECT_ID} --
 python3 -m multiversxetl deduplicate-loaded-data --gcp-project-id=${GCP_PROJECT_ID} --bq-dataset=${BQ_DATASET}
 ```
 
+## Docker setup
+
+Build the Docker image:
+
+```
+docker build --network host -f ./docker/Dockerfile -t multiversx-etl:latest .
+```
+
+```
+docker compose --file ./docker/docker-compose.yml --env-file ./docker/env/testnet.env \
+    --profile planner --profile worker \
+    --project-name multiversx-etl-testnet up --detach
+```
+
 ## Management (Google Cloud Console)
 
 Below are a few links useful for managing the ETL process. They are only accessible to the MultiversX team.

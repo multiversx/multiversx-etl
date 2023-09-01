@@ -16,5 +16,6 @@ USER $USERNAME
 WORKDIR /home/${USERNAME}
 
 COPY ./multiversxetl /home/${USERNAME}/app/multiversxetl
+COPY ./schema /home/${USERNAME}/app/schema
 
 ENV PYTHONPATH=/home/${USERNAME}/app

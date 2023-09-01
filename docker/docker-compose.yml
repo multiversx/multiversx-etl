@@ -1,17 +1,16 @@
 version: '3'
 
 services:
-  multiversx-etl-plan-tasks:
+  multiversx-etl-planner:
     ulimits:
       nproc: 65535
     image: multiversx-etl:latest
-    container_name: multiversx-etl-plan-tasks
+    container_name: multiversx-etl-planner
     volumes:
       - ${WORKSPACE}:/workspace
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/secrets/credentials.json
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
-
       - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
       - GCP_PROJECT_ID=${GCP_PROJECT_ID}
       - GROUP=${GROUP}
@@ -43,3 +42,38 @@ services:
         "--sleep-between-repeats",
         "${SLEEP_BETWEEN_REPEATS}"
       ]
+    profiles:
+      - planner
+
+  multiversx-etl-worker:
+    ulimits:
+      nproc: 65535
+    image: multiversx-etl:latest
+    container_name: multiversx-etl-worker
+    volumes:
+      - ${WORKSPACE}:/workspace
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/secrets/credentials.json
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
+      - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GROUP=${GROUP}
+    entrypoint:
+      [
+        "python3.10",
+        "-m",
+        "multiversxetl",
+        "work-on-tasks",
+        "--gcp-project-id",
+        "${GCP_PROJECT_ID}",
+        "--workspace",
+        "/workspace",
+        "--group",
+        "${GROUP}",
+        "--num-threads-per-job",
+        "8",
+        "--schema-folder",
+        "~/app/schema"
+      ]
+    profiles:
+      - worker
