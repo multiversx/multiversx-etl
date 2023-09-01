@@ -11,6 +11,7 @@ services:
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/secrets/credentials.json
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
+
       - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
       - GCP_PROJECT_ID=${GCP_PROJECT_ID}
       - GROUP=${GROUP}

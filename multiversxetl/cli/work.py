@@ -21,6 +21,100 @@ from multiversxetl.planner import (TasksStorage, TasksWithIntervalStorage,
 @click.option("--workspace", required=True, type=str, help="Workspace path.")
 @click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix, as workspace subfolder.")
 @click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
+@click.option("--num-threads-per-job", type=int, default=1, help="Number of threads.")
+@click.option("--index-name", type=str, help="Filter by Elasticsearch index name (if omitted, all indices are extracted & loaded).")
+@click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
+@click.option("--schema-folder", required=True, type=str, help="Folder with schema files.")
+def work_on_tasks(
+    gcp_project_id: str,
+    workspace: str,
+    group: str,
+    worker_id: str,
+    num_threads_per_job: int,
+    index_name: Optional[str],
+    sleep_between_tasks: int,
+    schema_folder: str
+):
+    should_stop: threading.Event = threading.Event()
+    tasks_with_interval_storage = TasksWithIntervalStorage(gcp_project_id, group)
+    tasks_without_interval_storage = TasksWithoutIntervalStorage(gcp_project_id, group)
+
+    def job_extract_tasks_with_interval():
+        do_continuously(
+            should_stop,
+            lambda: do_any_extract_task(gcp_project_id, workspace, group, tasks_with_interval_storage, worker_id, index_name),
+            sleep_between_tasks,
+            num_threads_per_job,
+            thread_name_prefix="extract_tasks_with_interval"
+        )
+
+    def job_extract_tasks_without_interval():
+        do_continuously(
+            should_stop,
+            lambda: do_any_extract_task(gcp_project_id, workspace, group, tasks_without_interval_storage, worker_id, index_name),
+            sleep_between_tasks,
+            num_threads_per_job,
+            thread_name_prefix="extract_tasks_without_interval"
+        )
+
+    def job_load_tasks_with_interval():
+        do_continuously(
+            should_stop,
+            lambda: do_any_load_task(gcp_project_id, workspace, group, tasks_with_interval_storage, worker_id, index_name, schema_folder),
+            sleep_between_tasks,
+            num_threads_per_job,
+            thread_name_prefix="load_tasks_with_interval"
+        )
+
+    def job_load_tasks_without_interval():
+        do_continuously(
+            should_stop,
+            lambda: do_any_load_task(gcp_project_id, workspace, group, tasks_without_interval_storage, worker_id, index_name, schema_folder),
+            sleep_between_tasks,
+            num_threads_per_job,
+            thread_name_prefix="load_tasks_without_interval"
+        )
+
+    jobs: List[threading.Thread] = []
+
+    job = threading.Thread(
+        name=f"job_extract_tasks_with_interval",
+        target=job_extract_tasks_with_interval
+    )
+    job.start()
+    jobs.append(job)
+
+    job = threading.Thread(
+        name=f"job_extract_tasks_without_interval",
+        target=job_extract_tasks_without_interval
+    )
+    job.start()
+    jobs.append(job)
+
+    job = threading.Thread(
+        name=f"job_load_tasks_with_interval",
+        target=job_load_tasks_with_interval
+    )
+    job.start()
+    jobs.append(job)
+
+    job = threading.Thread(
+        name=f"job_load_tasks_without_interval",
+        target=job_load_tasks_without_interval
+    )
+    job.start()
+    jobs.append(job)
+
+    for job in jobs:
+        if job.is_alive():
+            job.join()
+
+
+@click.command(context_settings=dict(help_option_names=["-h", "--help"]))
+@click.option("--gcp-project-id", required=True, type=str, help="The GCP project ID.")
+@click.option("--workspace", required=True, type=str, help="Workspace path.")
+@click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix, as workspace subfolder.")
+@click.option("--worker-id", type=str, help="Worker ID (e.g. computer name).")
 @click.option("--num-threads", type=int, default=1, help="Number of threads.")
 @click.option("--index-name", type=str, help="Filter by Elasticsearch index name (if omitted, all indices are extracted).")
 @click.option("--sleep-between-tasks", type=int, default=3, help="Time to sleep between tasks (in seconds).")
@@ -39,10 +133,11 @@ def extract_with_intervals(
 
     Example of **time-stamped indices**: blocks, miniblocks, transactions etc.
     """
-
+    should_stop = threading.Event()
     storage = TasksWithIntervalStorage(gcp_project_id, group)
 
     do_continuously(
+        should_stop,
         lambda: do_any_extract_task(gcp_project_id, workspace, group, storage, worker_id, index_name),
         sleep_between_tasks,
         num_threads
@@ -72,10 +167,11 @@ def extract_without_intervals(
 
     Example of **not-time-stamped indices**: accounts, validators, delegators etc.
     """
-
+    should_stop = threading.Event()
     storage = TasksWithoutIntervalStorage(gcp_project_id, group)
 
     do_continuously(
+        should_stop,
         lambda: do_any_extract_task(gcp_project_id, workspace, group, storage, worker_id, index_name),
         sleep_between_tasks,
         num_threads
@@ -139,10 +235,11 @@ def load_with_intervals(
 
     Before loading, the data suffers slight transformations (when needed).
     """
-
+    should_stop = threading.Event()
     storage = TasksWithIntervalStorage(gcp_project_id, group)
 
     do_continuously(
+        should_stop,
         lambda: do_any_load_task(gcp_project_id, workspace, group, storage, worker_id, index_name, schema_folder),
         sleep_between_tasks,
         num_threads
@@ -174,9 +271,11 @@ def load_without_intervals(
 
     Before loading, the data suffers slight transformations (when needed).
     """
+    should_stop = threading.Event()
     storage = TasksWithoutIntervalStorage(gcp_project_id, group)
 
     do_continuously(
+        should_stop,
         lambda: do_any_load_task(gcp_project_id, workspace, group, storage, worker_id, index_name, schema_folder),
         sleep_between_tasks,
         num_threads
@@ -206,7 +305,7 @@ def do_any_load_task(
 
         transform_job = TransformJob(file_storage, task)
         transform_job.run()
-        load_job = LoadJob(gcp_project_id, file_storage, task, Path(schema_folder))
+        load_job = LoadJob(gcp_project_id, file_storage, task, Path(schema_folder).expanduser().resolve())
         load_job.run()
         storage.update_task(task.id, lambda t: t.update_on_loading_finished("", get_now()))
 
@@ -220,16 +319,21 @@ def do_any_load_task(
         raise
 
 
-def do_continuously(callable: Callable[[], None], sleep_between_tasks: int, num_threads: int, thread_start_delay: int = 1):
+def do_continuously(
+        should_stop_all_threads: threading.Event,
+        callable: Callable[[], None],
+        sleep_between_tasks: int,
+        num_threads: int,
+        thread_start_delay: int = 1,
+        thread_name_prefix: str = "thread"):
     threads: List[threading.Thread] = []
-    should_stop_all_threads = threading.Event()
 
     for i in range(num_threads):
         # Start threads with a small delay between them.
         time.sleep(thread_start_delay)
 
         thread = threading.Thread(
-            name=f"Thread-{i}",
+            name=f"{thread_name_prefix}-{i}",
             target=do_continuously_in_thread,
             args=[callable, sleep_between_tasks, should_stop_all_threads]
         )
@@ -254,6 +358,7 @@ def do_continuously_in_thread(callable: Callable[[], None], sleep_between_tasks:
         except TransientError as error:
             logging.info(f"Transient error, will try again later: {error}")
         except:
+            logging.exception("Unexpected error, thread will stop.")
             should_stop.set()
             raise
 
