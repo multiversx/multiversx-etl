@@ -3,7 +3,7 @@ import sys
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
-from multiversxetl.constants import SECONDS_IN_FIVE_MINUTES
+from multiversxetl.constants import SECONDS_IN_MINUTE
 
 
 class TaskStatus(Enum):
@@ -96,6 +96,9 @@ class Task:
     def is_loading_pending(self):
         return self.loading_status == TaskStatus.PENDING
 
+    def is_loading_finished(self):
+        return self.loading_status == TaskStatus.FINISHED
+
     def update_on_extraction_started(self, worker_id: str) -> Dict[str, Any]:
         self.extraction_worker_id = worker_id
         self.extraction_status = TaskStatus.STARTED
@@ -148,7 +151,8 @@ class Task:
 
         return {
             "loading_status": self.loading_status.value,
-            "loading_outcome": self.loading_outcome
+            "loading_outcome": self.loading_outcome,
+            "loading_finished_on": self.loading_finished_on
         }
 
     def is_time_bound(self) -> bool:
@@ -161,7 +165,7 @@ class Task:
         return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}"
 
     def is_finished_some_time_ago(self, now: int):
-        return self.loading_finished_on is not None and self.loading_finished_on < now - SECONDS_IN_FIVE_MINUTES
+        return self.loading_finished_on is not None and self.loading_finished_on < now - SECONDS_IN_MINUTE
 
     def __eq__(self, other: Any):
         return self.id == other.id
@@ -242,10 +246,40 @@ def group_tasks_by_index_name(tasks: List[Task]) -> Dict[str, List[Task]]:
 
         groups[index_name].append(task)
 
+    return groups
+
+
+def ungroup_tasks(groups: Dict[str, List[Task]]):
+    return [task for group in groups.values() for task in group]
+
+
+def sort_tasks_within_groups_by_start_timestamp(groups: Dict[str, List[Task]]):
     for group in groups.values():
         group.sort(key=lambda task: task.start_timestamp or 0)
 
-    return groups
+
+def sort_tasks_within_groups_by_end_timestamp(groups: Dict[str, List[Task]]):
+    for group in groups.values():
+        group.sort(key=lambda task: task.end_timestamp or 0)
+
+
+def exclude_tasks_which_are_latest_for_their_index(tasks: List[Task]) -> List[Task]:
+    groups = group_tasks_by_index_name(tasks)
+    sort_tasks_within_groups_by_end_timestamp(groups)
+
+    for group in groups.values():
+        del group[-1]
+
+    tasks = ungroup_tasks(groups)
+    return tasks
+
+
+def get_latest_task_for_index(tasks: List[Task], index_name: str) -> Optional[Task]:
+    sorted_tasks = sorted(tasks, key=lambda task: task.end_timestamp or 0, reverse=True)
+    filtered_tasks = [task for task in sorted_tasks if task.index_name == index_name]
+    latest_task_for_index = filtered_tasks[0] if filtered_tasks else None
+
+    return latest_task_for_index
 
 
 def exclude_redundant_task_against(tasks_to_filter: List[Task], maybe_including_tasks: List[Task]) -> List[Task]:

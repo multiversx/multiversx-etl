@@ -9,7 +9,8 @@ from multiversxetl.errors import UsageError
 from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 from multiversxetl.planner.tasks import (Task, exclude_redundant_task_against,
-                                         find_redundant_tasks)
+                                         find_redundant_tasks,
+                                         get_latest_task_for_index)
 
 
 def plan_tasks(
@@ -95,14 +96,12 @@ def decide_start_timestamp(existing_tasks: List[Task], index_name: str, explicit
     if explicit_start_timestamp is not None:
         return explicit_start_timestamp
 
-    sorted_tasks = sorted(existing_tasks, key=lambda task: task.end_timestamp or 0, reverse=True)
-    filtered_tasks = [task for task in sorted_tasks if task.index_name == index_name]
-    latest_task = filtered_tasks[0] if filtered_tasks else None
+    latest_task_for_index = get_latest_task_for_index(existing_tasks, index_name)
 
-    if not latest_task:
+    if not latest_task_for_index:
         raise UsageError(f"Cannot find any previous task for index = {index_name}. Please specify a start timestamp explicitly.")
 
-    latest_task_end_timestamp = latest_task.end_timestamp
+    latest_task_end_timestamp = latest_task_for_index.end_timestamp
     assert latest_task_end_timestamp is not None
     return latest_task_end_timestamp
 

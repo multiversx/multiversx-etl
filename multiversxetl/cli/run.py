@@ -12,6 +12,8 @@ from multiversxetl.cli.plan_tasks import plan_tasks
 from multiversxetl.cli.work import work_on_tasks
 from multiversxetl.constants import (INDICES_WITH_INTERVALS,
                                      INDICES_WITHOUT_INTERVALS, SECONDS_IN_DAY)
+from multiversxetl.planner.tasks import \
+    exclude_tasks_which_are_latest_for_their_index
 from multiversxetl.planner.tasks_reporter import TasksReporter
 from multiversxetl.planner.tasks_storage import (TasksStorage,
                                                  TasksWithIntervalStorage,
@@ -63,11 +65,15 @@ def run(
 
     tasks_with_interval_storage = TasksWithIntervalStorage(gcp_project_id, group)
     tasks_without_interval_storage = TasksWithoutIntervalStorage(gcp_project_id, group)
-    reports_folder_parent = Path(workspace) / group / "reports" / f"run_{_timestamp_to_filename_friendly_time(start_time_global)}"
+
+    reports_folder_parent_name = f"run_{_timestamp_to_filename_friendly_time(start_time_global)}"
+    reports_folder_parent = Path(workspace) / group / "reports" / reports_folder_parent_name
+    reports_folder_parent.mkdir(parents=True, exist_ok=True)
 
     for i in range(num_global_iterations):
         start_time_of_iteration = _get_now()
         reports_folder = reports_folder_parent / f"iteration_{i:08}_{start_time_of_iteration}"
+        reports_folder.mkdir(parents=True, exist_ok=True)
 
         _run_iteration(
             tasks_with_interval_storage,
@@ -141,7 +147,8 @@ def _run_iteration(
             "after_planning",
             reporter,
             tasks_with_interval_storage,
-            tasks_without_interval_storage
+            tasks_without_interval_storage,
+            with_details=True
         )
 
     if not skip_working:
@@ -164,17 +171,11 @@ def _run_iteration(
                 f"after_batch_{i:08}",
                 reporter,
                 tasks_with_interval_storage,
-                tasks_without_interval_storage
+                tasks_without_interval_storage,
+                with_details=False
             )
 
             _cleanup_finished_tasks(
-                tasks_with_interval_storage,
-                tasks_without_interval_storage
-            )
-
-            _report_tasks(
-                f"after_batch_{i:08}_after_cleanup",
-                reporter,
                 tasks_with_interval_storage,
                 tasks_without_interval_storage
             )
@@ -194,6 +195,7 @@ def _report_tasks(
     reporter: TasksReporter,
     tasks_with_interval_storage: TasksStorage,
     tasks_without_interval_storage: TasksStorage,
+    with_details: bool
 ):
     now = _get_now()
     existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
@@ -202,7 +204,9 @@ def _report_tasks(
     reporter.generate_report(
         f"{name}_{now}",
         existing_tasks_with_interval,
-        existing_tasks_without_interval
+        existing_tasks_without_interval,
+        with_summary=True,
+        with_details=with_details
     )
 
 
@@ -210,20 +214,18 @@ def _cleanup_finished_tasks(
     tasks_with_interval_storage: TasksStorage,
     tasks_without_interval_storage: TasksStorage,
 ):
-    now = _get_now()
-
+    logging.info(f"Cleanup old tasks...")
     logging.info(f"Re-fetch tasks (in order to cleanup old tasks)...")
 
     existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
+    existing_tasks_with_interval = exclude_tasks_which_are_latest_for_their_index(existing_tasks_with_interval)
+    existing_tasks_with_interval_to_remove = [task for task in existing_tasks_with_interval if task.is_loading_finished()]
+
     existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
+    existing_tasks_without_interval_to_remove = [task for task in existing_tasks_without_interval if task.is_loading_finished()]
 
-    logging.info(f"Cleanup old tasks...")
-
-    tasks_to_remove = [task for task in existing_tasks_with_interval if task.is_finished_some_time_ago(now)]
-    tasks_with_interval_storage.delete_tasks(tasks_to_remove)
-
-    tasks_to_remove = [task for task in existing_tasks_without_interval if task.is_finished_some_time_ago(now)]
-    tasks_without_interval_storage.delete_tasks(tasks_to_remove)
+    tasks_with_interval_storage.delete_tasks(existing_tasks_with_interval_to_remove)
+    tasks_without_interval_storage.delete_tasks(existing_tasks_without_interval_to_remove)
 
 
 def _get_now():
