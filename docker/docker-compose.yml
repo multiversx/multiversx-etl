@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-  multiversx-etl-planner:
+  multiversx-etl-run:
     ulimits:
       nproc: 65535
     image: multiversx-etl:latest
-    container_name: multiversx-etl-planner
+    container_name: multiversx-etl-run
     volumes:
       - ${WORKSPACE}:/workspace
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/secrets/credentials.json
@@ -17,14 +17,12 @@ services:
       - INDEXER_URL=${INDEXER_URL}
       - BQ_DATASET=${BQ_DATASET}
       - INITIAL_START_TIMESTAMP=${INITIAL_START_TIMESTAMP}
-      - NUM_REPEATS=${NUM_REPEATS}
-      - SLEEP_BETWEEN_REPEATS=${SLEEP_BETWEEN_REPEATS}
     entrypoint:
       [
         "python3.10",
         "-m",
         "multiversxetl",
-        "plan-tasks",
+        "run",
         "--gcp-project-id",
         "${GCP_PROJECT_ID}",
         "--workspace",
@@ -37,43 +35,14 @@ services:
         "${BQ_DATASET}",
         "--initial-start-timestamp",
         "${INITIAL_START_TIMESTAMP}",
-        "--num-repeats",
-        "${NUM_REPEATS}",
-        "--sleep-between-repeats",
-        "${SLEEP_BETWEEN_REPEATS}"
-      ]
-    profiles:
-      - planner
-
-  multiversx-etl-worker:
-    ulimits:
-      nproc: 65535
-    image: multiversx-etl:latest
-    container_name: multiversx-etl-worker
-    volumes:
-      - ${WORKSPACE}:/workspace
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/secrets/credentials.json
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
-      - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
-      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
-      - GROUP=${GROUP}
-    entrypoint:
-      [
-        "python3.10",
-        "-m",
-        "multiversxetl",
-        "work-on-tasks",
-        "--gcp-project-id",
-        "${GCP_PROJECT_ID}",
-        "--workspace",
-        "/workspace",
-        "--group",
-        "${GROUP}",
-        "--num-threads-per-job",
+        "--num-threads-per-work-job",
         "8",
         "--schema-folder",
-        "~/app/schema"
+        "~/app/schema",
+        "--num-units-per-work-batch",
+        "100",
+        "--skip-planning",
+        "--skip-deduplication",
+        "--min-delay-between-global-iterations",
+        "600"
       ]
-    profiles:
-      - worker
