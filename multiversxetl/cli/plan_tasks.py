@@ -22,6 +22,8 @@ def plan_tasks(
     initial_end_timestamp: Optional[int],
     granularity: int
 ):
+    logging.info(f"Plan tasks, group = {group}, indexer = {indexer_url}, dataset = {bq_dataset}, initial start time = {initial_start_timestamp}, initial end time = ${initial_end_timestamp}, granularity = {granularity} ...")
+
     planner = TasksPlanner()
     indices_with_intervals = set(INDICES_WITH_INTERVALS) & set(indices)
     indices_without_intervals = set(INDICES_WITHOUT_INTERVALS) & set(indices)

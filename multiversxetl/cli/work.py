@@ -26,13 +26,19 @@ def work_on_tasks(
     tasks_with_interval_storage: TasksStorage,
     tasks_without_interval_storage: TasksStorage,
 ) -> bool:
-    work_units_counter = AtomicCounter(num_work_units)
+    work_units_counter = AtomicCounter(upper_checkpoint_value=num_work_units)
     is_work_enough_for_now = work_units_counter.has_reached_upper_checkpoint
     on_error_happened: threading.Event = threading.Event()
 
     def job_extract_tasks_with_interval():
         do_until(
-            lambda: do_any_extract_task(gcp_project_id, workspace, group, tasks_with_interval_storage, worker_id, index_name),
+            lambda: do_any_extract_task(
+                gcp_project_id,
+                workspace, group,
+                tasks_with_interval_storage,
+                worker_id,
+                index_name
+            ),
             is_work_enough_for_now,
             on_error_happened,
             work_units_counter,
@@ -43,7 +49,14 @@ def work_on_tasks(
 
     def job_extract_tasks_without_interval():
         do_until(
-            lambda: do_any_extract_task(gcp_project_id, workspace, group, tasks_without_interval_storage, worker_id, index_name),
+            lambda: do_any_extract_task(
+                gcp_project_id,
+                workspace,
+                group,
+                tasks_without_interval_storage,
+                worker_id,
+                index_name
+            ),
             is_work_enough_for_now,
             on_error_happened,
             work_units_counter,
@@ -54,7 +67,15 @@ def work_on_tasks(
 
     def job_load_tasks_with_interval():
         do_until(
-            lambda: do_any_load_task(gcp_project_id, workspace, group, tasks_with_interval_storage, worker_id, index_name, schema_folder),
+            lambda: do_any_load_task(
+                gcp_project_id,
+                workspace,
+                group,
+                tasks_with_interval_storage,
+                worker_id,
+                index_name,
+                schema_folder
+            ),
             is_work_enough_for_now,
             on_error_happened,
             work_units_counter,
@@ -65,7 +86,15 @@ def work_on_tasks(
 
     def job_load_tasks_without_interval():
         do_until(
-            lambda: do_any_load_task(gcp_project_id, workspace, group, tasks_without_interval_storage, worker_id, index_name, schema_folder),
+            lambda: do_any_load_task(
+                gcp_project_id,
+                workspace,
+                group,
+                tasks_without_interval_storage,
+                worker_id,
+                index_name,
+                schema_folder
+            ),
             is_work_enough_for_now,
             on_error_happened,
             work_units_counter,
@@ -108,7 +137,10 @@ def work_on_tasks(
         if job.is_alive():
             job.join()
 
-    # True if more work might be necessary in the future.
+    if on_error_happened.is_set():
+        raise Exception("Error happened during work.")
+
+    # True if more work might be necessary in the future (on any job).
     return is_work_enough_for_now.is_set() or on_error_happened.is_set()
 
 

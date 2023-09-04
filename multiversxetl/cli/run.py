@@ -7,8 +7,8 @@ from typing import Optional, Tuple
 
 import click
 
-from multiversxetl.cli import plan_tasks
 from multiversxetl.cli.checks import deduplicate_loaded_data
+from multiversxetl.cli.plan_tasks import plan_tasks
 from multiversxetl.cli.work import work_on_tasks
 from multiversxetl.constants import (INDICES_WITH_INTERVALS,
                                      INDICES_WITHOUT_INTERVALS, SECONDS_IN_DAY)
@@ -63,7 +63,7 @@ def run(
 
     tasks_with_interval_storage = TasksWithIntervalStorage(gcp_project_id, group)
     tasks_without_interval_storage = TasksWithoutIntervalStorage(gcp_project_id, group)
-    reports_folder_parent = Path(workspace) / group / "reports" / f"run_{start_time_global}"
+    reports_folder_parent = Path(workspace) / group / "reports" / f"run_{_timestamp_to_filename_friendly_time(start_time_global)}"
 
     for i in range(num_global_iterations):
         start_time_of_iteration = _get_now()
@@ -228,3 +228,7 @@ def _cleanup_finished_tasks(
 
 def _get_now():
     return int(datetime.datetime.utcnow().timestamp())
+
+
+def _timestamp_to_filename_friendly_time(timestamp: int):
+    return datetime.datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%d_%H-%M-%S")

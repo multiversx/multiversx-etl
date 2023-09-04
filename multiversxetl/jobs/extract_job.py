@@ -61,7 +61,7 @@ class ExtractJob:
 
                 num_written += 1
                 if num_written % 1000 == 0:
-                    logging.info(f"Written {num_written} records to {filename}")
+                    logging.debug(f"Written {num_written} records to {filename}")
 
     def _jsonify_record(self, record: Dict[str, Any]) -> str:
         data = record["_source"]

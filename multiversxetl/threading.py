@@ -46,8 +46,8 @@ def do_until(
                 callable,
                 external_event_is_work_enough_for_now,
                 external_or_internal_event_has_error_happened,
-                sleep_between_calls,
-                calls_counter
+                calls_counter,
+                sleep_between_calls
             ]
         )
 
