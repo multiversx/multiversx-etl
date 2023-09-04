@@ -1,144 +1,92 @@
 import datetime
 import logging
-import time
-from pathlib import Path
 from typing import List, Optional, Tuple
-
-import click
 
 from multiversxetl.constants import (INDICES_WITH_INTERVALS,
                                      INDICES_WITHOUT_INTERVALS,
-                                     MIN_TIME_DELTA_FROM_NOW_FOR_EXTRACTION,
-                                     SECONDS_IN_DAY)
+                                     MIN_TIME_DELTA_FROM_NOW_FOR_EXTRACTION)
 from multiversxetl.errors import UsageError
 from multiversxetl.planner import (TasksPlanner, TasksWithIntervalStorage,
                                    TasksWithoutIntervalStorage)
 from multiversxetl.planner.tasks import (Task, exclude_redundant_task_against,
                                          find_redundant_tasks)
-from multiversxetl.planner.tasks_reporter import TasksReporter
 
 
-@click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option("--gcp-project-id", type=str, required=True, help="The GCP project ID.")
-@click.option("--workspace", required=True, type=str, help="Workspace path.")
-@click.option("--group", type=str, required=True, help="Tasks group (tag). Used as Firestore collections prefix.")
-@click.option("--indexer-url", type=str, required=True, help="The indexer URL (Elasticsearch instance).")
-@click.option("--indices", multiple=True, default=INDICES_WITH_INTERVALS + INDICES_WITHOUT_INTERVALS)
-@click.option("--bq-dataset", type=str, required=True, help="The BigQuery dataset (destination).")
-@click.option("--initial-start-timestamp", type=int, help="The start timestamp (e.g. genesis time).")
-@click.option("--initial-end-timestamp", type=int, help="The end timestamp (e.g. a recent one).")
-@click.option("--granularity", type=int, default=SECONDS_IN_DAY, help="Task granularity, in seconds.")
-@click.option("--num-repeats", type=int, default=1, help="Number of repeats.")
-@click.option("--sleep-between-repeats", type=int, default=SECONDS_IN_DAY, help="Time to sleep between planning sessions (repeats).")
 def plan_tasks(
     gcp_project_id: str,
-    workspace: str,
     group: str,
     indexer_url: str,
     indices: Tuple[str, ...],
     bq_dataset: str,
     initial_start_timestamp: Optional[int],
     initial_end_timestamp: Optional[int],
-    granularity: int,
-    num_repeats: bool,
-    sleep_between_repeats: int
+    granularity: int
 ):
     planner = TasksPlanner()
-    reporter = TasksReporter(Path(workspace) / group)
     indices_with_intervals = set(INDICES_WITH_INTERVALS) & set(indices)
     indices_without_intervals = set(INDICES_WITHOUT_INTERVALS) & set(indices)
     tasks_with_interval_storage = TasksWithIntervalStorage(gcp_project_id, group)
     tasks_without_interval_storage = TasksWithoutIntervalStorage(gcp_project_id, group)
 
-    for i in range(num_repeats):
-        now = int(datetime.datetime.utcnow().timestamp())
+    now = int(datetime.datetime.utcnow().timestamp())
 
-        logging.info(f"Fetch tasks...")
+    logging.info(f"Fetch tasks...")
 
-        existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
-        existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
+    existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
+    existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
 
-        logging.info(f"Find and remove redundant tasks...")
+    logging.info(f"Find and remove redundant tasks...")
 
-        tasks_to_remove = find_redundant_tasks(existing_tasks_with_interval)
-        tasks_with_interval_storage.delete_tasks(tasks_to_remove)
+    tasks_to_remove = find_redundant_tasks(existing_tasks_with_interval)
+    tasks_with_interval_storage.delete_tasks(tasks_to_remove)
 
-        tasks_to_remove = find_redundant_tasks(existing_tasks_without_interval)
-        tasks_without_interval_storage.delete_tasks(tasks_to_remove)
+    tasks_to_remove = find_redundant_tasks(existing_tasks_without_interval)
+    tasks_without_interval_storage.delete_tasks(tasks_to_remove)
 
-        logging.info(f"Re-fetch tasks...")
+    logging.info(f"Re-fetch tasks...")
 
-        existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
-        existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
+    existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
+    existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
 
-        newly_planned_tasks_with_interval: List[Task] = []
-        newly_planned_tasks_without_interval: List[Task] = []
+    newly_planned_tasks_with_interval: List[Task] = []
+    newly_planned_tasks_without_interval: List[Task] = []
 
-        logging.info(f"Prepare new tasks...")
+    logging.info(f"Prepare new tasks...")
 
-        # Handle indices with intervals
-        for index_name in indices_with_intervals:
-            # Each index has its own start timestamp (generally speaking, they will be the same)
-            start_timestamp = decide_start_timestamp(existing_tasks_with_interval, index_name, initial_start_timestamp if i == 0 else None)
-            # End timestamp is shared among all indices
-            end_timestamp = decide_end_timestamp(initial_end_timestamp if i == 0 else None, now)
+    # Handle indices with intervals
+    for index_name in indices_with_intervals:
+        # Each index has its own start timestamp (generally speaking, they will be the same)
+        start_timestamp = decide_start_timestamp(existing_tasks_with_interval, index_name, initial_start_timestamp)
+        # End timestamp is shared among all indices
+        end_timestamp = decide_end_timestamp(initial_end_timestamp, now)
 
-            new_tasks = planner.plan_tasks_with_intervals(
-                indexer_url,
-                index_name,
-                bq_dataset,
-                start_timestamp,
-                end_timestamp,
-                granularity
-            )
-
-            newly_planned_tasks_with_interval.extend(new_tasks)
-
-        # Handle indices without intervals
-        for index_name in indices_without_intervals:
-            new_tasks = planner.plan_tasks_without_intervals(indexer_url, index_name, bq_dataset)
-            newly_planned_tasks_without_interval.extend(new_tasks)
-
-        logging.info(f"Prepared new tasks: with intervals = {len(newly_planned_tasks_with_interval)}, without intervals = {len(newly_planned_tasks_without_interval)}.")
-        logging.info(f"Exclude new redundant tasks...")
-
-        newly_planned_tasks_with_interval = exclude_redundant_task_against(newly_planned_tasks_with_interval, existing_tasks_with_interval)
-        newly_planned_tasks_without_interval = exclude_redundant_task_against(newly_planned_tasks_without_interval, existing_tasks_without_interval)
-
-        logging.info(f"New tasks upon exclusion: with intervals = {len(newly_planned_tasks_with_interval)}, without intervals = {len(newly_planned_tasks_without_interval)}.")
-        logging.info(f"Add new non-redundant tasks...")
-
-        tasks_with_interval_storage.add_tasks(newly_planned_tasks_with_interval)
-        tasks_without_interval_storage.add_tasks(newly_planned_tasks_without_interval)
-
-        logging.info(f"Re-fetch tasks (in order to cleanup old tasks)...")
-
-        existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
-        existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
-
-        logging.info(f"Cleanup old tasks...")
-
-        tasks_to_remove = [task for task in existing_tasks_with_interval if task.is_finished_long_time_ago(now)]
-        tasks_with_interval_storage.delete_tasks(tasks_to_remove)
-
-        tasks_to_remove = [task for task in existing_tasks_without_interval if task.is_finished_long_time_ago(now)]
-        tasks_without_interval_storage.delete_tasks(tasks_to_remove)
-
-        logging.info(f"Re-fetch tasks (in order to generate report)...")
-
-        existing_tasks_with_interval = tasks_with_interval_storage.get_all_tasks()
-        existing_tasks_without_interval = tasks_without_interval_storage.get_all_tasks()
-
-        logging.info(f"Generate report...")
-
-        reporter.generate_report(
-            f"after_planning_{i:08}_{now}",
-            existing_tasks_with_interval,
-            existing_tasks_without_interval
+        new_tasks = planner.plan_tasks_with_intervals(
+            indexer_url,
+            index_name,
+            bq_dataset,
+            start_timestamp,
+            end_timestamp,
+            granularity
         )
 
-        logging.info(f"Sleeping for {sleep_between_repeats} seconds...")
-        time.sleep(sleep_between_repeats)
+        newly_planned_tasks_with_interval.extend(new_tasks)
+
+    # Handle indices without intervals
+    for index_name in indices_without_intervals:
+        new_tasks = planner.plan_tasks_without_intervals(indexer_url, index_name, bq_dataset)
+        newly_planned_tasks_without_interval.extend(new_tasks)
+
+    logging.info(f"Prepared new tasks: with intervals = {len(newly_planned_tasks_with_interval)}, without intervals = {len(newly_planned_tasks_without_interval)}.")
+    logging.info(f"Exclude new redundant tasks...")
+
+    newly_planned_tasks_with_interval = exclude_redundant_task_against(newly_planned_tasks_with_interval, existing_tasks_with_interval)
+    newly_planned_tasks_without_interval = exclude_redundant_task_against(newly_planned_tasks_without_interval, existing_tasks_without_interval)
+
+    logging.info(f"New tasks upon exclusion: with intervals = {len(newly_planned_tasks_with_interval)}, without intervals = {len(newly_planned_tasks_without_interval)}.")
+    logging.info(f"Add new non-redundant tasks...")
+
+    tasks_with_interval_storage.add_tasks(newly_planned_tasks_with_interval)
+    tasks_without_interval_storage.add_tasks(newly_planned_tasks_without_interval)
 
 
 def decide_start_timestamp(existing_tasks: List[Task], index_name: str, explicit_start_timestamp: Optional[int]) -> int:

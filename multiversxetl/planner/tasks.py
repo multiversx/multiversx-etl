@@ -3,7 +3,7 @@ import sys
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
-from multiversxetl.constants import SECONDS_IN_DAY
+from multiversxetl.constants import SECONDS_IN_FIVE_MINUTES
 
 
 class TaskStatus(Enum):
@@ -160,8 +160,8 @@ class Task:
     def get_pretty_name(self) -> str:
         return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}_{self.id}"
 
-    def is_finished_long_time_ago(self, now: int):
-        return self.loading_finished_on is not None and self.loading_finished_on < now - SECONDS_IN_DAY
+    def is_finished_some_time_ago(self, now: int):
+        return self.loading_finished_on is not None and self.loading_finished_on < now - SECONDS_IN_FIVE_MINUTES
 
     def __eq__(self, other: Any):
         return self.id == other.id
