@@ -64,15 +64,6 @@ class TasksDashboard:
 
         return None
 
-    def on_task_finished(self, task: Task) -> None:
-        """
-        This can be called concurrently with "pick_next_task" or "on_task_finished".
-        """
-        with self._lock:
-            assert task.is_started(), f"Task {task} must have had the status 'started'."
-            assert task in self._tasks, f"Task {task} is not in the list of tasks."
-            task.set_finished()
-
     def _assert_all_existing_tasks_are_finished(self) -> None:
         for task in self._tasks:
             assert task.is_finished(), f"Task {task} is not finished."

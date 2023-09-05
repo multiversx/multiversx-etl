@@ -1,4 +1,8 @@
+import datetime
 from enum import Enum
+from typing import Optional
+
+INDEX_NAME_FORMAT_RJUST = 24
 
 
 class TaskStatus(Enum):
@@ -20,6 +24,8 @@ class Task:
     def __init__(self, index_name: str) -> None:
         self.index_name = index_name
         self.status: TaskStatus = TaskStatus.PENDING
+        self.error: Optional[Exception] = None
+        self.transient_error: Optional[Exception] = None
 
     def is_pending(self) -> bool:
         return self.status == TaskStatus.PENDING
@@ -28,13 +34,26 @@ class Task:
         return self.status == TaskStatus.STARTED
 
     def set_started(self) -> None:
+        assert self.is_pending()
         self.status = TaskStatus.STARTED
 
     def is_finished(self) -> bool:
         return self.status == TaskStatus.FINISHED
 
     def set_finished(self) -> None:
+        assert self.is_started()
         self.status = TaskStatus.FINISHED
+
+    def is_failed(self) -> bool:
+        return self.status == TaskStatus.FAILED
+
+    def set_failed(self, error: Exception) -> None:
+        assert self.is_started()
+        self.status = TaskStatus.FAILED
+        self.error = error
+
+    def get_filename_friendly_description(self) -> str:
+        raise NotImplementedError()
 
 
 class TaskWithInterval(Task):
@@ -48,7 +67,22 @@ class TaskWithInterval(Task):
         self.start_timestamp = start_timestamp
         self.end_timestamp = end_timestamp
 
+    def __str__(self) -> str:
+        start_time = datetime.datetime.utcfromtimestamp(self.start_timestamp)
+        end_time = datetime.datetime.utcfromtimestamp(self.end_timestamp)
+
+        return f"( ⚙ {self.index_name.rjust(INDEX_NAME_FORMAT_RJUST)}, {start_time} <> {end_time} )"
+
+    def get_filename_friendly_description(self) -> str:
+        return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}"
+
 
 class TaskWithoutInterval(Task):
     def __init__(self, index_name: str) -> None:
         super().__init__(index_name)
+
+    def __str__(self) -> str:
+        return f"( ⚙ {self.index_name.rjust(INDEX_NAME_FORMAT_RJUST)} )"
+
+    def get_filename_friendly_description(self) -> str:
+        return f"{self.index_name}"
