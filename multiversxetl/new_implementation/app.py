@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import List
 
+import requests
 from google.cloud import bigquery
 
 from multiversxetl.errors import UsageError
@@ -73,7 +74,8 @@ def _run(
     worker_state = WorkerState.load_from_file(worker_state_path)
 
     worker_id = socket.gethostname()
-    bq_client = bigquery.Client(project=worker_config.gcp_project_id)
+
+    bq_client = _create_bq_client(worker_config.gcp_project_id)
     indexer = Indexer(worker_config.indexer_url)
     cloud_logger = CloudLogger(worker_config.gcp_project_id, worker_id)
     tasks_dashboard = TasksDashboard()
@@ -86,7 +88,7 @@ def _run(
         schema_folder=worker_config.schema_folder
     )
 
-    for bulk_index in range(0, 15):
+    for bulk_index in range(0, sys.maxsize):
         cloud_logger.log_info(f"Starting bulk #{bulk_index}...")
         cloud_logger.log_info(f"Latest finished interval end time: {worker_state.get_latest_finished_interval_end_datetime()}.")
 
@@ -132,6 +134,14 @@ def _run(
         worker_state.save_to_file(worker_state_path)
 
         cloud_logger.log_info(f"Bulk #{bulk_index} done.")
+
+
+def _create_bq_client(gcp_project_id: str) -> bigquery.Client:
+    bq_client = bigquery.Client(project=gcp_project_id)
+    adapter = requests.adapters.HTTPAdapter(pool_connections=128, pool_maxsize=128, max_retries=3)  # type: ignore
+    bq_client._http.mount("https://", adapter)  # type: ignore
+    bq_client._http._auth_request.session.mount("https://", adapter)  # type: ignore
+    return bq_client
 
 
 def _consume_tasks_in_parallel(
