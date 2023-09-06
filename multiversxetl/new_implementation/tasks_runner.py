@@ -30,13 +30,13 @@ class IFileStorage(Protocol):
 class TasksRunner:
     def __init__(
             self,
-            gcp_project_id: str,
+            bq_client: bigquery.Client,
             bq_dataset: str,
             indexer: IIndexer,
             file_storage: IFileStorage,
             schema_folder: Path
     ) -> None:
-        self.bigquery_client = bigquery.Client(project=gcp_project_id)
+        self.bq_client = bq_client
         self.bq_dataset = bq_dataset
         self.indexer = indexer
         self.file_storage = file_storage
@@ -53,7 +53,7 @@ class TasksRunner:
         self._do_load(task)
 
     def _do_extract(self, task: Task) -> None:
-        logging.info(f"_do_extract: {task}")
+        logging.debug(f"_do_extract: {task}")
 
         records = self._extract_records_from_indexer(task)
         self._write_extracted_records_to_file(task, records)
@@ -93,7 +93,7 @@ class TasksRunner:
         return as_json
 
     def _do_transform(self, task: Task):
-        logging.info(f"_do_transform: {task}")
+        logging.debug(f"_do_transform: {task}")
 
         transformer = self.transformers.get(task.index_name, Transformer())
         input_filename = self.file_storage.get_extracted_path(task.get_filename_friendly_description())
@@ -106,27 +106,27 @@ class TasksRunner:
                     output_file.write(transformed_line + "\n")
 
     def _do_load(self, task: Task) -> None:
-        logging.info(f"_do_load: {task}")
+        logging.debug(f"_do_load: {task}")
 
         table_id = self._get_bq_table_id(task)
         file_path = self.file_storage.get_load_path(task.get_filename_friendly_description())
         job_config = self._prepare_bq_job_config(task)
 
         with open(file_path, "rb") as source_file:
-            job = self.bigquery_client.load_table_from_file(source_file, table_id, job_config=job_config)
+            job = self.bq_client.load_table_from_file(source_file, table_id, job_config=job_config)
 
         # Waits for the job to complete.
         job.result()
 
-        table: Any = self.bigquery_client.get_table(table_id)
-        logging.info(f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_id}")
+        table: Any = self.bq_client.get_table(table_id)
+        logging.debug(f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_id}")
 
     def _get_bq_table_id(self, task: Task) -> str:
         return f"{self.bq_dataset}.{task.index_name}"
 
     def _prepare_bq_job_config(self, task: Task) -> bigquery.LoadJobConfig:
         schema_path = self.schema_folder / f"{task.index_name}.json"
-        schema = self.bigquery_client.schema_from_json(schema_path)
+        schema = self.bq_client.schema_from_json(schema_path)
         write_disposition = self._get_bq_write_disposition(task)
 
         return bigquery.LoadJobConfig(

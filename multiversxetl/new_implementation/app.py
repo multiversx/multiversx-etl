@@ -1,11 +1,23 @@
 import logging
 import os
+import socket
 import sys
+import threading
+import time
+import traceback
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import List
 
+from google.cloud import bigquery
+
 from multiversxetl.errors import UsageError
+from multiversxetl.indexer import Indexer
+from multiversxetl.jobs.file_storage import FileStorage
+from multiversxetl.logger import CloudLogger
+from multiversxetl.new_implementation.checks import check_loaded_data
+from multiversxetl.new_implementation.tasks_dashboard import TasksDashboard
+from multiversxetl.new_implementation.tasks_runner import TasksRunner
 from multiversxetl.new_implementation.worker_config import WorkerConfig
 from multiversxetl.new_implementation.worker_state import WorkerState
 
@@ -45,8 +57,131 @@ def _do_main(args: List[str]):
     if not worker_state_path.exists():
         raise UsageError(f"Worker state file not found: {worker_state_path}")
 
+    _run(
+        workspace=workspace,
+        worker_config_path=worker_config_path,
+        worker_state_path=worker_state_path,
+    )
+
+
+def _run(
+    workspace: Path,
+    worker_config_path: Path,
+    worker_state_path: Path,
+):
     worker_config = WorkerConfig.load_from_file(worker_config_path)
     worker_state = WorkerState.load_from_file(worker_state_path)
+
+    worker_id = socket.gethostname()
+    bq_client = bigquery.Client(project=worker_config.gcp_project_id)
+    indexer = Indexer(worker_config.indexer_url)
+    cloud_logger = CloudLogger(worker_config.gcp_project_id, worker_id)
+    tasks_dashboard = TasksDashboard()
+    file_storage = FileStorage(workspace)
+    tasks_runner = TasksRunner(
+        bq_client=bq_client,
+        bq_dataset=worker_config.bq_dataset,
+        indexer=indexer,
+        file_storage=file_storage,
+        schema_folder=worker_config.schema_folder
+    )
+
+    for bulk_index in range(0, 15):
+        cloud_logger.log_info(f"Starting bulk #{bulk_index}...")
+        cloud_logger.log_info(f"Latest finished interval end time: {worker_state.get_latest_finished_interval_end_datetime()}.")
+
+        latest_planned_interval_end_time = tasks_dashboard.plan_bulk_with_intervals(
+            indices=worker_config.indices_with_intervals,
+            initial_start_timestamp=(worker_state.latest_finished_interval_end_time or worker_config.time_partition_start),
+            initial_end_timestamp=worker_config.time_partition_end,
+            num_intervals_in_bulk=worker_config.num_intervals_in_bulk,
+            interval_size_in_seconds=worker_config.interval_size_in_seconds
+        )
+
+        if latest_planned_interval_end_time is None:
+            logging.warning("No tasks planned, nothing to do. Will sleep a bit.")
+            time.sleep(5)
+            continue
+
+        _consume_tasks_in_parallel(
+            dashboard=tasks_dashboard,
+            runner=tasks_runner,
+            num_threads=worker_config.num_threads,
+        )
+
+        failed_tasks = tasks_dashboard.get_failed_tasks()
+        if failed_tasks:
+            for task in failed_tasks:
+                cloud_logger.log_error(f"Task has failed: {task.error}", task)
+
+            logging.error(f"{len(failed_tasks)} tasks have failed, will stop.")
+            break
+
+        tasks_dashboard.assert_all_existing_tasks_are_finished()
+
+        check_loaded_data(
+            bq_client=bq_client,
+            bq_dataset=worker_config.bq_dataset,
+            indexer=indexer,
+            tables=worker_config.indices_with_intervals,
+            start_timestamp=worker_config.time_partition_start,
+            end_timestamp=latest_planned_interval_end_time
+        )
+
+        worker_state.latest_finished_interval_end_time = latest_planned_interval_end_time
+        worker_state.save_to_file(worker_state_path)
+
+        cloud_logger.log_info(f"Bulk #{bulk_index} done.")
+
+
+def _consume_tasks_in_parallel(
+        dashboard: TasksDashboard,
+        runner: TasksRunner,
+        num_threads: int
+):
+    # If an error happens in any thread, we stop all threads.
+    event_has_error_happened: threading.Event = threading.Event()
+    threads: List[threading.Thread] = []
+
+    for _ in range(num_threads):
+        thread = threading.Thread(
+            target=_consume_tasks_thread,
+            args=[
+                dashboard,
+                runner,
+                event_has_error_happened
+            ]
+        )
+
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        if thread.is_alive():
+            thread.join()
+
+
+def _consume_tasks_thread(
+    dashboard: TasksDashboard,
+    runner: TasksRunner,
+    external_or_internal_event_has_error_happened: threading.Event
+):
+    if external_or_internal_event_has_error_happened.is_set():
+        return
+
+    while True:
+        task = dashboard.pick_next_task()
+        if task is None:
+            break
+
+        try:
+            runner.run(task)
+            task.set_finished()
+        except Exception as error:
+            logging.error(f"Error while consuming task {task}.")
+            external_or_internal_event_has_error_happened.set()
+            task.set_failed(error, traceback.format_exc())
+            break
 
 
 if __name__ == "__main__":
