@@ -23,7 +23,7 @@ class TasksDashboard:
 
         Returns the end time of the latest interval for the planned tasks.
         """
-        self._assert_all_existing_tasks_are_finished()
+        self.assert_all_existing_tasks_are_finished()
 
         end_timestamp_of_latest_interval: Optional[int] = None
 
@@ -46,7 +46,7 @@ class TasksDashboard:
         """
         This should not be called concurrently with other methods.
         """
-        self._assert_all_existing_tasks_are_finished()
+        self.assert_all_existing_tasks_are_finished()
 
         for index_name in indices:
             task = TaskWithoutInterval(index_name)
@@ -64,6 +64,15 @@ class TasksDashboard:
 
         return None
 
-    def _assert_all_existing_tasks_are_finished(self) -> None:
+    def assert_all_existing_tasks_are_finished(self) -> None:
+        """
+        This should not be called concurrently with other methods.
+        """
         for task in self._tasks:
             assert task.is_finished(), f"Task {task} is not finished."
+
+    def get_failed_tasks(self) -> List[Task]:
+        """
+        This should not be called concurrently with other methods.
+        """
+        return [task for task in self._tasks if task.is_failed()]

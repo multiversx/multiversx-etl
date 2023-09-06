@@ -1,8 +1,8 @@
 import datetime
 from enum import Enum
-from typing import Optional
+from typing import Any, Dict, Optional
 
-INDEX_NAME_FORMAT_RJUST = 24
+INDEX_NAME_FORMAT_RJUST = 32
 
 
 class TaskStatus(Enum):
@@ -25,7 +25,7 @@ class Task:
         self.index_name = index_name
         self.status: TaskStatus = TaskStatus.PENDING
         self.error: Optional[Exception] = None
-        self.transient_error: Optional[Exception] = None
+        self.error_stack_trace: str = ""
 
     def is_pending(self) -> bool:
         return self.status == TaskStatus.PENDING
@@ -47,13 +47,22 @@ class Task:
     def is_failed(self) -> bool:
         return self.status == TaskStatus.FAILED
 
-    def set_failed(self, error: Exception) -> None:
+    def set_failed(self, error: Exception, formatted_stack_trace: str) -> None:
         assert self.is_started()
         self.status = TaskStatus.FAILED
         self.error = error
+        self.error_stack_trace = formatted_stack_trace
 
     def get_filename_friendly_description(self) -> str:
         raise NotImplementedError()
+
+    def to_plain_dictionary(self) -> Dict[str, Any]:
+        return {
+            "index_name": self.index_name,
+            "status": self.status.value,
+            "error": str(self.error) if self.error else None,
+            "error_stack_trace": self.error_stack_trace
+        }
 
 
 class TaskWithInterval(Task):
@@ -75,6 +84,15 @@ class TaskWithInterval(Task):
 
     def get_filename_friendly_description(self) -> str:
         return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}"
+
+    def to_plain_dictionary(self) -> Dict[str, Any]:
+        result = super().to_plain_dictionary()
+        result.update({
+            "start_timestamp": self.start_timestamp,
+            "end_timestamp": self.end_timestamp
+        })
+
+        return result
 
 
 class TaskWithoutInterval(Task):
