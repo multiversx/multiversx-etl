@@ -25,6 +25,8 @@ class IFileStorage(Protocol):
     def get_extracted_path(self, task_pretty_name: str) -> Path: ...
     def get_transformed_path(self, task_pretty_name: str) -> Path: ...
     def get_load_path(self, task_pretty_name: str) -> Path: ...
+    def remove_extracted_file(self, task_pretty_name: str): ...
+    def remove_transformed_file(self, task_pretty_name: str): ...
 
 
 class TasksRunner:
@@ -51,6 +53,9 @@ class TasksRunner:
         self._do_extract(task)
         self._do_transform(task)
         self._do_load(task)
+
+        self.file_storage.remove_extracted_file(task.get_filename_friendly_description())
+        self.file_storage.remove_transformed_file(task.get_filename_friendly_description())
 
     def _do_extract(self, task: Task) -> None:
         logging.debug(f"_do_extract: {task}")
