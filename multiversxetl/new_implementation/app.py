@@ -13,8 +13,8 @@ import requests
 from google.cloud import bigquery
 
 from multiversxetl.errors import UsageError
+from multiversxetl.file_storage import FileStorage
 from multiversxetl.indexer import Indexer
-from multiversxetl.jobs.file_storage import FileStorage
 from multiversxetl.logger import CloudLogger
 from multiversxetl.new_implementation.checks import check_loaded_data
 from multiversxetl.new_implementation.tasks_dashboard import TasksDashboard
