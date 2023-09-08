@@ -1,3 +1,5 @@
+import logging
+import random
 import threading
 from typing import List, Optional
 
@@ -24,6 +26,7 @@ class TasksDashboard:
         Returns the end time of the latest interval for the planned tasks.
         """
         self.assert_all_existing_tasks_are_finished()
+        self._clear_all_existing_tasks()
 
         end_timestamp_of_latest_interval: Optional[int] = None
 
@@ -40,6 +43,9 @@ class TasksDashboard:
                 task = TaskWithInterval(index_name, start_timestamp, end_timestamp)
                 self._tasks.append(task)
 
+        # Consumers will randomly pick tasks.
+        self._shuffle_all_existing_tasks()
+
         return end_timestamp_of_latest_interval
 
     def plan_bulk_without_intervals(self, indices: List[str]) -> None:
@@ -47,6 +53,7 @@ class TasksDashboard:
         This should not be called concurrently with other methods.
         """
         self.assert_all_existing_tasks_are_finished()
+        self._tasks.clear()
 
         for index_name in indices:
             task = TaskWithoutInterval(index_name)
@@ -57,12 +64,15 @@ class TasksDashboard:
         This can be called concurrently with "pick_next_task" or "on_task_finished".
         """
         with self._lock:
+            num_pending = len([task.is_pending() for task in self._tasks])
+            num_started = len([task.is_started() for task in self._tasks])
+
+            logging.info(f"pick_next_task(): pending = {num_pending}, started = {num_started}.")
+
             for task in self._tasks:
                 if task.is_pending():
                     task.set_started()
                     return task
-
-        return None
 
     def assert_all_existing_tasks_are_finished(self) -> None:
         """
@@ -70,6 +80,12 @@ class TasksDashboard:
         """
         for task in self._tasks:
             assert task.is_finished(), f"Task {task} is not finished."
+
+    def _clear_all_existing_tasks(self) -> None:
+        self._tasks.clear()
+
+    def _shuffle_all_existing_tasks(self) -> None:
+        random.shuffle(self._tasks)
 
     def get_failed_tasks(self) -> List[Task]:
         """
