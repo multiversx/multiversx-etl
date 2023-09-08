@@ -58,21 +58,23 @@ class TasksDashboard:
             task = TaskWithoutInterval(index_name)
             self._tasks.append(task)
 
-    def pick_next_task(self) -> Optional[Task]:
+    def pick_and_start_task(self) -> Optional[Task]:
         """
         This can be called concurrently with "pick_next_task" or "on_task_finished".
         """
         with self._lock:
-            num_pending = len([task for task in self._tasks if task.is_pending()])
-            num_started = len([task for task in self._tasks if task.is_started()])
-            num_finished = len([task for task in self._tasks if task.is_finished()])
-
-            logging.info(f"pick_next_task(): pending = {num_pending}, started = {num_started}, finished = {num_finished}, total = {len(self._tasks)}.")
+            self._report_tasks_status("pick_and_start_task()")
 
             for task in self._tasks:
                 if task.is_pending():
-                    task.set_started()
+                    task.set_started(self._get_now())
                     return task
+
+    def on_task_finished(self, task: Task) -> None:
+        task.set_finished(self._get_now())
+        logging.info(f"Task {task} finished. Took {task.get_duration()} seconds.")
+        self._report_tasks_status("on_task_finished()")
+        pass
 
     def assert_all_existing_tasks_are_finished(self) -> None:
         """
@@ -87,8 +89,18 @@ class TasksDashboard:
     def _shuffle_all_existing_tasks(self) -> None:
         random.shuffle(self._tasks)
 
+    def _report_tasks_status(self, message: str) -> None:
+        num_pending = len([task for task in self._tasks if task.is_pending()])
+        num_started = len([task for task in self._tasks if task.is_started()])
+        num_finished = len([task for task in self._tasks if task.is_finished()])
+
+        logging.info(f"{message}: pending = {num_pending}, started = {num_started}, finished = {num_finished}, total = {len(self._tasks)}.")
+
     def get_failed_tasks(self) -> List[Task]:
         """
         This should not be called concurrently with other methods.
         """
         return [task for task in self._tasks if task.is_failed()]
+
+    def _get_now(self) -> datetime.datetime:
+        return datetime.datetime.utcnow()

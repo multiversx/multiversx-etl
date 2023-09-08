@@ -158,8 +158,9 @@ def _consume_tasks_in_parallel(
     event_has_error_happened: threading.Event = threading.Event()
     threads: List[threading.Thread] = []
 
-    for _ in range(num_threads):
+    for thread_index in range(num_threads):
         thread = threading.Thread(
+            name=f"consume-task-{thread_index}",
             target=_consume_tasks_thread,
             args=[
                 dashboard,
@@ -185,13 +186,13 @@ def _consume_tasks_thread(
         return
 
     while True:
-        task = dashboard.pick_next_task()
+        task = dashboard.pick_and_start_task()
         if task is None:
             break
 
         try:
             runner.run(task)
-            task.set_finished()
+            dashboard.on_task_finished(task)
         except Exception as error:
             logging.error(f"Error while consuming task {task}.")
             external_or_internal_event_has_error_happened.set()

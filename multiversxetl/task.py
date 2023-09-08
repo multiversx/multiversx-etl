@@ -2,8 +2,6 @@ import datetime
 from enum import Enum
 from typing import Any, Dict, Optional
 
-INDEX_NAME_FORMAT_RJUST = 32
-
 
 class TaskStatus(Enum):
     """
@@ -26,6 +24,8 @@ class Task:
         self.status: TaskStatus = TaskStatus.PENDING
         self.error: Optional[Exception] = None
         self.error_stack_trace: str = ""
+        self.started_on: Optional[datetime.datetime] = None
+        self.finished_on: Optional[datetime.datetime] = None
 
     def is_pending(self) -> bool:
         return self.status == TaskStatus.PENDING
@@ -33,16 +33,18 @@ class Task:
     def is_started(self) -> bool:
         return self.status == TaskStatus.STARTED
 
-    def set_started(self) -> None:
+    def set_started(self, now: datetime.datetime) -> None:
         assert self.is_pending()
         self.status = TaskStatus.STARTED
+        self.started_on = now
 
     def is_finished(self) -> bool:
         return self.status == TaskStatus.FINISHED
 
-    def set_finished(self) -> None:
+    def set_finished(self, now: datetime.datetime) -> None:
         assert self.is_started()
         self.status = TaskStatus.FINISHED
+        self.finished_on = now
 
     def is_failed(self) -> bool:
         return self.status == TaskStatus.FAILED
@@ -64,6 +66,11 @@ class Task:
             "error_stack_trace": self.error_stack_trace
         }
 
+    def get_duration(self) -> Optional[float]:
+        if self.started_on and self.finished_on:
+            return (self.finished_on - self.started_on).total_seconds()
+        return None
+
 
 class TaskWithInterval(Task):
     def __init__(
@@ -80,7 +87,7 @@ class TaskWithInterval(Task):
         start_time = datetime.datetime.utcfromtimestamp(self.start_timestamp)
         end_time = datetime.datetime.utcfromtimestamp(self.end_timestamp)
 
-        return f"( ⚙ {self.index_name.rjust(INDEX_NAME_FORMAT_RJUST)}, {start_time} <> {end_time} )"
+        return f"({self.index_name}, {start_time} <> {end_time})"
 
     def get_filename_friendly_description(self) -> str:
         return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}"
@@ -100,7 +107,7 @@ class TaskWithoutInterval(Task):
         super().__init__(index_name)
 
     def __str__(self) -> str:
-        return f"( ⚙ {self.index_name.rjust(INDEX_NAME_FORMAT_RJUST)} )"
+        return f"({self.index_name})"
 
     def get_filename_friendly_description(self) -> str:
         return f"{self.index_name}"

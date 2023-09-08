@@ -18,27 +18,32 @@ def check_loaded_data(
         end_timestamp: int):
 
     for table in tables:
-        start_datetime = datetime.datetime.utcfromtimestamp(start_timestamp)
-        end_datetime = datetime.datetime.utcfromtimestamp(end_timestamp)
-        logging.info(f"Checking table = {table}, start = {start_timestamp} ({start_datetime}), end = {end_timestamp} ({end_datetime})")
+        _do_check_loaded_data_for_table(bq_client, bq_dataset, indexer, table, start_timestamp, end_timestamp)
 
-        any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
-        if any_duplicates:
-            logging.warning(f"🗙 Duplicates found (will be corrected).")
-            _deduplicate_table(bq_client, bq_dataset, table)
+def _do_check_loaded_data_for_table(
+        bq_client: bigquery.Client,
+        bq_dataset: str,
+        indexer: IIndexer,
+        table: str,
+        start_timestamp: int,
+        end_timestamp: int):
+    start_datetime = datetime.datetime.utcfromtimestamp(start_timestamp)
+    end_datetime = datetime.datetime.utcfromtimestamp(end_timestamp)
+    logging.info(f"Checking table = {table}, start = {start_timestamp} ({start_datetime}), end = {end_timestamp} ({end_datetime})")
 
-        any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
-        assert not any_duplicates
+    any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
-    for table in tables:
-        start_datetime = datetime.datetime.utcfromtimestamp(start_timestamp)
-        end_datetime = datetime.datetime.utcfromtimestamp(end_timestamp)
-        logging.info(f"Checking table = {table}, start = {start_timestamp} ({start_datetime}), end = {end_timestamp} ({end_datetime})")
+    if any_duplicates:
+        logging.warning(f"Duplicates found (will be corrected).")
+        _deduplicate_table(bq_client, bq_dataset, table)
 
-        counts_match: bool = _check_counts_indexer_vs_bq_in_interval(indexer, bq_client, bq_dataset, table, start_timestamp, end_timestamp)
-        if not counts_match:
-            raise Exception(f"Counts do not match for '{table}'.")
+    any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
+    assert not any_duplicates
+
+    counts_match: bool = _check_counts_indexer_vs_bq_in_interval(indexer, bq_client, bq_dataset, table, start_timestamp, end_timestamp)
+    if not counts_match:
+        raise Exception(f"Counts do not match for '{table}'.")
 
 
 def _check_counts_indexer_vs_bq_in_interval(indexer: IIndexer, bq_client: bigquery.Client, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> bool:
@@ -60,7 +65,7 @@ def _check_any_duplicates_in_bq(bq_client: bigquery.Client, bq_dataset: str, tab
         samples = _get_samples_of_duplicates_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
         for record in samples:
-            print(f"[sample (duplicate)] {table}: ID = {record._id}, count = {record.count}")
+            logging.debug(f"Duplicate sample for {table}: ID = {record._id}, count = {record.count}")
 
     return num_duplicates > 0
 
