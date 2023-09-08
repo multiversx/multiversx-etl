@@ -64,10 +64,11 @@ class TasksDashboard:
         This can be called concurrently with "pick_next_task" or "on_task_finished".
         """
         with self._lock:
-            num_pending = len([task.is_pending() for task in self._tasks])
-            num_started = len([task.is_started() for task in self._tasks])
+            num_pending = len([task for task in self._tasks if task.is_pending()])
+            num_started = len([task for task in self._tasks if task.is_started()])
+            num_finished = len([task for task in self._tasks if task.is_finished()])
 
-            logging.info(f"pick_next_task(): pending = {num_pending}, started = {num_started}.")
+            logging.info(f"pick_next_task(): pending = {num_pending}, started = {num_started}, finished = {num_finished}, total = {len(self._tasks)}.")
 
             for task in self._tasks:
                 if task.is_pending():
