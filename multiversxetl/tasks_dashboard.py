@@ -3,8 +3,7 @@ import random
 import threading
 from typing import List, Optional
 
-from multiversxetl.new_implementation.task import (Task, TaskWithInterval,
-                                                   TaskWithoutInterval)
+from multiversxetl.task import Task, TaskWithInterval, TaskWithoutInterval
 
 
 class TasksDashboard:

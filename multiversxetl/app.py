@@ -12,15 +12,15 @@ from typing import List
 import requests
 from google.cloud import bigquery
 
+from multiversxetl.checks import check_loaded_data
 from multiversxetl.errors import UsageError
 from multiversxetl.file_storage import FileStorage
 from multiversxetl.indexer import Indexer
 from multiversxetl.logger import CloudLogger
-from multiversxetl.new_implementation.checks import check_loaded_data
-from multiversxetl.new_implementation.tasks_dashboard import TasksDashboard
-from multiversxetl.new_implementation.tasks_runner import TasksRunner
-from multiversxetl.new_implementation.worker_config import WorkerConfig
-from multiversxetl.new_implementation.worker_state import WorkerState
+from multiversxetl.tasks_dashboard import TasksDashboard
+from multiversxetl.tasks_runner import TasksRunner
+from multiversxetl.worker_config import WorkerConfig
+from multiversxetl.worker_state import WorkerState
 
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] [%(levelname)s] [%(threadName)s] [%(module)s]: %(message)s")
 # Suppress some logging from Elasticsearch.

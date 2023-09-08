@@ -5,12 +5,9 @@ from typing import Any, Dict, Iterable, Protocol
 
 from google.cloud import bigquery
 
-from multiversxetl.new_implementation.task import (Task, TaskWithInterval,
-                                                   TaskWithoutInterval)
-from multiversxetl.new_implementation.transformers import (BlocksTransformer,
-                                                           LogsTransformer,
-                                                           TokensTransformer,
-                                                           Transformer)
+from multiversxetl.task import Task, TaskWithInterval, TaskWithoutInterval
+from multiversxetl.transformers import (BlocksTransformer, LogsTransformer,
+                                        TokensTransformer, Transformer)
 
 WRITE_DISPOSITION_APPEND = "WRITE_APPEND"
 WRITE_DISPOSITION_TRUNCATE = "WRITE_TRUNCATE"
