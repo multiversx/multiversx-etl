@@ -20,12 +20,12 @@ def check_loaded_data(
     for table in tables:
         start_datetime = datetime.datetime.utcfromtimestamp(start_timestamp)
         end_datetime = datetime.datetime.utcfromtimestamp(end_timestamp)
-        print(f"Checking table = {table}, start = {start_timestamp} {(start_datetime)}, end = {(end_datetime)}")
+        logging.info(f"Checking table = {table}, start = {start_timestamp} ({start_datetime}), end = {end_timestamp} ({end_datetime})")
 
         any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
         if any_duplicates:
-            print(f"🗙 Duplicates found (will be corrected).")
+            logging.warning(f"🗙 Duplicates found (will be corrected).")
             _deduplicate_table(bq_client, bq_dataset, table)
 
         any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
@@ -34,7 +34,7 @@ def check_loaded_data(
     for table in tables:
         start_datetime = datetime.datetime.utcfromtimestamp(start_timestamp)
         end_datetime = datetime.datetime.utcfromtimestamp(end_timestamp)
-        print(f"Checking table = {table}, start = {start_timestamp} {(start_datetime)}, end = {(end_datetime)}")
+        logging.info(f"Checking table = {table}, start = {start_timestamp} ({start_datetime}), end = {end_timestamp} ({end_datetime})")
 
         counts_match: bool = _check_counts_indexer_vs_bq_in_interval(indexer, bq_client, bq_dataset, table, start_timestamp, end_timestamp)
         if not counts_match:
@@ -55,12 +55,12 @@ def _check_any_duplicates_in_bq(bq_client: bigquery.Client, bq_dataset: str, tab
     num_duplicates = _get_num_duplicates_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
     if num_duplicates:
-        print(f"Number of duplicates in BigQuery: {num_duplicates}")
+        logging.warning(f"Number of duplicates in BigQuery: {num_duplicates}")
 
         samples = _get_samples_of_duplicates_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
         for record in samples:
-            print(f"[sample] {table}: ID = {record._id}, count = {record.count}")
+            print(f"[sample (duplicate)] {table}: ID = {record._id}, count = {record.count}")
 
     return num_duplicates > 0
 
