@@ -58,6 +58,7 @@ def _do_main(args: List[str]):
     if not worker_state_path.exists():
         raise UsageError(f"Worker state file not found: {worker_state_path}")
 
+    # TODO: Perhaps move here the main loop?
     _run(
         workspace=workspace,
         worker_config_path=worker_config_path,
@@ -70,6 +71,7 @@ def _run(
     worker_config_path: Path,
     worker_state_path: Path,
 ):
+    # TODO: Allow to reload at run-time when beginning a new bulk.
     worker_config = WorkerConfig.load_from_file(worker_config_path)
     worker_state = WorkerState.load_from_file(worker_state_path)
 
@@ -92,6 +94,7 @@ def _run(
         cloud_logger.log_info(f"Starting bulk #{bulk_index}...")
         cloud_logger.log_info(f"Latest finished interval end time: {worker_state.get_latest_finished_interval_end_datetime()}.")
 
+        # TODO: Apply limit to "initial_end_timestamp".
         latest_planned_interval_end_time = tasks_dashboard.plan_bulk_with_intervals(
             indices=worker_config.indices_with_intervals,
             initial_start_timestamp=(worker_state.latest_finished_interval_end_time or worker_config.time_partition_start),
@@ -134,6 +137,8 @@ def _run(
         worker_state.save_to_file(worker_state_path)
 
         cloud_logger.log_info(f"Bulk #{bulk_index} done.")
+
+    # TODO: Plan tasks without interval!
 
 
 def _create_bq_client(gcp_project_id: str) -> bigquery.Client:
