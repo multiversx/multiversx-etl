@@ -4,6 +4,7 @@ import random
 import threading
 from typing import List, Optional
 
+from multiversxetl.constants import MIN_TIME_DELTA_FROM_NOW_FOR_ETL
 from multiversxetl.task import Task, TaskWithInterval, TaskWithoutInterval
 
 
@@ -29,10 +30,11 @@ class TasksDashboard:
         self._clear_all_existing_tasks()
 
         end_timestamp_of_latest_interval: Optional[int] = None
+        max_end_timestamp = int(self._get_now().timestamp()) - MIN_TIME_DELTA_FROM_NOW_FOR_ETL
 
         for interval_index in range(num_intervals_in_bulk):
             start_timestamp = initial_start_timestamp + interval_index * interval_size_in_seconds
-            end_timestamp = min(start_timestamp + interval_size_in_seconds, initial_end_timestamp)
+            end_timestamp = min(start_timestamp + interval_size_in_seconds, initial_end_timestamp, max_end_timestamp)
 
             if end_timestamp > initial_end_timestamp:
                 break
@@ -104,4 +106,4 @@ class TasksDashboard:
         return [task for task in self._tasks if task.is_failed()]
 
     def _get_now(self) -> datetime.datetime:
-        return datetime.datetime.utcnow()
+        return datetime.datetime.now(tz=datetime.timezone.utc)

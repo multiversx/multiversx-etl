@@ -12,7 +12,7 @@ class WorkerState:
         self.latest_finished_interval_end_time = latest_finished_interval_end_time
 
     def get_latest_finished_interval_end_datetime(self) -> datetime.datetime:
-        return datetime.datetime.utcfromtimestamp(self.latest_finished_interval_end_time)
+        return datetime.datetime.fromtimestamp(self.latest_finished_interval_end_time, tz=datetime.timezone.utc)
 
     @classmethod
     def load_from_file(cls, path: Path) -> "WorkerState":

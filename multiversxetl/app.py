@@ -94,7 +94,6 @@ def _run(
         cloud_logger.log_info(f"Starting bulk #{bulk_index}...")
         cloud_logger.log_info(f"Latest finished interval end time: {worker_state.get_latest_finished_interval_end_datetime()}.")
 
-        # TODO: Apply limit to "initial_end_timestamp".
         latest_planned_interval_end_time = tasks_dashboard.plan_bulk_with_intervals(
             indices=worker_config.indices_with_intervals,
             initial_start_timestamp=(worker_state.latest_finished_interval_end_time or worker_config.time_partition_start),

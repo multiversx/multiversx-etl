@@ -28,8 +28,8 @@ def _do_check_loaded_data_for_table(
         table: str,
         start_timestamp: int,
         end_timestamp: int):
-    start_datetime = datetime.datetime.utcfromtimestamp(start_timestamp)
-    end_datetime = datetime.datetime.utcfromtimestamp(end_timestamp)
+    start_datetime = datetime.datetime.fromtimestamp(start_timestamp, tz=datetime.timezone.utc)
+    end_datetime = datetime.datetime.fromtimestamp(end_timestamp, tz=datetime.timezone.utc)
     logging.info(f"Checking table = {table}, start = {start_timestamp} ({start_datetime}), end = {end_timestamp} ({end_datetime})")
 
     any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)

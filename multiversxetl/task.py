@@ -84,8 +84,8 @@ class TaskWithInterval(Task):
         self.end_timestamp = end_timestamp
 
     def __str__(self) -> str:
-        start_time = datetime.datetime.utcfromtimestamp(self.start_timestamp)
-        end_time = datetime.datetime.utcfromtimestamp(self.end_timestamp)
+        start_time = datetime.datetime.fromtimestamp(self.start_timestamp, tz=datetime.timezone.utc)
+        end_time = datetime.datetime.fromtimestamp(self.end_timestamp, tz=datetime.timezone.utc)
 
         return f"({self.index_name}, {start_time} <> {end_time})"
 
