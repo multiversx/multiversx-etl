@@ -3,13 +3,15 @@ from typing import Any, Dict, Iterable
 import elasticsearch.helpers
 from elasticsearch import Elasticsearch
 
+from multiversxetl.constants import ELASTICSEARCH_MAX_RETRIES
+
 SCROLL_CONSISTENCY_TIME = "10m"
 SCAN_BATCH_SIZE = 9999
 
 
 class Indexer:
     def __init__(self, url: str):
-        self.elastic_search_client = Elasticsearch(url)
+        self.elastic_search_client = Elasticsearch(url, max_retries=ELASTICSEARCH_MAX_RETRIES)
 
     def count_records_with_interval(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int:
         query = self._get_query_object_with_interval(start_timestamp, end_timestamp)
