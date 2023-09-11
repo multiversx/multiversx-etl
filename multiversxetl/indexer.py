@@ -1,9 +1,10 @@
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, Optional
 
 import elasticsearch.helpers
 from elasticsearch import Elasticsearch
 
-from multiversxetl.constants import ELASTICSEARCH_MAX_RETRIES
+from multiversxetl.constants import (ELASTICSEARCH_MAX_RETRIES,
+                                     ELASTICSEARCH_MAX_SIZE)
 
 SCROLL_CONSISTENCY_TIME = "10m"
 SCAN_BATCH_SIZE = 9999
@@ -11,17 +12,24 @@ SCAN_BATCH_SIZE = 9999
 
 class Indexer:
     def __init__(self, url: str):
-        self.elastic_search_client = Elasticsearch(url, max_retries=ELASTICSEARCH_MAX_RETRIES)
+        self.elastic_search_client = Elasticsearch(
+            url,
+            max_retries=ELASTICSEARCH_MAX_RETRIES,
+            retry_on_timeout=True,
+            maxsize=ELASTICSEARCH_MAX_SIZE
+        )
 
-    def count_records_with_interval(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int:
-        query = self._get_query_object_with_interval(start_timestamp, end_timestamp)
+    def count_records(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int:
+        query = self._get_query_object(start_timestamp, end_timestamp)
         return self.elastic_search_client.count(index=index_name, query=query["query"])["count"]
 
-    def count_records_without_interval(self, index_name: str) -> int:
-        return self.elastic_search_client.count(index=index_name)["count"]
-
-    def get_records_with_interval(self, index_name: str, start_timestamp: int, end_timestamp: int) -> Iterable[Dict[str, Any]]:
-        query = self._get_query_object_with_interval(start_timestamp, end_timestamp)
+    def get_records(
+            self,
+            index_name: str,
+            start_timestamp: Optional[int] = None,
+            end_timestamp: Optional[int] = None
+    ) -> Iterable[Dict[str, Any]]:
+        query = self._get_query_object(start_timestamp, end_timestamp)
 
         records = elasticsearch.helpers.scan(
             client=self.elastic_search_client,
@@ -38,29 +46,14 @@ class Indexer:
 
         return records
 
-    def get_records_without_interval(self, index_name: str) -> Iterable[Dict[str, Any]]:
-        query: Any = {
-            "query": {
-                "match_all": {},
+    def _get_query_object(self, start_timestamp: Optional[int], end_timestamp: Optional[int]) -> Dict[str, Any]:
+        if start_timestamp is None and end_timestamp is None:
+            return {
+                "query": {
+                    "match_all": {},
+                }
             }
-        }
 
-        records = elasticsearch.helpers.scan(
-            client=self.elastic_search_client,
-            index=index_name,
-            query=query,
-            scroll=SCROLL_CONSISTENCY_TIME,
-            raise_on_error=True,
-            preserve_order=False,
-            size=SCAN_BATCH_SIZE,
-            request_timeout=None,
-            scroll_kwargs=None,
-            clear_scroll=True
-        )
-
-        return records
-
-    def _get_query_object_with_interval(self, start_timestamp: int, end_timestamp: int) -> Dict[str, Any]:
         return {
             "query": {
                 "range": {

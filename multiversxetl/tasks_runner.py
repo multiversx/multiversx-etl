@@ -1,7 +1,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, Iterable, Protocol
+from typing import Any, Dict, Iterable, Optional, Protocol
 
 from google.cloud import bigquery
 
@@ -14,8 +14,7 @@ WRITE_DISPOSITION_TRUNCATE = "WRITE_TRUNCATE"
 
 
 class IIndexer(Protocol):
-    def get_records_with_interval(self, index_name: str, start_timestamp: int, end_timestamp: int) -> Iterable[Dict[str, Any]]: ...
-    def get_records_without_interval(self, index_name: str) -> Iterable[Dict[str, Any]]: ...
+    def get_records(self, index_name: str, start_timestamp: Optional[int] = None, end_timestamp: Optional[int] = None) -> Iterable[Dict[str, Any]]: ...
 
 
 class IFileStorage(Protocol):
@@ -65,13 +64,13 @@ class TasksRunner:
             assert task.start_timestamp is not None
             assert task.end_timestamp is not None
 
-            return self.indexer.get_records_with_interval(
+            return self.indexer.get_records(
                 task.index_name,
                 task.start_timestamp,
                 task.end_timestamp
             )
         elif isinstance(task, TaskWithoutInterval):
-            return self.indexer.get_records_without_interval(task.index_name)
+            return self.indexer.get_records(task.index_name)
 
         raise NotImplementedError()
 
@@ -129,15 +128,9 @@ class TasksRunner:
     def _prepare_bq_job_config(self, task: Task) -> bigquery.LoadJobConfig:
         schema_path = self.schema_folder / f"{task.index_name}.json"
         schema = self.bq_client.schema_from_json(schema_path)
-        write_disposition = self._get_bq_write_disposition(task)
 
         return bigquery.LoadJobConfig(
             schema=schema,
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-            write_disposition=write_disposition
+            write_disposition=WRITE_DISPOSITION_APPEND
         )
-
-    def _get_bq_write_disposition(self, task: Task) -> str:
-        if isinstance(task, TaskWithInterval):
-            return WRITE_DISPOSITION_APPEND
-        return WRITE_DISPOSITION_TRUNCATE

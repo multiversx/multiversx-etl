@@ -6,7 +6,7 @@ from google.cloud import bigquery
 
 
 class IIndexer(Protocol):
-    def count_records_with_interval(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int: ...
+    def count_records(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int: ...
 
 
 def check_loaded_data(
@@ -47,11 +47,13 @@ def _do_check_loaded_data_for_table(
 
 
 def _check_counts_indexer_vs_bq_in_interval(indexer: IIndexer, bq_client: bigquery.Client, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> bool:
-    count_in_indexer = indexer.count_records_with_interval(table, start_timestamp, end_timestamp)
+    count_in_indexer = indexer.count_records(table, start_timestamp, end_timestamp)
     count_in_bq = _get_num_records_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
     if count_in_indexer != count_in_bq:
         logging.warning(f"Counts do not match for '{table}': indexer = {count_in_indexer}, bq = {count_in_bq}.")
+    else:
+        logging.info(f"Counts match for '{table}': {count_in_indexer}")
 
     return count_in_indexer == count_in_bq
 
