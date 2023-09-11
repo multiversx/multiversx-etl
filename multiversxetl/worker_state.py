@@ -7,12 +7,12 @@ from typing import Any, Dict
 class WorkerState:
     def __init__(
         self,
-        latest_finished_interval_end_time: int,
+        latest_checkpoint_timestamp: int
     ) -> None:
-        self.latest_finished_interval_end_time = latest_finished_interval_end_time
+        self.latest_checkpoint_timestamp = latest_checkpoint_timestamp
 
-    def get_latest_finished_interval_end_datetime(self) -> datetime.datetime:
-        return datetime.datetime.fromtimestamp(self.latest_finished_interval_end_time, tz=datetime.timezone.utc)
+    def get_latest_checkpoint_datetime(self) -> datetime.datetime:
+        return datetime.datetime.fromtimestamp(self.latest_checkpoint_timestamp, tz=datetime.timezone.utc)
 
     @classmethod
     def load_from_file(cls, path: Path) -> "WorkerState":
@@ -23,7 +23,7 @@ class WorkerState:
     @classmethod
     def load_from_dict(cls, data: Dict[str, Any]) -> "WorkerState":
         return cls(
-            latest_finished_interval_end_time=data.get("latest_finished_interval_end_time", 0)
+            latest_checkpoint_timestamp=data.get("latest_checkpoint_timestamp", 0)
         )
 
     def save_to_file(self, path: Path) -> None:
@@ -33,5 +33,5 @@ class WorkerState:
 
     def to_plain_dictionary(self) -> Dict[str, Any]:
         return {
-            "latest_finished_interval_end_time": self.latest_finished_interval_end_time,
+            "latest_checkpoint_timestamp": self.latest_checkpoint_timestamp
         }

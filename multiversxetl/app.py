@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import socket
@@ -13,6 +14,9 @@ import requests
 from google.cloud import bigquery
 
 from multiversxetl.checks import check_loaded_data
+from multiversxetl.constants import (
+    SECONDS_MIN_DELTA_BETWEEN_NOW_AND_ETL_ITERATION,
+    SECONDS_SLEEP_BETWEEN_ETL_ITERATIONS)
 from multiversxetl.errors import UsageError
 from multiversxetl.file_storage import FileStorage
 from multiversxetl.indexer import Indexer
@@ -58,22 +62,34 @@ def _do_main(args: List[str]):
     if not worker_state_path.exists():
         raise UsageError(f"Worker state file not found: {worker_state_path}")
 
-    # TODO: Perhaps move here the main loop?
-    _run(
-        workspace=workspace,
-        worker_config_path=worker_config_path,
-        worker_state_path=worker_state_path,
-    )
+    for iteration_index in range(0, sys.maxsize):
+        logging.info(f"Starting iteration {iteration_index}...")
+
+        _run_iteration(
+            workspace=workspace,
+            worker_config_path=worker_config_path,
+            worker_state_path=worker_state_path,
+        )
+
+        logging.info(f"Iteration {iteration_index} done. Will sleep a bit.")
+        time.sleep(SECONDS_SLEEP_BETWEEN_ETL_ITERATIONS)
 
 
-def _run(
+def _run_iteration(
     workspace: Path,
     worker_config_path: Path,
     worker_state_path: Path,
 ):
-    # TODO: Allow to reload at run-time when beginning a new bulk.
     worker_config = WorkerConfig.load_from_file(worker_config_path)
     worker_state = WorkerState.load_from_file(worker_state_path)
+
+    now = int(_get_now().timestamp())
+    max_initial_end_time = now - SECONDS_MIN_DELTA_BETWEEN_NOW_AND_ETL_ITERATION
+    initial_end_timestamp = min(worker_config.time_partition_end, max_initial_end_time)
+
+    if worker_state.latest_checkpoint_timestamp > max_initial_end_time:
+        logging.info(f"Latest checkpoint is too recent. {worker_state.latest_checkpoint_timestamp - max_initial_end_time} seconds left before we can retry.")
+        return
 
     worker_id = socket.gethostname()
 
@@ -92,20 +108,19 @@ def _run(
 
     for bulk_index in range(0, sys.maxsize):
         cloud_logger.log_info(f"Starting bulk #{bulk_index}...")
-        cloud_logger.log_info(f"Latest finished interval end time: {worker_state.get_latest_finished_interval_end_datetime()}.")
+        cloud_logger.log_info(f"Latest checkpoint: {worker_state.get_latest_checkpoint_datetime()}.")
 
         latest_planned_interval_end_time = tasks_dashboard.plan_bulk_with_intervals(
             indices=worker_config.indices_with_intervals,
-            initial_start_timestamp=(worker_state.latest_finished_interval_end_time or worker_config.time_partition_start),
-            initial_end_timestamp=worker_config.time_partition_end,
+            initial_start_timestamp=(worker_state.latest_checkpoint_timestamp or worker_config.time_partition_start),
+            initial_end_timestamp=initial_end_timestamp,
             num_intervals_in_bulk=worker_config.num_intervals_in_bulk,
             interval_size_in_seconds=worker_config.interval_size_in_seconds
         )
 
         if latest_planned_interval_end_time is None:
-            logging.warning("No tasks planned, nothing to do. Will sleep a bit.")
-            time.sleep(5)
-            continue
+            logging.warning("No tasks planned, nothing to do.")
+            return
 
         _consume_tasks_in_parallel(
             dashboard=tasks_dashboard,
@@ -132,7 +147,7 @@ def _run(
             end_timestamp=latest_planned_interval_end_time
         )
 
-        worker_state.latest_finished_interval_end_time = latest_planned_interval_end_time
+        worker_state.latest_checkpoint_timestamp = latest_planned_interval_end_time
         worker_state.save_to_file(worker_state_path)
 
         cloud_logger.log_info(f"Bulk #{bulk_index} done.")
@@ -197,6 +212,10 @@ def _consume_tasks_thread(
             external_or_internal_event_has_error_happened.set()
             task.set_failed(error, traceback.format_exc())
             break
+
+
+def _get_now() -> datetime.datetime:
+    return datetime.datetime.now(tz=datetime.timezone.utc)
 
 
 if __name__ == "__main__":
