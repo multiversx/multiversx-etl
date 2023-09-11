@@ -5,7 +5,7 @@ from typing import Any, Dict, Iterable, Optional, Protocol
 
 from google.cloud import bigquery
 
-from multiversxetl.task import Task, TaskWithInterval, TaskWithoutInterval
+from multiversxetl.task import Task
 from multiversxetl.transformers import (BlocksTransformer, LogsTransformer,
                                         TokensTransformer, Transformer)
 
@@ -60,19 +60,11 @@ class TasksRunner:
         self._write_extracted_records_to_file(task, records)
 
     def _extract_records_from_indexer(self, task: Task) -> Iterable[Dict[str, Any]]:
-        if isinstance(task, TaskWithInterval):
-            assert task.start_timestamp is not None
-            assert task.end_timestamp is not None
-
-            return self.indexer.get_records(
-                task.index_name,
-                task.start_timestamp,
-                task.end_timestamp
-            )
-        elif isinstance(task, TaskWithoutInterval):
-            return self.indexer.get_records(task.index_name)
-
-        raise NotImplementedError()
+        return self.indexer.get_records(
+            task.index_name,
+            task.start_timestamp,
+            task.end_timestamp
+        )
 
     def _write_extracted_records_to_file(self, task: Task, records: Iterable[Dict[str, Any]]) -> None:
         filename = self.file_storage.get_extracted_path(task.get_filename_friendly_description())

@@ -19,8 +19,15 @@ class TaskStatus(Enum):
 
 
 class Task:
-    def __init__(self, index_name: str) -> None:
+    def __init__(
+            self,
+            index_name: str,
+            start_timestamp: Optional[int] = None,
+            end_timestamp: Optional[int] = None
+    ) -> None:
         self.index_name = index_name
+        self.start_timestamp = start_timestamp
+        self.end_timestamp = end_timestamp
         self.status: TaskStatus = TaskStatus.PENDING
         self.error: Optional[Exception] = None
         self.error_stack_trace: str = ""
@@ -55,12 +62,20 @@ class Task:
         self.error = error
         self.error_stack_trace = formatted_stack_trace
 
+    def __str__(self) -> str:
+        start_time = datetime.datetime.fromtimestamp(self.start_timestamp, tz=datetime.timezone.utc) if self.start_timestamp else None
+        end_time = datetime.datetime.fromtimestamp(self.end_timestamp, tz=datetime.timezone.utc) if self.end_timestamp else None
+
+        return f"({self.index_name}, {start_time} <> {end_time})"
+
     def get_filename_friendly_description(self) -> str:
-        raise NotImplementedError()
+        return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}"
 
     def to_plain_dictionary(self) -> Dict[str, Any]:
         return {
             "index_name": self.index_name,
+            "start_timestamp": self.start_timestamp,
+            "end_timestamp": self.end_timestamp,
             "status": self.status.value,
             "error": str(self.error) if self.error else None,
             "error_stack_trace": self.error_stack_trace
@@ -70,44 +85,3 @@ class Task:
         if self.started_on and self.finished_on:
             return (self.finished_on - self.started_on).total_seconds()
         return None
-
-
-class TaskWithInterval(Task):
-    def __init__(
-        self,
-        index_name: str,
-        start_timestamp: int,
-        end_timestamp: int
-    ) -> None:
-        super().__init__(index_name)
-        self.start_timestamp = start_timestamp
-        self.end_timestamp = end_timestamp
-
-    def __str__(self) -> str:
-        start_time = datetime.datetime.fromtimestamp(self.start_timestamp, tz=datetime.timezone.utc)
-        end_time = datetime.datetime.fromtimestamp(self.end_timestamp, tz=datetime.timezone.utc)
-
-        return f"({self.index_name}, {start_time} <> {end_time})"
-
-    def get_filename_friendly_description(self) -> str:
-        return f"{self.index_name}_{self.start_timestamp}_{self.end_timestamp}"
-
-    def to_plain_dictionary(self) -> Dict[str, Any]:
-        result = super().to_plain_dictionary()
-        result.update({
-            "start_timestamp": self.start_timestamp,
-            "end_timestamp": self.end_timestamp
-        })
-
-        return result
-
-
-class TaskWithoutInterval(Task):
-    def __init__(self, index_name: str) -> None:
-        super().__init__(index_name)
-
-    def __str__(self) -> str:
-        return f"({self.index_name})"
-
-    def get_filename_friendly_description(self) -> str:
-        return f"{self.index_name}"

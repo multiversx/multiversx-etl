@@ -5,7 +5,7 @@ import threading
 from typing import List, Optional
 
 from multiversxetl.constants import MIN_TIME_DELTA_FROM_NOW_FOR_ETL
-from multiversxetl.task import Task, TaskWithInterval, TaskWithoutInterval
+from multiversxetl.task import Task
 
 
 class TasksDashboard:
@@ -42,7 +42,7 @@ class TasksDashboard:
             end_timestamp_of_latest_interval = end_timestamp
 
             for index_name in indices:
-                task = TaskWithInterval(index_name, start_timestamp, end_timestamp)
+                task = Task(index_name, start_timestamp, end_timestamp)
                 self._tasks.append(task)
 
         # Consumers will randomly pick tasks.
@@ -58,7 +58,7 @@ class TasksDashboard:
         self._tasks.clear()
 
         for index_name in indices:
-            task = TaskWithoutInterval(index_name)
+            task = Task(index_name)
             self._tasks.append(task)
 
     def pick_and_start_task(self) -> Optional[Task]:
