@@ -10,15 +10,25 @@ class IIndexer(Protocol):
 
 
 def check_loaded_data(
-        bq_client: bigquery.Client,
-        bq_dataset: str,
-        indexer: IIndexer,
-        tables: List[str],
-        start_timestamp: int,
-        end_timestamp: int):
+    bq_client: bigquery.Client,
+    bq_dataset: str,
+    indexer: IIndexer,
+    tables: List[str],
+    start_timestamp: int,
+    end_timestamp: int,
+    should_fail_on_counts_mismatch: bool
+):
 
     for table in tables:
-        _do_check_loaded_data_for_table(bq_client, bq_dataset, indexer, table, start_timestamp, end_timestamp)
+        _do_check_loaded_data_for_table(
+            bq_client,
+            bq_dataset,
+            indexer,
+            table,
+            start_timestamp,
+            end_timestamp,
+            should_fail_on_counts_mismatch
+        )
 
 
 def _do_check_loaded_data_for_table(
@@ -27,7 +37,9 @@ def _do_check_loaded_data_for_table(
         indexer: IIndexer,
         table: str,
         start_timestamp: int,
-        end_timestamp: int):
+        end_timestamp: int,
+        should_fail_on_counts_mismatch: bool
+):
     start_datetime = datetime.datetime.fromtimestamp(start_timestamp, tz=datetime.timezone.utc)
     end_datetime = datetime.datetime.fromtimestamp(end_timestamp, tz=datetime.timezone.utc)
     logging.info(f"Checking table = {table}, start = {start_timestamp} ({start_datetime}), end = {end_timestamp} ({end_datetime})")
@@ -42,7 +54,7 @@ def _do_check_loaded_data_for_table(
     assert not any_duplicates
 
     counts_match: bool = _check_counts_indexer_vs_bq_in_interval(indexer, bq_client, bq_dataset, table, start_timestamp, end_timestamp)
-    if not counts_match:
+    if not counts_match and should_fail_on_counts_mismatch:
         raise Exception(f"Counts do not match for '{table}'.")
 
 
