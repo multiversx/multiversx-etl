@@ -3,29 +3,42 @@
     "schema_folder": "./schema",
     "bq_dataset": "mainnet",
     "indexer_url": "https://index.multiversx.com:443",
-    "indices_with_intervals": [
-        "blocks",
-        "receipts",
-        "transactions",
-        "miniblocks",
-        "rounds",
-        "accountshistory",
-        "scresults",
-        "accountsesdthistory",
-        "logs",
-        "operations"
-    ],
-    "indices_without_intervals": [
-        "accounts",
-        "accountsesdt",
-        "validators",
-        "epochinfo",
-        "delegators",
-        "tokens"
-    ],
-    "time_partition_start": 1596117600,
-    "time_partition_end": 2000000000,
-    "interval_size_in_seconds": 86400,
-    "num_intervals_in_bulk": 1,
-    "num_threads": 4
+    "genesis_timestamp": 1596117600,
+    "append_only_indices": {
+        "indices": [
+            "blocks",
+            "receipts",
+            "transactions",
+            "miniblocks",
+            "rounds",
+            "accountshistory",
+            "scresults",
+            "accountsesdthistory",
+            "logs",
+            "operations"
+        ],
+        "time_partition_start": 1596117600,
+        "time_partition_end": 2000000000,
+        "interval_size_in_seconds": 86400,
+        "num_intervals_in_bulk": 1,
+        "num_threads": 4,
+        "should_fail_on_counts_mismatch": true
+    },
+    "mutable_indices": {
+        "indices": [
+            "accounts",
+            "accountsesdt",
+            "validators",
+            "epochinfo",
+            "delegators",
+            "tokens",
+            "scdeploys"
+        ],
+        "time_partition_start": 0,
+        "time_partition_end": 0,
+        "interval_size_in_seconds": 7776000,
+        "num_intervals_in_bulk": 65535,
+        "num_threads": 256,
+        "should_fail_on_counts_mismatch": false
+    }
 }
