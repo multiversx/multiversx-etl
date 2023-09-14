@@ -12,7 +12,7 @@ class TasksDashboard:
         self._lock = threading.Lock()
         self._tasks: List[Task] = []
 
-    def plan_bulk_with_intervals(
+    def plan_bulk(
             self,
             indices: List[str],
             initial_start_timestamp: int,
@@ -46,17 +46,6 @@ class TasksDashboard:
         self._shuffle_all_existing_tasks()
 
         return end_timestamp_of_latest_interval
-
-    def plan_bulk_without_intervals(self, indices: List[str]) -> None:
-        """
-        This should not be called concurrently with other methods.
-        """
-        self.assert_all_existing_tasks_are_finished()
-        self._tasks.clear()
-
-        for index_name in indices:
-            task = Task(index_name)
-            self._tasks.append(task)
 
     def pick_and_start_task(self) -> Optional[Task]:
         """
