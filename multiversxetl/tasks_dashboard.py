@@ -93,8 +93,9 @@ class TasksDashboard:
         num_pending = len([task for task in self._tasks if task.is_pending()])
         num_started = len([task for task in self._tasks if task.is_started()])
         num_finished = len([task for task in self._tasks if task.is_finished()])
+        num_failed = len([task for task in self._tasks if task.is_failed()])
 
-        logging.info(f"{message}: pending = {num_pending}, started = {num_started}, finished = {num_finished}, total = {len(self._tasks)}.")
+        logging.info(f"{message}: pending = {num_pending}, started = {num_started}, finished = {num_finished}, failed = {num_failed}, total = {len(self._tasks)}.")
 
     def get_failed_tasks(self) -> List[Task]:
         """
