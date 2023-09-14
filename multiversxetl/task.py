@@ -34,6 +34,9 @@ class Task:
         self.started_on: Optional[datetime.datetime] = None
         self.finished_on: Optional[datetime.datetime] = None
 
+        if start_timestamp is not None and end_timestamp is not None:
+            assert start_timestamp < end_timestamp
+
     def is_pending(self) -> bool:
         return self.status == TaskStatus.PENDING
 
