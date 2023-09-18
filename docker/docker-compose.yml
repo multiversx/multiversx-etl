@@ -12,37 +12,13 @@ services:
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
       - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
-      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
-      - GROUP=${GROUP}
-      - INDEXER_URL=${INDEXER_URL}
-      - BQ_DATASET=${BQ_DATASET}
-      - INITIAL_START_TIMESTAMP=${INITIAL_START_TIMESTAMP}
+      - WORKSPACE=${WORKSPACE}
     entrypoint:
       [
         "python3.10",
         "-m",
         "multiversxetl",
-        "run",
-        "--gcp-project-id",
-        "${GCP_PROJECT_ID}",
+        "app",
         "--workspace",
-        "/workspace",
-        "--group",
-        "${GROUP}",
-        "--indexer-url",
-        "${INDEXER_URL}",
-        "--bq-dataset",
-        "${BQ_DATASET}",
-        "--initial-start-timestamp",
-        "${INITIAL_START_TIMESTAMP}",
-        "--num-threads-per-work-job",
-        "8",
-        "--schema-folder",
-        "~/app/schema",
-        "--num-units-per-work-batch",
-        "100",
-        "--skip-planning",
-        "--skip-deduplication",
-        "--min-delay-between-global-iterations",
-        "600"
+        "${WORKSPACE}"
       ]
