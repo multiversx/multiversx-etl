@@ -33,10 +33,11 @@ class TasksDashboard:
         for interval_index in range(num_intervals_in_bulk):
             start_timestamp = initial_start_timestamp + interval_index * interval_size_in_seconds
             end_timestamp = min(start_timestamp + interval_size_in_seconds, initial_end_timestamp)
-            end_timestamp_of_latest_interval = end_timestamp
 
-            if end_timestamp == start_timestamp:
-                return None
+            if start_timestamp >= initial_end_timestamp:
+                break
+
+            end_timestamp_of_latest_interval = end_timestamp
 
             for index_name in indices:
                 task = Task(index_name, start_timestamp, end_timestamp)
