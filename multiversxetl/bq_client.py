@@ -1,5 +1,8 @@
+import datetime
 import logging
+import time
 from pathlib import Path
+from threading import Lock
 from typing import Any, List, Optional
 
 import requests
@@ -16,6 +19,7 @@ class BqClient:
         client._http._auth_request.session.mount("https://", adapter)  # type: ignore
 
         self.client = client
+        self.throttler = OneEachSecondsThrottler(num_seconds=3)
 
     def truncate_tables(self, bq_dataset: str, tables: List[str]) -> None:
         for table in tables:
@@ -45,6 +49,8 @@ class BqClient:
             schema_path: Path,
             data_path: Path,
     ):
+        self.throttler.wait_if_necessary()
+
         table_id = f"{bq_dataset}.{table_name}"
         logging.debug(f"Loading data into {table_id}...")
 
@@ -64,3 +70,27 @@ class BqClient:
 
         table: Any = self.client.get_table(table_id)
         logging.debug(f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_id}")
+
+
+class OneEachSecondsThrottler:
+    def __init__(self, num_seconds: int) -> None:
+        self.mutex = Lock()
+        self.latest_operation_timestamp = 0
+        self.num_seconds = num_seconds
+
+    def wait_if_necessary(self) -> None:
+        while True:
+            should_wait = False
+
+            with self.mutex:
+                now = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())
+                delta = now - self.latest_operation_timestamp
+
+                if delta < self.num_seconds:
+                    should_wait = True
+                else:
+                    self.latest_operation_timestamp = now
+                    break
+
+            if should_wait:
+                time.sleep(1)
