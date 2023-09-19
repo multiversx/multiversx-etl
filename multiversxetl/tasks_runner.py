@@ -3,18 +3,17 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Protocol
 
-from google.cloud import bigquery
-
 from multiversxetl.task import Task
 from multiversxetl.transformers import (BlocksTransformer, LogsTransformer,
                                         TokensTransformer, Transformer)
 
-WRITE_DISPOSITION_APPEND = "WRITE_APPEND"
-WRITE_DISPOSITION_TRUNCATE = "WRITE_TRUNCATE"
-
 
 class IIndexer(Protocol):
     def get_records(self, index_name: str, start_timestamp: Optional[int] = None, end_timestamp: Optional[int] = None) -> Iterable[Dict[str, Any]]: ...
+
+
+class IBqClient(Protocol):
+    def load_data(self, bq_dataset: str, table_name: str, schema_path: Path, data_path: Path): ...
 
 
 class IFileStorage(Protocol):
@@ -28,7 +27,7 @@ class IFileStorage(Protocol):
 class TasksRunner:
     def __init__(
             self,
-            bq_client: bigquery.Client,
+            bq_client: IBqClient,
             bq_dataset: str,
             indexer: IIndexer,
             file_storage: IFileStorage,
@@ -101,28 +100,11 @@ class TasksRunner:
     def _do_load(self, task: Task) -> None:
         logging.debug(f"_do_load: {task}")
 
-        table_id = self._get_bq_table_id(task)
         file_path = self.file_storage.get_load_path(task.get_filename_friendly_description())
-        job_config = self._prepare_bq_job_config(task)
 
-        with open(file_path, "rb") as source_file:
-            job = self.bq_client.load_table_from_file(source_file, table_id, job_config=job_config)
-
-        # Waits for the job to complete.
-        job.result()
-
-        table: Any = self.bq_client.get_table(table_id)
-        logging.debug(f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_id}")
-
-    def _get_bq_table_id(self, task: Task) -> str:
-        return f"{self.bq_dataset}.{task.index_name}"
-
-    def _prepare_bq_job_config(self, task: Task) -> bigquery.LoadJobConfig:
-        schema_path = self.schema_folder / f"{task.index_name}.json"
-        schema = self.bq_client.schema_from_json(schema_path)
-
-        return bigquery.LoadJobConfig(
-            schema=schema,
-            source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-            write_disposition=WRITE_DISPOSITION_APPEND
+        self.bq_client.load_data(
+            bq_dataset=self.bq_dataset,
+            table_name=task.index_name,
+            schema_path=self.schema_folder / f"{task.index_name}.json",
+            data_path=file_path
         )

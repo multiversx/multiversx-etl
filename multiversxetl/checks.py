@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import Any, List, Protocol
+from typing import Any, List, Optional, Protocol
 
 from google.cloud import bigquery
 
@@ -9,8 +9,12 @@ class IIndexer(Protocol):
     def count_records(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int: ...
 
 
+class IBqClient(Protocol):
+    def run_query(self, query_parameters: List[bigquery.ScalarQueryParameter], query: str, into_table: Optional[str] = None) -> List[Any]: ...
+
+
 def check_loaded_data(
-    bq_client: bigquery.Client,
+    bq_client: IBqClient,
     bq_dataset: str,
     indexer: IIndexer,
     tables: List[str],
@@ -32,7 +36,7 @@ def check_loaded_data(
 
 
 def _do_check_loaded_data_for_table(
-        bq_client: bigquery.Client,
+        bq_client: IBqClient,
         bq_dataset: str,
         indexer: IIndexer,
         table: str,
@@ -58,7 +62,7 @@ def _do_check_loaded_data_for_table(
         raise Exception(f"Counts do not match for '{table}'.")
 
 
-def _check_counts_indexer_vs_bq_in_interval(indexer: IIndexer, bq_client: bigquery.Client, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> bool:
+def _check_counts_indexer_vs_bq_in_interval(indexer: IIndexer, bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> bool:
     count_in_indexer = indexer.count_records(table, start_timestamp, end_timestamp)
     count_in_bq = _get_num_records_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
@@ -70,7 +74,7 @@ def _check_counts_indexer_vs_bq_in_interval(indexer: IIndexer, bq_client: bigque
     return count_in_indexer == count_in_bq
 
 
-def _check_any_duplicates_in_bq(bq_client: bigquery.Client, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> bool:
+def _check_any_duplicates_in_bq(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> bool:
     num_duplicates = _get_num_duplicates_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
 
     if num_duplicates:
@@ -84,12 +88,10 @@ def _check_any_duplicates_in_bq(bq_client: bigquery.Client, bq_dataset: str, tab
     return num_duplicates > 0
 
 
-def _get_samples_of_duplicates_in_interval(bq_client: bigquery.Client, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> List[Any]:
+def _get_samples_of_duplicates_in_interval(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> List[Any]:
     query = _create_query_for_get_samples_of_duplicates_in_interval(bq_dataset, table)
     query_parameters = _create_query_parameters_for_interval(start_timestamp, end_timestamp)
-    job_config = bigquery.QueryJobConfig(query_parameters=query_parameters)
-    job = bq_client.query(query, job_config=job_config)
-    records = list(job.result())
+    records = bq_client.run_query(query_parameters, query)
     return records
 
 
@@ -104,12 +106,10 @@ def _create_query_for_get_samples_of_duplicates_in_interval(dataset: str, table:
     """
 
 
-def _get_num_duplicates_in_interval(bq_client: bigquery.Client, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
+def _get_num_duplicates_in_interval(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
     query = _create_query_for_get_num_duplicates_in_interval(bq_dataset, table)
     query_parameters = _create_query_parameters_for_interval(start_timestamp, end_timestamp)
-    job_config = bigquery.QueryJobConfig(query_parameters=query_parameters)
-    job = bq_client.query(query, job_config=job_config)
-    records = list(job.result())
+    records = bq_client.run_query(query_parameters, query)
     return records[0].num_duplicates or 0
 
 
@@ -126,12 +126,10 @@ def _create_query_for_get_num_duplicates_in_interval(dataset: str, table: str):
     """
 
 
-def _get_num_records_in_interval(bq_client: bigquery.Client, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
+def _get_num_records_in_interval(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
     query = _create_query_for_get_num_records_in_interval(bq_dataset, table)
     query_parameters = _create_query_parameters_for_interval(start_timestamp, end_timestamp)
-    job_config = bigquery.QueryJobConfig(query_parameters=query_parameters)
-    job = bq_client.query(query, job_config=job_config)
-    records = list(job.result())
+    records = bq_client.run_query(query_parameters, query)
     return records[0].count
 
 
@@ -150,16 +148,11 @@ def _create_query_parameters_for_interval(start_timestamp: int, end_timestamp: i
     ]
 
 
-def _deduplicate_table(bq_client: bigquery.Client, bq_dataset: str, table: str):
+def _deduplicate_table(bq_client: IBqClient, bq_dataset: str, table: str):
     logging.info(f"Deduplicating table: {table}")
 
     query = _create_query_for_deduplicate_tabel(bq_dataset, table)
-    job_config = bigquery.QueryJobConfig(
-        destination=f"{bq_client.project}.{bq_dataset}.{table}",
-        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE
-    )
-    job = bq_client.query(query, job_config=job_config)
-    job.result()
+    bq_client.run_query([], query, into_table=f"{bq_dataset}.{table}")
 
 
 def _create_query_for_deduplicate_tabel(dataset: str, table: str):

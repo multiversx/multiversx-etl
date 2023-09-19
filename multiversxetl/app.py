@@ -10,9 +10,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import List, Optional
 
-import requests
-from google.cloud import bigquery
-
+from multiversxetl.bq_client import BqClient
 from multiversxetl.checks import check_loaded_data
 from multiversxetl.constants import (
     SECONDS_MIN_DELTA_BETWEEN_NOW_AND_APPEND_ONLY_INDICES_EXTRACTION_END_TIME,
@@ -88,7 +86,7 @@ def _run_iteration(
     iteration_start_time = int(_get_now().timestamp())
     worker_id = socket.gethostname()
 
-    bq_client = _create_bq_client(worker_config.gcp_project_id)
+    bq_client = BqClient(worker_config.gcp_project_id)
     indexer = Indexer(worker_config.indexer_url)
     cloud_logger = CloudLogger(worker_config.gcp_project_id, worker_id)
     tasks_dashboard = TasksDashboard()
@@ -105,8 +103,7 @@ def _run_iteration(
     initial_end_timestamp = iteration_start_time
 
     # First, we truncate the mutable indices (they will be reloaded from scratch).
-    _truncate_tables(
-        bq_client=bq_client,
+    bq_client.truncate_tables(
         bq_dataset=worker_config.bq_dataset,
         tables=mutable_indices_config.indices,
     )
@@ -154,17 +151,9 @@ def _run_iteration(
         cloud_logger.log_info(f"Bulk #{bulk_index} done.")
 
 
-def _create_bq_client(gcp_project_id: str) -> bigquery.Client:
-    bq_client = bigquery.Client(project=gcp_project_id)
-    adapter = requests.adapters.HTTPAdapter(pool_connections=128, pool_maxsize=128, max_retries=3)  # type: ignore
-    bq_client._http.mount("https://", adapter)  # type: ignore
-    bq_client._http._auth_request.session.mount("https://", adapter)  # type: ignore
-    return bq_client
-
-
 def _plan_and_consume_bulk(
     indexer: Indexer,
-    bq_client: bigquery.Client,
+    bq_client: BqClient,
     bq_dataset: str,
     tasks_dashboard: TasksDashboard,
     tasks_runner: TasksRunner,
@@ -267,12 +256,6 @@ def _consume_tasks_thread(
 
 def _get_now() -> datetime.datetime:
     return datetime.datetime.now(tz=datetime.timezone.utc)
-
-
-def _truncate_tables(bq_client: bigquery.Client, bq_dataset: str, tables: List[str]) -> None:
-    for table in tables:
-        table_ref = bq_client.dataset(bq_dataset).table(table)
-        bq_client.delete_table(table_ref)
 
 
 if __name__ == "__main__":
