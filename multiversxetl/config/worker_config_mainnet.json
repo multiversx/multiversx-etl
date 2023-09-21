@@ -29,11 +29,15 @@
         "indices": [
             "accounts",
             "accountsesdt",
-            "validators",
-            "epochinfo",
             "delegators",
             "tokens",
-            "scdeploys"
+            "scdeploys",
+            "epochinfo",
+            "validators"
+        ],
+        "indices_without_timestamp": [
+            "epochinfo",
+            "validators"
         ],
         "time_partition_start": 0,
         "time_partition_end": 0,

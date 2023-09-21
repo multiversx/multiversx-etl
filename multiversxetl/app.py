@@ -164,6 +164,7 @@ def _plan_and_consume_bulk(
     latest_planned_interval_end_time = tasks_dashboard.plan_bulk(
         bq_dataset=bq_dataset,
         indices=indices_config.indices,
+        indices_without_timestamp=indices_config.indices_without_timestamp,
         initial_start_timestamp=initial_start_timestamp,
         initial_end_timestamp=initial_end_timestamp,
         num_intervals_in_bulk=indices_config.num_intervals_in_bulk,

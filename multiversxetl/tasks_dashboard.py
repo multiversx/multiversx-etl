@@ -16,6 +16,7 @@ class TasksDashboard:
             self,
             bq_dataset: str,
             indices: List[str],
+            indices_without_timestamp: List[str],
             initial_start_timestamp: int,
             initial_end_timestamp: int,
             num_intervals_in_bulk: int,
@@ -40,9 +41,13 @@ class TasksDashboard:
 
             end_timestamp_of_latest_interval = end_timestamp
 
-            for index_name in indices:
-                task = Task(index_name, bq_dataset, start_timestamp, end_timestamp)
+            for index_name in set(indices) - set(indices_without_timestamp):
+                task = Task(bq_dataset, index_name, start_timestamp, end_timestamp)
                 self._tasks.append(task)
+
+        for index_name in indices_without_timestamp:
+            task = Task(bq_dataset, index_name)
+            self._tasks.append(task)
 
         # Consumers will randomly pick tasks.
         self._shuffle_all_existing_tasks()
