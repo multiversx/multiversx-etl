@@ -197,7 +197,8 @@ def _plan_and_consume_bulk(
         tables=indices_config.indices,
         start_timestamp=indices_config.time_partition_start,
         end_timestamp=latest_planned_interval_end_time,
-        should_fail_on_counts_mismatch=indices_config.should_fail_on_counts_mismatch
+        should_fail_on_counts_mismatch=indices_config.should_fail_on_counts_mismatch,
+        skip_counts_check_for_indices=indices_config.skip_counts_check_for_indices
     )
 
     return latest_planned_interval_end_time

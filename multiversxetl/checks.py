@@ -20,10 +20,14 @@ def check_loaded_data(
     tables: List[str],
     start_timestamp: int,
     end_timestamp: int,
-    should_fail_on_counts_mismatch: bool
+    should_fail_on_counts_mismatch: bool,
+    skip_counts_check_for_indices: List[str]
 ):
 
     for table in tables:
+        if table in skip_counts_check_for_indices:
+            continue
+
         _do_check_loaded_data_for_table(
             bq_client,
             bq_dataset,

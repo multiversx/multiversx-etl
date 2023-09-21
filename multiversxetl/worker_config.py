@@ -48,6 +48,7 @@ class IndicesConfig:
             num_intervals_in_bulk: int,
             num_threads: int,
             should_fail_on_counts_mismatch: bool,
+            skip_counts_check_for_indices: List[str] = []
     ) -> None:
         self.bq_dataset = bq_dataset
         self.indices = indices
@@ -57,6 +58,7 @@ class IndicesConfig:
         self.num_intervals_in_bulk = num_intervals_in_bulk
         self.num_threads = num_threads
         self.should_fail_on_counts_mismatch = should_fail_on_counts_mismatch
+        self.skip_counts_check_for_indices = skip_counts_check_for_indices
 
     @classmethod
     def load_from_dict(cls, data: Dict[str, Any]) -> "IndicesConfig":
@@ -68,5 +70,6 @@ class IndicesConfig:
             interval_size_in_seconds=data["interval_size_in_seconds"],
             num_intervals_in_bulk=data["num_intervals_in_bulk"],
             num_threads=data["num_threads"],
-            should_fail_on_counts_mismatch=data["should_fail_on_counts_mismatch"]
+            should_fail_on_counts_mismatch=data["should_fail_on_counts_mismatch"],
+            skip_counts_check_for_indices=data.get("skip_counts_check_for_indices", [])
         )
