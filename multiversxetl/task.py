@@ -21,10 +21,12 @@ class TaskStatus(Enum):
 class Task:
     def __init__(
             self,
+            bq_dataset: str,
             index_name: str,
             start_timestamp: Optional[int] = None,
             end_timestamp: Optional[int] = None
     ) -> None:
+        self.bq_dataset = bq_dataset
         self.index_name = index_name
         self.start_timestamp = start_timestamp
         self.end_timestamp = end_timestamp
@@ -76,6 +78,7 @@ class Task:
 
     def to_plain_dictionary(self) -> Dict[str, Any]:
         return {
+            "bq_dataset": self.bq_dataset,
             "index_name": self.index_name,
             "start_timestamp": self.start_timestamp,
             "end_timestamp": self.end_timestamp,

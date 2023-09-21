@@ -28,13 +28,11 @@ class TasksRunner:
     def __init__(
             self,
             bq_client: IBqClient,
-            bq_dataset: str,
             indexer: IIndexer,
             file_storage: IFileStorage,
             schema_folder: Path
     ) -> None:
         self.bq_client = bq_client
-        self.bq_dataset = bq_dataset
         self.indexer = indexer
         self.file_storage = file_storage
         self.schema_folder = schema_folder
@@ -103,7 +101,7 @@ class TasksRunner:
         file_path = self.file_storage.get_load_path(task.get_filename_friendly_description())
 
         self.bq_client.load_data(
-            bq_dataset=self.bq_dataset,
+            bq_dataset=task.bq_dataset,
             table_name=task.index_name,
             schema_path=self.schema_folder / f"{task.index_name}.json",
             data_path=file_path

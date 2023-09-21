@@ -14,6 +14,7 @@ class TasksDashboard:
 
     def plan_bulk(
             self,
+            bq_dataset: str,
             indices: List[str],
             initial_start_timestamp: int,
             initial_end_timestamp: int,
@@ -40,7 +41,7 @@ class TasksDashboard:
             end_timestamp_of_latest_interval = end_timestamp
 
             for index_name in indices:
-                task = Task(index_name, start_timestamp, end_timestamp)
+                task = Task(index_name, bq_dataset, start_timestamp, end_timestamp)
                 self._tasks.append(task)
 
         # Consumers will randomly pick tasks.

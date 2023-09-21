@@ -93,7 +93,6 @@ def _run_iteration(
     file_storage = FileStorage(workspace)
     tasks_runner = TasksRunner(
         bq_client=bq_client,
-        bq_dataset=worker_config.bq_dataset,
         indexer=indexer,
         file_storage=file_storage,
         schema_folder=worker_config.schema_folder
@@ -104,7 +103,7 @@ def _run_iteration(
 
     # First, we truncate the mutable indices (they will be reloaded from scratch).
     bq_client.truncate_tables(
-        bq_dataset=worker_config.bq_dataset,
+        bq_dataset=mutable_indices_config.bq_dataset,
         tables=mutable_indices_config.indices,
     )
 
@@ -112,7 +111,7 @@ def _run_iteration(
     _ = _plan_and_consume_bulk(
         indexer=indexer,
         bq_client=bq_client,
-        bq_dataset=worker_config.bq_dataset,
+        bq_dataset=mutable_indices_config.bq_dataset,
         tasks_dashboard=tasks_dashboard,
         tasks_runner=tasks_runner,
         cloud_logger=cloud_logger,
@@ -132,7 +131,7 @@ def _run_iteration(
         latest_checkpoint_timestamp = _plan_and_consume_bulk(
             indexer=indexer,
             bq_client=bq_client,
-            bq_dataset=worker_config.bq_dataset,
+            bq_dataset=append_only_indices_config.bq_dataset,
             tasks_dashboard=tasks_dashboard,
             tasks_runner=tasks_runner,
             cloud_logger=cloud_logger,
@@ -163,6 +162,7 @@ def _plan_and_consume_bulk(
     initial_end_timestamp: int
 ) -> Optional[int]:
     latest_planned_interval_end_time = tasks_dashboard.plan_bulk(
+        bq_dataset=bq_dataset,
         indices=indices_config.indices,
         initial_start_timestamp=initial_start_timestamp,
         initial_end_timestamp=initial_end_timestamp,
