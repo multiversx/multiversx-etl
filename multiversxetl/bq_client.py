@@ -7,12 +7,15 @@ from typing import Any, List, Optional
 
 import requests
 from google.cloud import bigquery
+from google.cloud.bigquery_datatransfer_v1 import (
+    DataTransferServiceClient, StartManualTransferRunsRequest)
 
 WRITE_DISPOSITION_APPEND = "WRITE_APPEND"
 
 
 class BqClient:
     def __init__(self, gcp_project_id: str) -> None:
+        self.gcp_project_id = gcp_project_id
         client = bigquery.Client(project=gcp_project_id)
         adapter = requests.adapters.HTTPAdapter(pool_connections=128, pool_maxsize=128, max_retries=3)  # type: ignore
         client._http.mount("https://", adapter)  # type: ignore
@@ -23,8 +26,10 @@ class BqClient:
 
     def truncate_tables(self, bq_dataset: str, tables: List[str]) -> None:
         for table in tables:
+            logging.info(f"Truncating {bq_dataset}.{table}...")
+
             table_ref = self.client.dataset(bq_dataset).table(table)
-            self.client.delete_table(table_ref)
+            self.client.delete_table(table_ref, not_found_ok=True)
 
     def run_query(
         self,

@@ -1,5 +1,6 @@
 six
 elasticsearch
 google-cloud-bigquery
+google-cloud-bigquery-datatransfer
 google-cloud-firestore
 google-cloud-logging

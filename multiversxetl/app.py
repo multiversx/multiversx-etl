@@ -175,6 +175,8 @@ def _plan_and_consume_bulk(
         logging.warning("No tasks planned, nothing to do.")
         return
 
+    tasks_dashboard.report_tasks()
+
     _consume_tasks_in_parallel(
         tasks_dashboard=tasks_dashboard,
         tasks_runner=tasks_runner,

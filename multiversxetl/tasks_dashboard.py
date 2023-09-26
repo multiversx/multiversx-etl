@@ -101,3 +101,11 @@ class TasksDashboard:
 
     def _get_now(self) -> datetime.datetime:
         return datetime.datetime.now(tz=datetime.timezone.utc)
+
+    def report_tasks(self) -> None:
+        """
+        This should not be called concurrently with other methods.
+        """
+
+        for task in self._tasks:
+            logging.info(f"{task}: {task.status}")
