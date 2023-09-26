@@ -26,6 +26,7 @@
     },
     "mutable_indices": {
         "bq_dataset": "mainnet_mutable_indices_staging",
+        "bq_data_transfer_name": "projects/multiversx-blockchain-etl/locations/eu/transferConfigs/651a71b4-0000-29cd-8cea-94eb2c1b1b5a",
         "indices": [
             "accounts",
             "accountsesdt",

@@ -41,6 +41,7 @@ class IndicesConfig:
     def __init__(
             self,
             bq_dataset: str,
+            bq_data_transfer_name: str,
             indices: List[str],
             indices_without_timestamp: List[str],
             time_partition_start: int,
@@ -52,6 +53,7 @@ class IndicesConfig:
             skip_counts_check_for_indices: List[str] = []
     ) -> None:
         self.bq_dataset = bq_dataset
+        self.bq_data_transfer_name = bq_data_transfer_name
         self.indices = indices
         self.indices_without_timestamp = indices_without_timestamp
         self.time_partition_start = time_partition_start
@@ -66,6 +68,7 @@ class IndicesConfig:
     def load_from_dict(cls, data: Dict[str, Any]) -> "IndicesConfig":
         return cls(
             bq_dataset=data["bq_dataset"],
+            bq_data_transfer_name=data.get("bq_data_transfer_name", ""),
             indices=data["indices"],
             indices_without_timestamp=data.get("indices_without_timestamp", []),
             time_partition_start=data["time_partition_start"],

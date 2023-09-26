@@ -76,6 +76,21 @@ class BqClient:
         table: Any = self.client.get_table(table_id)
         logging.debug(f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_id}")
 
+    def trigger_data_transfer(self, transfer_config_name: str):
+        # https://cloud.google.com/bigquery/docs/working-with-transfers
+        client = DataTransferServiceClient()
+        now = datetime.datetime.now(datetime.timezone.utc)
+
+        request = StartManualTransferRunsRequest(
+            parent=transfer_config_name,
+            requested_run_time=now,
+        )
+
+        response = client.start_manual_transfer_runs(request=request)  # type: ignore
+
+        for run in response.runs:
+            logging.info(f"Started manual transfer: time = {run.run_time}, name = {run.name}")
+
 
 class OneEachSecondsThrottler:
     def __init__(self, num_seconds: int) -> None:
