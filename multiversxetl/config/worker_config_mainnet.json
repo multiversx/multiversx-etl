@@ -4,18 +4,19 @@
     "indexer_url": "https://index.multiversx.com:443",
     "genesis_timestamp": 1596117600,
     "append_only_indices": {
-        "bq_dataset": "mainnet",
+        "bq_dataset": "mainnet_append_only_indices_staging",
+        "bq_data_transfer_name": "projects/multiversx-blockchain-etl/locations/eu/transferConfigs/6503b4b2-0000-2c27-a437-f403045ceb22",
         "indices": [
-            "blocks",
-            "receipts",
-            "transactions",
-            "miniblocks",
-            "rounds",
-            "accountshistory",
-            "scresults",
             "accountsesdthistory",
+            "accountshistory",
+            "blocks",
             "logs",
-            "operations"
+            "miniblocks",
+            "operations",
+            "receipts",
+            "rounds",
+            "scresults",
+            "transactions"
         ],
         "time_partition_start": 1596117600,
         "time_partition_end": 2000000000,
@@ -31,9 +32,9 @@
             "accounts",
             "accountsesdt",
             "delegators",
-            "tokens",
-            "scdeploys",
             "epochinfo",
+            "scdeploys",
+            "tokens",
             "validators"
         ],
         "indices_without_timestamp": [
