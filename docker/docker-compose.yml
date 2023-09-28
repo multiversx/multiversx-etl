@@ -1,17 +1,17 @@
 version: '3'
 
 services:
-  multiversx-etl-run:
+  multiversx-etl-append-only-indices:
     ulimits:
       nproc: 65535
     image: multiversx-etl:latest
-    container_name: multiversx-etl-run
+    container_name: multiversx-etl-append-only-indices
     volumes:
       - ${WORKSPACE}:/workspace
       - ${GOOGLE_APPLICATION_CREDENTIALS}:/secrets/credentials.json
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
-      - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
+      - GOOGLE_CLOUD_PROJECT=multiversx-etl
       - WORKSPACE=${WORKSPACE}
     entrypoint:
       [
@@ -20,5 +20,33 @@ services:
         "multiversxetl",
         "app",
         "--workspace",
-        "${WORKSPACE}"
+        "${WORKSPACE}",
+        "etl-append-only-indices",
+        "--sleep-between-iterations",
+        "1800"
+      ]
+
+  multiversx-etl-mutable-indices:
+    ulimits:
+      nproc: 65535
+    image: multiversx-etl:latest
+    container_name: multiversx-etl-mutable-indices
+    volumes:
+      - ${WORKSPACE}:/workspace
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/secrets/credentials.json
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
+      - GOOGLE_CLOUD_PROJECT=multiversx-etl
+      - WORKSPACE=${WORKSPACE}
+    entrypoint:
+      [
+        "python3.10",
+        "-m",
+        "multiversxetl",
+        "app",
+        "--workspace",
+        "${WORKSPACE}",
+        "etl-mutable-indices",
+        "--sleep-between-iterations",
+        "86400"
       ]
