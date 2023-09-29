@@ -73,7 +73,7 @@ def _do_etl_mutable_indices(args: Any):
 
         controller = AppController(workspace)
         controller.etl_mutable_indices()
-        # controller.bq_client.trigger_data_transfer(controller.worker_config.mutable_indices.bq_data_transfer_name)
+        controller.bq_client.trigger_data_transfer(controller.worker_config.mutable_indices.bq_data_transfer_name)
 
         logging.info(f"Iteration {iteration_index} done (_do_main_mutable_indices). Will sleep {sleep_between_iterations} seconds...")
         time.sleep(sleep_between_iterations)
