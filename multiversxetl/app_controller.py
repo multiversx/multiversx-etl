@@ -64,8 +64,6 @@ class AppController:
             initial_end_timestamp=now
         )
 
-        self.bq_client.trigger_data_transfer(indices_config.bq_data_transfer_name)
-
     def etl_append_only_indices(self):
         indices_config = self.worker_config.append_only_indices
 
@@ -94,8 +92,6 @@ class AppController:
             self.worker_state.save_to_file(self.worker_state_path)
 
             self.cloud_logger.log_info(f"Bulk #{bulk_index} done.")
-
-        self.bq_client.trigger_data_transfer(indices_config.bq_data_transfer_name)
 
     def _plan_and_consume_bulk(
         self,

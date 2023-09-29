@@ -17,10 +17,9 @@ services:
       [
         "python3.10",
         "-m",
-        "multiversxetl",
-        "app",
+        "multiversxetl.app",
         "--workspace",
-        "${WORKSPACE}",
+        "/workspace",
         "etl-append-only-indices",
         "--sleep-between-iterations",
         "1800"
@@ -42,10 +41,9 @@ services:
       [
         "python3.10",
         "-m",
-        "multiversxetl",
-        "app",
+        "multiversxetl.app",
         "--workspace",
-        "${WORKSPACE}",
+        "/workspace",
         "etl-mutable-indices",
         "--sleep-between-iterations",
         "86400"

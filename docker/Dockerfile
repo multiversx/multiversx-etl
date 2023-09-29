@@ -13,7 +13,7 @@ RUN pip install -r /requirements.txt && rm /requirements.txt
 
 # Switch to regular user
 USER $USERNAME
-WORKDIR /home/${USERNAME}
+WORKDIR /home/${USERNAME}/app
 
 COPY ./multiversxetl /home/${USERNAME}/app/multiversxetl
 COPY ./schema /home/${USERNAME}/app/schema

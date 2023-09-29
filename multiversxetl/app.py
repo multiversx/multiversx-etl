@@ -39,17 +39,17 @@ def _do_main(args: List[str]):
 
     subparser = subparsers.add_parser("etl-append-only-indices", help="Do ETL for append-only indices (continuously).")
     subparser.add_argument("--sleep-between-iterations", type=int, default=SECONDS_IN_HALF_AN_HOUR)
-    subparser.set_defaults(func=_do_main_etl_append_only_indices)
+    subparser.set_defaults(func=_do_etl_append_only_indices)
 
     subparser = subparsers.add_parser("etl-mutable-indices", help="Do ETL for mutable indices (continuously).")
     subparser.add_argument("--sleep-between-iterations", type=int, default=SECONDS_IN_DAY)
-    subparser.set_defaults(func=_do_main_mutable_indices)
+    subparser.set_defaults(func=_do_etl_mutable_indices)
 
     parsed_args = parser.parse_args(args)
     parsed_args.func(parsed_args)
 
 
-def _do_main_etl_append_only_indices(args: Any):
+def _do_etl_append_only_indices(args: Any):
     workspace = Path(args.workspace).expanduser().resolve()
     sleep_between_iterations = args.sleep_between_iterations
 
@@ -58,12 +58,13 @@ def _do_main_etl_append_only_indices(args: Any):
 
         controller = AppController(workspace)
         controller.etl_append_only_indices()
+        controller.bq_client.trigger_data_transfer(controller.worker_config.append_only_indices.bq_data_transfer_name)
 
-        logging.info(f"Iteration {iteration_index} done (_do_main_etl_append_only_indices). Will sleep a bit...")
+        logging.info(f"Iteration {iteration_index} done (_do_main_etl_append_only_indices). Will sleep {sleep_between_iterations} seconds...")
         time.sleep(sleep_between_iterations)
 
 
-def _do_main_mutable_indices(args: Any):
+def _do_etl_mutable_indices(args: Any):
     workspace = Path(args.workspace).expanduser().resolve()
     sleep_between_iterations = args.sleep_between_iterations
 
@@ -72,8 +73,9 @@ def _do_main_mutable_indices(args: Any):
 
         controller = AppController(workspace)
         controller.etl_mutable_indices()
+        # controller.bq_client.trigger_data_transfer(controller.worker_config.mutable_indices.bq_data_transfer_name)
 
-        logging.info(f"Iteration {iteration_index} done (_do_main_mutable_indices). Will sleep a bit...")
+        logging.info(f"Iteration {iteration_index} done (_do_main_mutable_indices). Will sleep {sleep_between_iterations} seconds...")
         time.sleep(sleep_between_iterations)
 
 
