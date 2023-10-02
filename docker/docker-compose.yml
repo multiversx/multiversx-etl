@@ -22,7 +22,7 @@ services:
         "/workspace",
         "etl-append-only-indices",
         "--sleep-between-iterations",
-        "1800"
+        "3600"
       ]
 
   multiversx-etl-mutable-indices:
