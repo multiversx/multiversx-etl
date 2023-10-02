@@ -52,82 +52,33 @@ def _do_check_loaded_data_for_table(
     end_datetime = datetime.datetime.fromtimestamp(end_timestamp, tz=datetime.timezone.utc)
     logging.info(f"Checking table = {table}, start = {start_timestamp} ({start_datetime}), end = {end_timestamp} ({end_datetime})")
 
-    any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
-
-    if any_duplicates:
-        logging.warning(f"Duplicates found (will be corrected).")
-        _deduplicate_table(bq_client, bq_dataset, table)
-
-    any_duplicates: bool = _check_any_duplicates_in_bq(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
-    assert not any_duplicates
-
-    counts_match: bool = _check_counts_indexer_vs_bq_in_interval(indexer, bq_client, bq_dataset, table, start_timestamp, end_timestamp)
-    if not counts_match and should_fail_on_counts_mismatch:
-        raise Exception(f"Counts do not match for '{table}'.")
-
-
-def _check_counts_indexer_vs_bq_in_interval(indexer: IIndexer, bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> bool:
     count_in_indexer = indexer.count_records(table, start_timestamp, end_timestamp)
     count_in_bq = _get_num_records_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
+    counts_delta = count_in_indexer - count_in_bq
 
-    if count_in_indexer != count_in_bq:
-        logging.warning(f"Counts do not match for '{table}': indexer = {count_in_indexer}, bq = {count_in_bq}.")
+    if counts_delta == 0:
+        logging.info(f"Counts match for '{table}'.")
     else:
-        logging.info(f"Counts match for '{table}': {count_in_indexer}")
+        logging.warning(f"Counts do not match for '{table}': indexer = {count_in_indexer}, bq = {count_in_bq}, delta = {counts_delta}.")
 
-    return count_in_indexer == count_in_bq
+    if not should_fail_on_counts_mismatch:
+        return
 
+    if counts_delta > 0:
+        raise Exception(f"Data is missing in BigQuery for table '{table}'. Delta = {counts_delta}.")
 
-def _check_any_duplicates_in_bq(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> bool:
-    num_duplicates = _get_num_duplicates_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
+    if counts_delta < 0:
+        logging.warning(f"More records in BigQuery than in indexer. Will attempt to de-duplicate.")
 
-    if num_duplicates:
-        logging.warning(f"Number of duplicates in BigQuery: {num_duplicates}")
+        # We do not perform a duplication check (most probably a positive anyway), we directly de-duplicate, to save costs.
+        _deduplicate_table(bq_client, bq_dataset, table)
 
-        samples = _get_samples_of_duplicates_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
+        # Check counts again.
+        count_in_bq = _get_num_records_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
+        counts_delta = count_in_indexer - count_in_bq
 
-        for record in samples:
-            logging.debug(f"Duplicate sample for {table}: ID = {record._id}, count = {record.count}")
-
-    return num_duplicates > 0
-
-
-def _get_samples_of_duplicates_in_interval(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> List[Any]:
-    query = _create_query_for_get_samples_of_duplicates_in_interval(bq_dataset, table)
-    query_parameters = _create_query_parameters_for_interval(start_timestamp, end_timestamp)
-    records = bq_client.run_query(query_parameters, query)
-    return records
-
-
-def _create_query_for_get_samples_of_duplicates_in_interval(dataset: str, table: str):
-    return f"""
-    SELECT `_id`, COUNT(*) AS `count`
-    FROM `{dataset}.{table}`
-    WHERE `timestamp` >= TIMESTAMP_SECONDS(@start_timestamp) AND `timestamp` < TIMESTAMP_SECONDS(@end_timestamp)
-    GROUP BY _id
-    HAVING `count` > 1
-    LIMIT 10
-    """
-
-
-def _get_num_duplicates_in_interval(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
-    query = _create_query_for_get_num_duplicates_in_interval(bq_dataset, table)
-    query_parameters = _create_query_parameters_for_interval(start_timestamp, end_timestamp)
-    records = bq_client.run_query(query_parameters, query)
-    return records[0].num_duplicates or 0
-
-
-def _create_query_for_get_num_duplicates_in_interval(dataset: str, table: str):
-    return f"""
-    WITH `counts` AS (
-        SELECT COUNT(*) AS `count`
-        FROM `{dataset}.{table}`
-        WHERE `timestamp` >= TIMESTAMP_SECONDS(@start_timestamp) AND `timestamp` < TIMESTAMP_SECONDS(@end_timestamp)
-        GROUP BY _id
-        HAVING `count` > 1
-    )
-    SELECT (SUM(`count`) - COUNT(*)) AS `num_duplicates` FROM `counts`
-    """
+        if counts_delta != 0:
+            raise Exception(f"Counts do not match after deduplication: indexer = {count_in_indexer}, bq = {count_in_bq}, delta = {counts_delta}.")
 
 
 def _get_num_records_in_interval(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
