@@ -181,6 +181,28 @@ class AppController:
                 task.set_failed(error, traceback.format_exc())
                 break
 
+    def rewind_to_checkpoint(self):
+        """
+        From the BQ tables corresponding to append-only indices, deletes records newer than the latest checkpoint.
+        """
+        bq_dataset = self.worker_config.append_only_indices.bq_dataset
+        indices = self.worker_config.append_only_indices.indices
+        checkpoint_timestamp = self.worker_state.latest_checkpoint_timestamp
+
+        for table in indices:
+            self.bq_client.delete_newer_than(bq_dataset, table, checkpoint_timestamp)
+
+        check_loaded_data(
+            bq_client=self.bq_client,
+            bq_dataset=bq_dataset,
+            indexer=self.indexer,
+            tables=indices,
+            start_timestamp=self.worker_config.append_only_indices.time_partition_start,
+            end_timestamp=checkpoint_timestamp,
+            should_fail_on_counts_mismatch=True,
+            skip_counts_check_for_indices=[]
+        )
+
 
 def _get_now() -> datetime.datetime:
     return datetime.datetime.now(tz=datetime.timezone.utc)
