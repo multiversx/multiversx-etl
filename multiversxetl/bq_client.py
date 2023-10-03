@@ -31,6 +31,12 @@ class BqClient:
             table_ref = self.client.dataset(bq_dataset).table(table)
             self.client.delete_table(table_ref, not_found_ok=True)
 
+    def delete_newer_than(self, bq_dataset: str, table: str, timestamp: int) -> None:
+        logging.info(f"Deleting records in {bq_dataset}.{table} newer than {timestamp}...")
+
+        query = f"DELETE FROM `{bq_dataset}.{table}` WHERE timestamp > TIMESTAMP_SECONDS(@timestamp)"
+        self.run_query([bigquery.ScalarQueryParameter("timestamp", "INT64", timestamp)], query)
+
     def run_query(
         self,
         query_parameters: List[bigquery.ScalarQueryParameter],
