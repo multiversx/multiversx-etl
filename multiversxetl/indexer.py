@@ -7,7 +7,7 @@ from multiversxetl.constants import (ELASTICSEARCH_MAX_RETRIES,
                                      ELASTICSEARCH_MAX_SIZE)
 
 SCROLL_CONSISTENCY_TIME = "10m"
-SCAN_BATCH_SIZE = 9999
+SCAN_BATCH_SIZE = 7500
 
 
 class Indexer:

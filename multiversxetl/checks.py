@@ -4,6 +4,8 @@ from typing import Any, List, Optional, Protocol
 
 from google.cloud import bigquery
 
+from multiversxetl.errors import CountsMismatchError
+
 
 class IIndexer(Protocol):
     def count_records(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int: ...
@@ -65,7 +67,7 @@ def _do_check_loaded_data_for_table(
         return
 
     if counts_delta > 0:
-        raise Exception(f"Data is missing in BigQuery for table '{table}'. Delta = {counts_delta}.")
+        raise CountsMismatchError(f"Data is missing in BigQuery for table '{table}'. Delta = {counts_delta}.")
 
     if counts_delta < 0:
         logging.warning(f"More records in BigQuery than in indexer. Will attempt to de-duplicate.")
@@ -78,7 +80,7 @@ def _do_check_loaded_data_for_table(
         counts_delta = count_in_indexer - count_in_bq
 
         if counts_delta != 0:
-            raise Exception(f"Counts do not match even after deduplication: indexer = {count_in_indexer}, bq = {count_in_bq}, delta = {counts_delta}.")
+            raise CountsMismatchError(f"Counts do not match even after deduplication: indexer = {count_in_indexer}, bq = {count_in_bq}, delta = {counts_delta}.")
 
 
 def _get_num_records_in_interval(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:

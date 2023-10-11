@@ -1,8 +1,13 @@
-class TransientError(Exception):
+class KnownError(Exception):
     def __init__(self, message: str):
         super().__init__(message)
 
 
-class UsageError(Exception):
+class CountsMismatchError(KnownError):
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
+class UsageError(KnownError):
     def __init__(self, message: str):
         super().__init__(message)

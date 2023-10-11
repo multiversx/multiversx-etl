@@ -40,7 +40,7 @@ In order to invoke the two processes, you can either use the Docker setup (see n
 ```
 # First, set the following environment variables:
 export GCP_PROJECT_ID=multiversx-blockchain-etl
-export WORKSPACE=${HOME}/multiversx-etl
+export WORKSPACE=${HOME}/multiversx-etl/mainnet
 
 # The first flow (for append-only indices):
 python3 -m multiversxetl.app etl-append-only-indices --workspace=${WORKSPACE} --sleep-between-iterations=3600
