@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import os
@@ -8,8 +9,9 @@ from pathlib import Path
 from typing import Any, List
 
 from multiversxetl.app_controller import AppController
+from multiversxetl.checks import check_loaded_data
 from multiversxetl.constants import SECONDS_IN_DAY, SECONDS_IN_ONE_HOUR
-from multiversxetl.errors import UsageError
+from multiversxetl.errors import CountsMismatchError, KnownError
 from multiversxetl.schema import map_elastic_search_schema_to_bigquery_schema
 
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] [%(levelname)s] [%(threadName)s] [%(module)s]: %(message)s")
@@ -25,7 +27,7 @@ def main(args: List[str]) -> int:
     try:
         _do_main(args)
         return 0
-    except UsageError as error:
+    except KnownError as error:
         logging.error(error)
         return 1
     except KeyboardInterrupt:
@@ -52,9 +54,10 @@ def _do_main(args: List[str]):
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
     subparser.set_defaults(func=_do_rewind_to_checkpoint)
 
-    subparser = subparsers.add_parser("check-append-only-indices", help="..")
+    subparser = subparsers.add_parser("find-latest-good-checkpoint", help="Finds the latest good checkpoint (when BQ and Elasticsearch data counts match).")
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
-    subparser.set_defaults(func=_do_check_append_only_indices)
+    subparser.add_argument("--search-step", type=int, default=SECONDS_IN_DAY, help="Search step.")
+    subparser.set_defaults(func=_do_find_latest_good_checkpoint)
 
     subparser = subparsers.add_parser("regenerate-schema", help="Re-generates BQ schema files from ES schema files.")
     subparser.add_argument("--input-folder", type=str, help="The path to 'input' schema files. E.g. 'elasticreindexer/cmd/indices-creator/config/noKibana'.")
@@ -101,6 +104,34 @@ def _do_rewind_to_checkpoint(args: Any):
     controller.rewind_to_checkpoint()
 
 
+def _do_find_latest_good_checkpoint(args: Any):
+    workspace = Path(args.workspace).expanduser().resolve()
+    controller = AppController(workspace)
+    search_step = args.search_step
+
+    start_timestamp = controller.worker_config.append_only_indices.time_partition_start
+    now = int(_get_now().timestamp())
+
+    for end_timestamp in range(now, start_timestamp, -search_step):
+        try:
+            check_loaded_data(
+                bq_client=controller.bq_client,
+                bq_dataset=controller.worker_config.append_only_indices.bq_dataset,
+                indexer=controller.indexer,
+                tables=controller.worker_config.append_only_indices.indices,
+                start_timestamp=start_timestamp,
+                end_timestamp=end_timestamp,
+                should_fail_on_counts_mismatch=True,
+                skip_counts_check_for_indices=[],
+            )
+
+            logging.info(f"Latest good checkpoint: {end_timestamp}")
+            break
+        except CountsMismatchError:
+            logging.info("Will try again with an earlier checkpoint...")
+            continue
+
+
 def _do_regenerate_schema(args: Any):
     input_folder = Path(args.input_folder).expanduser().resolve()
     output_folder = Path(args.output_folder).expanduser().resolve()
@@ -123,6 +154,10 @@ def _do_regenerate_schema(args: Any):
 
         output_file_path = output_folder_path / input_file.name
         output_file_path.write_text(json.dumps(output_schema, indent=4) + "\n")
+
+
+def _get_now() -> datetime.datetime:
+    return datetime.datetime.now(tz=datetime.timezone.utc)
 
 
 if __name__ == "__main__":
