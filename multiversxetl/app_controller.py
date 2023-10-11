@@ -11,7 +11,7 @@ from multiversxetl.bq_client import BqClient
 from multiversxetl.checks import check_loaded_data
 from multiversxetl.constants import \
     SECONDS_MIN_DELTA_BETWEEN_NOW_AND_APPEND_ONLY_INDICES_EXTRACTION_END_TIME
-from multiversxetl.errors import UsageError
+from multiversxetl.errors import SomeTasksFailedError, UsageError
 from multiversxetl.file_storage import FileStorage
 from multiversxetl.indexer import Indexer
 from multiversxetl.logger import CloudLogger
@@ -125,7 +125,7 @@ class AppController:
                 self.cloud_logger.log_error(f"Task has failed: {task.error}", task)
 
             logging.error(f"{len(failed_tasks)} tasks have failed, will stop.")
-            return
+            raise SomeTasksFailedError()
 
         self.tasks_dashboard.assert_all_existing_tasks_are_finished()
 
@@ -188,6 +188,8 @@ class AppController:
         bq_dataset = self.worker_config.append_only_indices.bq_dataset
         indices = self.worker_config.append_only_indices.indices
         checkpoint_timestamp = self.worker_state.latest_checkpoint_timestamp
+
+        logging.info(f"Rewinding to checkpoint {checkpoint_timestamp}...")
 
         for table in indices:
             self.bq_client.delete_newer_than(bq_dataset, table, checkpoint_timestamp)

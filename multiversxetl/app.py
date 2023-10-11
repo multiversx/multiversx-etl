@@ -56,7 +56,7 @@ def _do_main(args: List[str]):
 
     subparser = subparsers.add_parser("find-latest-good-checkpoint", help="Finds the latest good checkpoint (when BQ and Elasticsearch data counts match).")
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
-    subparser.add_argument("--search-step", type=int, default=SECONDS_IN_DAY, help="Search step.")
+    subparser.add_argument("--search-step", type=int, default=SECONDS_IN_DAY, help="Search step (search precision).")
     subparser.set_defaults(func=_do_find_latest_good_checkpoint)
 
     subparser = subparsers.add_parser("regenerate-schema", help="Re-generates BQ schema files from ES schema files.")
@@ -72,9 +72,14 @@ def _do_etl_append_only_indices(args: Any):
     workspace = Path(args.workspace).expanduser().resolve()
     sleep_between_iterations = args.sleep_between_iterations
 
+    # Before starting the ETL process, we rewind to the latest checkpoint,
+    # to clean up any eventual partial loads from a previous (interrupted) run.
+    AppController(workspace).rewind_to_checkpoint()
+
     for iteration_index in range(0, sys.maxsize):
         logging.info(f"Starting iteration {iteration_index} (_do_main_etl_append_only_indices)...")
 
+        # We create a new controller on each iteration, so that workspace configuration and state is reloaded.
         controller = AppController(workspace)
         controller.etl_append_only_indices()
         controller.bq_client.trigger_data_transfer(controller.worker_config.append_only_indices.bq_data_transfer_name)

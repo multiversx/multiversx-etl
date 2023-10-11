@@ -3,7 +3,8 @@ version: '3'
 services:
   multiversx-etl-append-only-indices:
     ulimits:
-      nproc: 65535
+      nproc: 262140
+    restart: always
     image: multiversx-etl:latest
     container_name: multiversx-etl-append-only-indices
     volumes:
@@ -27,7 +28,8 @@ services:
 
   multiversx-etl-mutable-indices:
     ulimits:
-      nproc: 65535
+      nproc: 262140
+    restart: always
     image: multiversx-etl:latest
     container_name: multiversx-etl-mutable-indices
     volumes:
