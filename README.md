@@ -43,10 +43,10 @@ export GCP_PROJECT_ID=multiversx-blockchain-etl
 export WORKSPACE=${HOME}/multiversx-etl/mainnet
 
 # The first flow (for append-only indices):
-python3 -m multiversxetl.app etl-append-only-indices --workspace=${WORKSPACE} --sleep-between-iterations=3600
+python3 -m multiversxetl.app process-append-only-indices --workspace=${WORKSPACE} --sleep-between-iterations=3600
 
 # The second flow (for mutable indices):
-python3 -m multiversxetl.app etl-mutable-indices --workspace=${WORKSPACE} --sleep-between-iterations=86400
+python3 -m multiversxetl.app process-mutable-indices --workspace=${WORKSPACE} --sleep-between-iterations=86400
 ```
 
 ### Rewinding

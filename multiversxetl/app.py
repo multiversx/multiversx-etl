@@ -40,12 +40,12 @@ def _do_main(args: List[str]):
 
     subparsers = parser.add_subparsers()
 
-    subparser = subparsers.add_parser("etl-append-only-indices", help="Do ETL for append-only indices (continuously).")
+    subparser = subparsers.add_parser("process-append-only-indices", help="Do ETL for append-only indices (continuously).")
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
     subparser.add_argument("--sleep-between-iterations", type=int, default=SECONDS_IN_ONE_HOUR)
     subparser.set_defaults(func=_process_append_only_indices)
 
-    subparser = subparsers.add_parser("etl-mutable-indices", help="Do ETL for mutable indices (continuously).")
+    subparser = subparsers.add_parser("process-mutable-indices", help="Do ETL for mutable indices (continuously).")
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
     subparser.add_argument("--sleep-between-iterations", type=int, default=SECONDS_IN_DAY)
     subparser.set_defaults(func=_process_mutable_indices)
@@ -72,7 +72,7 @@ def _process_append_only_indices(args: Any):
     workspace = Path(args.workspace).expanduser().resolve()
     sleep_between_iterations = args.sleep_between_iterations
 
-    # Before starting the ETL process, we rewind to the latest checkpoint,
+    # # Before starting the ETL process, we rewind to the latest checkpoint,
     # to clean up any eventual partial loads from a previous (interrupted) run.
     AppController(workspace).rewind_to_checkpoint()
 
