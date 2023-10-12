@@ -23,6 +23,10 @@ class FileStorage:
             return transformed_path
         return extracted_path
 
+    def remove_extracted_file(self, task_pretty_name: str):
+        extracted_path = self.get_extracted_path(task_pretty_name)
+        extracted_path.unlink(missing_ok=True)
+
     def remove_transformed_file(self, task_pretty_name: str):
         transformed_path = self.get_transformed_path(task_pretty_name)
         transformed_path.unlink(missing_ok=True)
