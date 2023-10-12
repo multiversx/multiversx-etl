@@ -116,3 +116,4 @@ Below are a few links useful for managing the ETL process. They are only accessi
  - [Analytics Hub](https://console.cloud.google.com/bigquery/analytics-hub/exchanges?project=multiversx-blockchain-etl): create and publish data listings.
  - [Logs Explorer](https://console.cloud.google.com/logs/query?project=multiversx-blockchain-etl): inspect logs.
  - [Monitoring](https://console.cloud.google.com/bigquery/admin/monitoring?project=multiversx-blockchain-etl&region=eu): resource utilization and jobs explorer.
+ - [Data Transfers](https://console.cloud.google.com/bigquery/transfers?project=multiversx-blockchain-etl): inspect and manage the data transfers.
