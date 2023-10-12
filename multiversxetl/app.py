@@ -72,7 +72,7 @@ def _process_append_only_indices(args: Any):
     workspace = Path(args.workspace).expanduser().resolve()
     sleep_between_iterations = args.sleep_between_iterations
 
-    # # Before starting the ETL process, we rewind to the latest checkpoint,
+    # Before starting the ETL process, we rewind to the latest checkpoint,
     # to clean up any eventual partial loads from a previous (interrupted) run.
     AppController(workspace).rewind_to_checkpoint()
 
