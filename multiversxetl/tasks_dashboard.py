@@ -99,7 +99,8 @@ class TasksDashboard:
         """
         return [task for task in self._tasks if task.is_failed()]
 
-    def _get_now(self) -> datetime.datetime:
+    @staticmethod
+    def _get_now() -> datetime.datetime:
         return datetime.datetime.now(tz=datetime.timezone.utc)
 
     def report_tasks(self) -> None:

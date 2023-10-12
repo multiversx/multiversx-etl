@@ -59,7 +59,7 @@ def _do_check_loaded_data_for_table(
     counts_delta = count_in_indexer - count_in_bq
 
     if counts_delta == 0:
-        logging.info(f"Counts match for '{table}'.")
+        logging.info(f"Counts match for '{table}': {count_in_bq}.")
     else:
         logging.warning(f"Counts do not match for '{table}': indexer = {count_in_indexer}, bq = {count_in_bq}, delta = {counts_delta}.")
 

@@ -9,8 +9,7 @@ from typing import List, Optional
 
 from multiversxetl.bq_client import BqClient
 from multiversxetl.checks import check_loaded_data
-from multiversxetl.constants import \
-    SECONDS_MIN_DELTA_BETWEEN_NOW_AND_APPEND_ONLY_INDICES_EXTRACTION_END_TIME
+from multiversxetl.constants import END_TIME_DELTA
 from multiversxetl.errors import SomeTasksFailedError, UsageError
 from multiversxetl.file_storage import FileStorage
 from multiversxetl.indexer import Indexer
@@ -47,7 +46,7 @@ class AppController:
             schema_folder=self.worker_config.schema_folder
         )
 
-    def etl_mutable_indices(self):
+    def process_mutable_indices(self):
         indices_config = self.worker_config.mutable_indices
 
         now = int(_get_now().timestamp())
@@ -64,11 +63,11 @@ class AppController:
             initial_end_timestamp=now
         )
 
-    def etl_append_only_indices(self):
+    def process_append_only_indices(self):
         indices_config = self.worker_config.append_only_indices
 
         now = int(_get_now().timestamp())
-        max_initial_end_timestamp = now - SECONDS_MIN_DELTA_BETWEEN_NOW_AND_APPEND_ONLY_INDICES_EXTRACTION_END_TIME
+        max_initial_end_timestamp = now - END_TIME_DELTA
 
         initial_end_timestamp = min(
             max_initial_end_timestamp,
@@ -144,7 +143,7 @@ class AppController:
 
     def _consume_tasks_in_parallel(self, num_threads: int):
         # If an error happens in any thread, we stop all threads.
-        event_has_error_happened: threading.Event = threading.Event()
+        event_has_encountered_an_error: threading.Event = threading.Event()
         threads: List[threading.Thread] = []
 
         for thread_index in range(num_threads):
@@ -152,7 +151,7 @@ class AppController:
                 name=f"consume-task-{thread_index}",
                 target=self._consume_tasks_thread,
                 args=[
-                    event_has_error_happened
+                    event_has_encountered_an_error
                 ]
             )
 
@@ -163,9 +162,9 @@ class AppController:
             if thread.is_alive():
                 thread.join()
 
-    def _consume_tasks_thread(self, external_or_internal_event_has_error_happened: threading.Event):
+    def _consume_tasks_thread(self, external_or_internal_event_has_encountered_an_error: threading.Event):
         while True:
-            if external_or_internal_event_has_error_happened.is_set():
+            if external_or_internal_event_has_encountered_an_error.is_set():
                 break
 
             task = self.tasks_dashboard.pick_and_start_task()
@@ -177,7 +176,7 @@ class AppController:
                 self.tasks_dashboard.on_task_finished(task)
             except Exception as error:
                 logging.error(f"Error while consuming task {task}.")
-                external_or_internal_event_has_error_happened.set()
+                external_or_internal_event_has_encountered_an_error.set()
                 task.set_failed(error, traceback.format_exc())
                 break
 

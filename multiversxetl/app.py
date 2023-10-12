@@ -43,12 +43,12 @@ def _do_main(args: List[str]):
     subparser = subparsers.add_parser("etl-append-only-indices", help="Do ETL for append-only indices (continuously).")
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
     subparser.add_argument("--sleep-between-iterations", type=int, default=SECONDS_IN_ONE_HOUR)
-    subparser.set_defaults(func=_do_etl_append_only_indices)
+    subparser.set_defaults(func=_process_append_only_indices)
 
     subparser = subparsers.add_parser("etl-mutable-indices", help="Do ETL for mutable indices (continuously).")
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
     subparser.add_argument("--sleep-between-iterations", type=int, default=SECONDS_IN_DAY)
-    subparser.set_defaults(func=_do_etl_mutable_indices)
+    subparser.set_defaults(func=_process_mutable_indices)
 
     subparser = subparsers.add_parser("rewind", help="Rewind to the latest checkpoint.")
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
@@ -68,7 +68,7 @@ def _do_main(args: List[str]):
     parsed_args.func(parsed_args)
 
 
-def _do_etl_append_only_indices(args: Any):
+def _process_append_only_indices(args: Any):
     workspace = Path(args.workspace).expanduser().resolve()
     sleep_between_iterations = args.sleep_between_iterations
 
@@ -77,18 +77,18 @@ def _do_etl_append_only_indices(args: Any):
     AppController(workspace).rewind_to_checkpoint()
 
     for iteration_index in range(0, sys.maxsize):
-        logging.info(f"Starting iteration {iteration_index} (_do_main_etl_append_only_indices)...")
+        logging.info(f"Starting iteration {iteration_index} (_process_append_only_indices)...")
 
         # We create a new controller on each iteration, so that workspace configuration and state is reloaded.
         controller = AppController(workspace)
-        controller.etl_append_only_indices()
+        controller.process_append_only_indices()
         controller.bq_client.trigger_data_transfer(controller.worker_config.append_only_indices.bq_data_transfer_name)
 
-        logging.info(f"Iteration {iteration_index} done (_do_main_etl_append_only_indices). Will sleep {sleep_between_iterations} seconds...")
+        logging.info(f"Iteration {iteration_index} done (_process_append_only_indices). Will sleep {sleep_between_iterations} seconds...")
         time.sleep(sleep_between_iterations)
 
 
-def _do_etl_mutable_indices(args: Any):
+def _process_mutable_indices(args: Any):
     workspace = Path(args.workspace).expanduser().resolve()
     sleep_between_iterations = args.sleep_between_iterations
 
@@ -96,7 +96,7 @@ def _do_etl_mutable_indices(args: Any):
         logging.info(f"Starting iteration {iteration_index} (_do_main_mutable_indices)...")
 
         controller = AppController(workspace)
-        controller.etl_mutable_indices()
+        controller.process_mutable_indices()
         controller.bq_client.trigger_data_transfer(controller.worker_config.mutable_indices.bq_data_transfer_name)
 
         logging.info(f"Iteration {iteration_index} done (_do_main_mutable_indices). Will sleep {sleep_between_iterations} seconds...")

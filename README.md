@@ -51,7 +51,7 @@ python3 -m multiversxetl.app etl-mutable-indices --workspace=${WORKSPACE} --slee
 
 ### Rewinding
 
-Sometimes, errors occur during the ETL process. For the append-only flow, it's recommended to rewind the BQ tables to the latest checkpoint (good state), only re-run the process only after that. This helps to de-duplicate the data beforehand, through a simple data removal. Otherwise, the full data de-duplication step would be employed (performed automatically, after each bulk of tasks, if the data counts from BQ and Elasticsearch do not match), which is more expensive.
+Sometimes, errors occur during the ETL process. For the append-only flow, it's recommended to rewind the BQ tables to the latest checkpoint (good state), and re-run the process only after that. This helps to de-duplicate the data beforehand, through a simple data removal. Otherwise, the full data de-duplication step would be employed (performed automatically, after each bulk of tasks, if the data counts from BQ and Elasticsearch do not match), which is more expensive.
 
 To rewind the BQ tables corresponding to the append-only indices to the latest checkpoint, run the following command:
 

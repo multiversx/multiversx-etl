@@ -46,7 +46,8 @@ class Indexer:
 
         return records
 
-    def _get_query_object(self, start_timestamp: Optional[int], end_timestamp: Optional[int]) -> Dict[str, Any]:
+    @staticmethod
+    def _get_query_object(start_timestamp: Optional[int], end_timestamp: Optional[int]) -> Dict[str, Any]:
         if start_timestamp is None and end_timestamp is None:
             return {
                 "query": {
