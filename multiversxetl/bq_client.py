@@ -22,7 +22,7 @@ class BqClient:
         client._http._auth_request.session.mount("https://", adapter)  # type: ignore
 
         self.client = client
-        self.throttler = OneEachSecondThrottler(num_seconds=3)
+        self.throttler = OneEachSecondsThrottler(num_seconds=3)
 
     def truncate_tables(self, bq_dataset: str, tables: List[str]) -> None:
         for table in tables:
@@ -98,7 +98,7 @@ class BqClient:
             logging.info(f"Started manual transfer: time = {run.run_time}, name = {run.name}")
 
 
-class OneEachSecondThrottler:
+class OneEachSecondsThrottler:
     def __init__(self, num_seconds: int) -> None:
         self.mutex = Lock()
         self.latest_operation_timestamp = 0
