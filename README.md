@@ -4,9 +4,7 @@ ETL (extract, transform and load) tools for publishing MultiversX blockchain dat
 
 ## Published data
 
- - [Mainnet](https://console.cloud.google.com/bigquery?page=dataset&d=mainnet&p=multiversx-blockchain-etl)
- - [Devnet](https://console.cloud.google.com/bigquery?page=dataset&d=devnet&p=multiversx-blockchain-etl)
- - [Testnet](https://console.cloud.google.com/bigquery?page=dataset&d=testnet&p=multiversx-blockchain-etl)
+ - [Mainnet](https://console.cloud.google.com/bigquery?page=dataset&d=crypto_multiversx_mainnet_eu&p=multiversx-blockchain-etl)
 
 ## Setup virtual environment
 
