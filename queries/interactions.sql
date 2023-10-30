@@ -3,7 +3,7 @@
 SELECT 
   DATE(`timestamp`) `day`, 
   COUNT(DISTINCT `sender`) `num_users`, 
-FROM `multiversx.transactions`
+FROM `multiversx-blockchain-etl.crypto_multiversx_mainnet_eu.transactions`
 GROUP BY `day`
 ORDER BY `day` DESC
 LIMIT 1000
@@ -14,7 +14,7 @@ SELECT
   DATE(`timestamp`) `day`,
   `receiver` `contract`,
   COUNT(*) `num_interactions`, 
-FROM `multiversx.transactions`
+FROM `multiversx-blockchain-etl.crypto_multiversx_mainnet_eu.transactions`
 WHERE `isScCall` = true
 GROUP BY `day`, `contract`
 HAVING `day` >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
@@ -26,7 +26,7 @@ SELECT
   DATE(`timestamp`) `day`,
   `receiver` `contract`,
   COUNT(DISTINCT `sender`) `num_users`, 
-FROM `multiversx.transactions`
+FROM `multiversx-blockchain-etl.crypto_multiversx_mainnet_eu.transactions`
 WHERE `isScCall` = true
 GROUP BY `day`, `contract`
 HAVING `day` >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
@@ -44,7 +44,7 @@ WITH `contract_volumes_per_day` AS
     DATE(`timestamp`) `day`,
     `receiver` `contract`,
     SUM(CAST(`value` AS BIGNUMERIC)) `native_volume`, 
-  FROM `multiversx.transactions`
+  FROM `multiversx-blockchain-etl.crypto_multiversx_mainnet_eu.transactions`
   WHERE `isScCall` = true
   AND `status` = 'success'
   GROUP BY `day`, `contract`
