@@ -22,7 +22,7 @@
     {
         "name": "epochStartBlock",
         "type": "BOOLEAN",
-        "description": "True if the current block is an epoch-start block."
+        "description": "Whether the current block is an epoch-start block."
     },
     {
         "name": "epochStartInfo",
@@ -69,7 +69,7 @@
             }
         ],
         "type": "RECORD",
-        "description": "A structure that contains economic data, such as total supply."
+        "description": "A structure with information about the new epoch."
     },
     {
         "name": "epochStartShardsData",
@@ -78,27 +78,27 @@
             {
                 "name": "epoch",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The epoch number."
             },
             {
                 "name": "firstPendingMetaBlock",
                 "type": "STRING",
-                "description": ""
+                "description": "The first pending metablock hash."
             },
             {
                 "name": "headerHash",
                 "type": "STRING",
-                "description": ""
+                "description": "The hash of the epoch start block."
             },
             {
                 "name": "lastFinishedMetaBlock",
                 "type": "STRING",
-                "description": ""
+                "description": "The last finished metablock hash."
             },
             {
                 "name": "nonce",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The sequence number (block height) of the epoch start block."
             },
             {
                 "name": "pendingMiniBlockHeaders",
@@ -107,55 +107,55 @@
                     {
                         "name": "hash",
                         "type": "STRING",
-                        "description": ""
+                        "description": "The miniblock hash."
                     },
                     {
                         "name": "receiverShard",
                         "type": "NUMERIC",
-                        "description": ""
+                        "description": "The receiver shard."
                     },
                     {
                         "name": "senderShard",
                         "type": "NUMERIC",
-                        "description": ""
+                        "description": "The sender shard."
                     },
                     {
                         "name": "timestamp",
                         "type": "TIMESTAMP",
-                        "description": ""
+                        "description": "The timestamp of the miniblock."
                     },
                     {
                         "name": "type",
                         "type": "STRING",
-                        "description": ""
+                        "description": "The type of the miniblock."
                     }
                 ],
                 "type": "RECORD",
-                "description": ""
+                "description": "An array of structures with information about the pending miniblocks."
             },
             {
                 "name": "rootHash",
                 "type": "STRING",
-                "description": ""
+                "description": "The root hash of the epoch start block."
             },
             {
                 "name": "round",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The first round of the epoch."
             },
             {
                 "name": "scheduledRootHash",
                 "type": "STRING",
-                "description": ""
+                "description": "The 'scheduled' root hash of the epoch start block."
             },
             {
                 "name": "shardID",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The shard ID."
             }
         ],
         "type": "RECORD",
-        "description": "An array of structures that contains epoch-start data for each shard, such as pending miniblocks."
+        "description": "An array of structures with information about the epoch start."
     },
     {
         "name": "gasPenalized",
@@ -184,43 +184,43 @@
             {
                 "name": "firstProcessedTx",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The index of the first transaction that was processed in the miniblock."
             },
             {
                 "name": "lastProcessedTx",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The index of the last transaction that was processed in the miniblock."
             },
             {
                 "name": "senderShard",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The sender shard."
             },
             {
                 "name": "receiverShard",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The receiver shard."
             },
             {
                 "name": "mbIndex",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "The index of the miniblock."
             },
             {
                 "name": "type",
                 "type": "STRING",
-                "description": ""
+                "description": "The type of the miniblock."
             },
             {
                 "name": "procType",
                 "type": "STRING",
-                "description": ""
+                "description": "The processing type of the miniblock."
             },
             {
                 "name": "txsHashes",
                 "mode": "REPEATED",
                 "type": "STRING",
-                "description": ""
+                "description": "The hashes of the transactions that were included in the miniblock."
             },
             {
                 "name": "executionOrderTxsIndices",
@@ -230,7 +230,7 @@
             }
         ],
         "type": "RECORD",
-        "description": "An array of structures indicating processing details of the miniblocks, such as the index of the first processed transaction."
+        "description": "An array of structures with information about the miniblocks within the block."
     },
     {
         "name": "miniBlocksHashes",

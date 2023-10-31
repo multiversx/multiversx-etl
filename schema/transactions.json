@@ -10,12 +10,6 @@
         "description": "Additional information for a transaction. It can contain a simple message, a function call, an ESDT transfer payload, and so on."
     },
     {
-        "name": "esdtValues",
-        "mode": "REPEATED",
-        "type": "STRING",
-        "description": "A list of ESDT values that are transferred based on the data field."
-    },
-    {
         "name": "fee",
         "type": "STRING",
         "description": "The amount of EGLD the sender paid for the transaction."
@@ -48,17 +42,17 @@
     {
         "name": "hasOperations",
         "type": "BOOLEAN",
-        "description": "True if the transaction has smart contract results."
+        "description": "Whether the transaction has smart contract results."
     },
     {
         "name": "hasLogs",
         "type": "BOOLEAN",
-        "description": "True if the transaction has logs."
+        "description": "Whether the transaction has logs (and events)."
     },
     {
         "name": "hasScResults",
         "type": "BOOLEAN",
-        "description": "True if the transaction has smart contract results."
+        "description": "Whether the transaction has smart contract results."
     },
     {
         "name": "initialPaidFee",
@@ -68,12 +62,12 @@
     {
         "name": "isRelayed",
         "type": "BOOLEAN",
-        "description": "True if the transaction is a relayed transaction."
+        "description": "Whether the transaction is a relayed transaction."
     },
     {
         "name": "isScCall",
         "type": "BOOLEAN",
-        "description": "True if the transaction is a smart contract call."
+        "description": "Whether the transaction is a smart contract call."
     },
     {
         "name": "miniBlockHash",
@@ -158,15 +152,9 @@
         "description": "The timestamp of the block in which the transaction was executed."
     },
     {
-        "name": "tokens",
-        "mode": "REPEATED",
-        "type": "STRING",
-        "description": "A list of ESDT tokens that are transferred based on the data field. The indices from the `tokens` list are linked with the indices from `esdtValues` list."
-    },
-    {
         "name": "value",
         "type": "STRING",
-        "description": "The amount of EGLD to be sent from the sender to the receiver."
+        "description": "The amount of EGLD transferred by the transaction, in atomic units. E.g. '1500000000000000000' means 1.5 EGLD."
     },
     {
         "name": "version",
@@ -176,22 +164,34 @@
     {
         "name": "valueNum",
         "type": "FLOAT",
-        "description": ""
+        "description": "See `value` field. This value is expressed in EGLD."
+    },
+    {
+        "name": "tokens",
+        "mode": "REPEATED",
+        "type": "STRING",
+        "description": "A list of ESDT tokens that are transferred by the transaction."
+    },
+    {
+        "name": "esdtValues",
+        "mode": "REPEATED",
+        "type": "STRING",
+        "description": "A list of ESDT values that are transferred by the transaction. Values are expressed in atomic units."
     },
     {
         "name": "esdtValuesNum",
         "mode": "REPEATED",
         "type": "FLOAT",
-        "description": ""
+        "description": "See `esdtValues` field."
     },
     {
         "name": "guardian",
         "type": "STRING",
-        "description": ""
+        "description": "The guardian address, if the sender has a guardian."
     },
     {
         "name": "guardianSignature",
         "type": "STRING",
-        "description": ""
+        "description": "The signature of the guardian."
     }
 ]

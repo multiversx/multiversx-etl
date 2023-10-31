@@ -2,7 +2,7 @@
     {
         "name": "_id",
         "type": "STRING",
-        "description": "The address of the account, in bech32 encoding. Same as `address`."
+        "description": "A unique identifier (opaque)."
     },
     {
         "name": "address",
@@ -35,37 +35,37 @@
             {
                 "name": "creator",
                 "type": "STRING",
-                "description": "The bech32 encoded address of the token's creator."
+                "description": "The creator of the token (address)."
             },
             {
                 "name": "hash",
                 "type": "STRING",
-                "description": ""
+                "description": "Arbitrary field that should contain the hash of the NFT metadata."
             },
             {
                 "name": "metadata",
                 "type": "STRING",
-                "description": ""
+                "description": "Token metadata."
             },
             {
                 "name": "name",
                 "type": "STRING",
-                "description": ""
+                "description": "Token name."
             },
             {
                 "name": "nonEmptyURIs",
                 "type": "BOOLEAN",
-                "description": "True if the token has non empty uris."
+                "description": "Whether the token has non empty uris."
             },
             {
                 "name": "whiteListedStorage",
                 "type": "BOOLEAN",
-                "description": "True if the token has white-listed storage. An NFT/SFT has white-listed storage if the URI belongs to one of the allowed decentralized storage services, such as IPFS or Pinata."
+                "description": "Whether the token has whitelisted storage. An NFT/SFT has whitelisted storage if the URI belongs to one of the allowed decentralized storage services, such as IPFS or Pinata."
             },
             {
                 "name": "royalties",
                 "type": "NUMERIC",
-                "description": ""
+                "description": "NFT royalties. Numeric value between 0 an 10000 (0 meaning 0% and 10000 meaning 100%)."
             },
             {
                 "name": "tags",
@@ -81,12 +81,12 @@
             }
         ],
         "type": "RECORD",
-        "description": "A structure that contains extra data about a token, such as the creator of an NFT."
+        "description": "A structure that contains additional information about a token."
     },
     {
         "name": "identifier",
         "type": "STRING",
-        "description": "The identifier field consists of `token` field and the `nonce` field hex encoded (example: `TOKEN-01abdc-01`)."
+        "description": "The extended identifier. E.g. `TOKEN-01abdc-01`."
     },
     {
         "name": "properties",
@@ -96,7 +96,7 @@
     {
         "name": "shardID",
         "type": "NUMERIC",
-        "description": ""
+        "description": "Shard of the account."
     },
     {
         "name": "timestamp",
@@ -121,11 +121,11 @@
     {
         "name": "frozen",
         "type": "BOOLEAN",
-        "description": "The frozen field is set to true when the address possesses a current ESDT token that is in a frozen state."
+        "description": "Whether the tokens in question are 'frozen' for this account."
     },
     {
         "name": "paused",
         "type": "BOOLEAN",
-        "description": ""
+        "description": "Whether the token (collection) is 'paused'."
     }
 ]

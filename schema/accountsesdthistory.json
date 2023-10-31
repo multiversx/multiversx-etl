@@ -2,7 +2,7 @@
     {
         "name": "_id",
         "type": "STRING",
-        "description": "An opaque unique identifier."
+        "description": "A unique identifier (opaque)."
     },
     {
         "name": "address",
@@ -12,7 +12,7 @@
     {
         "name": "balance",
         "type": "STRING",
-        "description": "The amount of ESDT tokens the address possesses."
+        "description": "The (historical) ESDT balance, in atomic units."
     },
     {
         "name": "identifier",
@@ -22,12 +22,12 @@
     {
         "name": "isSender",
         "type": "BOOLEAN",
-        "description": ""
+        "description": "Whether the account was the sender (of the ESDT) when the balance changed."
     },
     {
         "name": "isSmartContract",
         "type": "BOOLEAN",
-        "description": "True if the address is a smart contract address."
+        "description": "Whether the address is a smart contract address."
     },
     {
         "name": "shardID",

@@ -2,7 +2,7 @@
     {
         "name": "_id",
         "type": "STRING",
-        "description": "An opaque unique identifier."
+        "description": "A unique identifier (opaque)."
     },
     {
         "name": "address",
@@ -12,17 +12,17 @@
     {
         "name": "balance",
         "type": "STRING",
-        "description": "The amount of EGLD the address possesses. It is a string that also includes the number of decimals. Example: \"1500000000000000000\" (equivalent to 1.5 EGLD)."
+        "description": "The (historical) EGLD balance, in atomic units. E.g. '1500000000000000000' means 1.5 EGLD."
     },
     {
         "name": "isSender",
         "type": "BOOLEAN",
-        "description": "True if the address was the sender when the balance has changed."
+        "description": "Whether the account was the sender (of the EGLD) when the balance changed."
     },
     {
         "name": "isSmartContract",
         "type": "BOOLEAN",
-        "description": "True if the address is a smart contract address."
+        "description": "Whether the account is a smart contract."
     },
     {
         "name": "shardID",

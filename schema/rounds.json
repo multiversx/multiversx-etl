@@ -2,12 +2,12 @@
     {
         "name": "_id",
         "type": "STRING",
-        "description": "An opaque unique identifier. Round number is kept in the `round` field."
+        "description": "A unique identifier (opaque). Round number is kept in the `round` field."
     },
     {
         "name": "blockWasProposed",
         "type": "BOOLEAN",
-        "description": "True if a block was proposed and executed in this round."
+        "description": "Whether a block was proposed and executed in this round."
     },
     {
         "name": "epoch",

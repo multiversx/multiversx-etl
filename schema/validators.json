@@ -2,7 +2,7 @@
     {
         "name": "_id",
         "type": "STRING",
-        "description": "An opaque unique identifier."
+        "description": "A unique identifier (opaque)."
     },
     {
         "name": "publicKeys",
