@@ -1,31 +1,38 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "An opaque unique identifier. Round number is kept in the `round` field."
     },
     {
         "name": "blockWasProposed",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "True if a block was proposed and executed in this round."
     },
     {
         "name": "epoch",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The epoch the round belongs to."
     },
     {
         "name": "round",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The number of the round."
     },
     {
         "name": "shardId",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard the round belongs to."
     },
     {
         "name": "signersIndexes",
         "mode": "REPEATED",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "An array that contains the indices of the validators that should sign the block from this round."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp of the round."
     }
 ]

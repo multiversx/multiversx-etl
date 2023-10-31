@@ -1,127 +1,157 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The smart contract result hash."
     },
     {
         "name": "callType",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The type of smart contract call that is done through the smart contract result."
     },
     {
         "name": "code",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The code holds the code of the smart contract result."
     },
     {
         "name": "data",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "Additional information for a smart contract result. It can contain a simple message, a function call, an ESDT transfer payload, and so on."
     },
     {
         "name": "esdtValues",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A list of ESDT values that are transferred based on the data field."
     },
     {
         "name": "function",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The name of the function that is called in case of a smart contract call."
     },
     {
         "name": "gasLimit",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The maximum gas units the sender is willing to pay for."
     },
     {
         "name": "gasPrice",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The amount to be paid for each gas unit."
     },
     {
         "name": "hasOperations",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": ""
     },
     {
         "name": "hasLogs",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "True if the transaction has logs."
     },
     {
         "name": "miniBlockHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The hash of the miniblock in which the smart contract result was included."
     },
     {
         "name": "nonce",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The transaction sequence number."
     },
     {
         "name": "operation",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The operation of the smart contract result based on the data field."
     },
     {
         "name": "originalSender",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The sender's address of the original transaction."
     },
     {
         "name": "originalTxHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The originalTxHash holds the hex encoded hash of the transaction that generated the smart contract result."
     },
     {
         "name": "prevTxHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The prevTxHash holds the hex encoded hash of the previous transaction."
     },
     {
         "name": "receiver",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The destination address of the smart contract result."
     },
     {
         "name": "receiverShard",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard ID of the receiver address."
     },
     {
         "name": "receivers",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A list of receiver addresses in case of ESDTNFTTransfer or MultiESDTTransfer."
     },
     {
         "name": "receiversShardIDs",
         "mode": "REPEATED",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "A list of receiver addresses' shard IDs."
     },
     {
         "name": "relayedValue",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The amount of EGLD to be transferred via the inner transaction's sender."
     },
     {
         "name": "relayerAddr",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address of the relayer."
     },
     {
         "name": "returnMessage",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The message that is returned by a smart contract in case of an error."
     },
     {
         "name": "sender",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address of the smart contract result sender."
     },
     {
         "name": "senderShard",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard ID of the sender address."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp of the block in which the smart contract result was executed."
     },
     {
         "name": "tokens",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A list of ESDT tokens that are transferred based on the data field. The indices from the `tokens` list are linked to the indices from `esdtValues` list."
     },
     {
         "name": "value",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The amount of EGLD to be sent from the sender to the receiver."
     },
     {
         "name": "valueNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": ""
     },
     {
         "name": "esdtValuesNum",
         "mode": "REPEATED",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": ""
     }
 ]

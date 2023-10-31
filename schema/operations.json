@@ -1,199 +1,247 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The transaction or smart contract result hash."
     },
     {
         "name": "callType",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "canBeIgnored",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": ""
     },
     {
         "name": "code",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "data",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "esdtValues",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "fee",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "feeNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": ""
     },
     {
         "name": "function",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "gasLimit",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": ""
     },
     {
         "name": "gasPrice",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": ""
     },
     {
         "name": "gasUsed",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": ""
     },
     {
         "name": "hasOperations",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": ""
     },
     {
         "name": "hasScResults",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": ""
     },
     {
         "name": "hasLogs",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": ""
     },
     {
         "name": "initialPaidFee",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "isRelayed",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": ""
     },
     {
         "name": "isScCall",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": ""
     },
     {
         "name": "miniBlockHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "nonce",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "operation",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "originalSender",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "originalTxHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "prevTxHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "receiver",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "receiverShard",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "receivers",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "receiversShardIDs",
         "mode": "REPEATED",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "receiverUserName",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "relayedValue",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "relayerAddr",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "returnMessage",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "round",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "searchOrder",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "sender",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "senderShard",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "senderUserName",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "signature",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "status",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": ""
     },
     {
         "name": "tokens",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "type",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "It can be `normal` in case of a transaction and `unsigned` in case of a smart contract result."
     },
     {
         "name": "value",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "version",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "valueNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": ""
     },
     {
         "name": "esdtValuesNum",
         "mode": "REPEATED",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": ""
     },
     {
         "name": "guardian",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "guardianSignature",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     }
 ]

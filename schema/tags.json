@@ -5,10 +5,12 @@
     },
     {
         "name": "count",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The number of NFTs with the current tag."
     },
     {
         "name": "tag",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The tag in an alphanumeric format."
     }
 ]

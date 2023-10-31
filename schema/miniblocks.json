@@ -1,42 +1,52 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The miniblock hash."
     },
     {
         "name": "procTypeD",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The processing type at the destination shard. It can be `Normal` or `Scheduled`."
     },
     {
         "name": "procTypeS",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The processing type at the source shard. It can be `Normal` or `Scheduled`."
     },
     {
         "name": "receiverBlockHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The hash (hex encoded) of the destination block in which the miniblock was included."
     },
     {
         "name": "receiverShard",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard ID of the destination block."
     },
     {
         "name": "reserved",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "senderBlockHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The hash (hex encoded) of the source block in which the miniblock was included."
     },
     {
         "name": "senderShard",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard ID of the source block."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp of the block in which the miniblock was executed."
     },
     {
         "name": "type",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The type of the miniblock. It can be `TxBlock` (if it contains transactions) or `SmartContractResultBlock` (if it contains smart contracts results)."
     }
 ]

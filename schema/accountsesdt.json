@@ -1,106 +1,131 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address of the account, in bech32 encoding. Same as `address`."
     },
     {
         "name": "address",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address in bech32 encoding."
     },
     {
         "name": "balance",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The amount of ESDT token the address possesses. It includes the number of decimals."
     },
     {
         "name": "balanceNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The amount of ESDT tokens the address possesses, in a numeric format."
     },
     {
         "name": "currentOwner",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "data",
         "fields": [
             {
                 "name": "attributes",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The attributes of the token."
             },
             {
                 "name": "creator",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The bech32 encoded address of the token's creator."
             },
             {
                 "name": "hash",
-                "type": "STRING"
+                "type": "STRING",
+                "description": ""
             },
             {
                 "name": "metadata",
-                "type": "STRING"
+                "type": "STRING",
+                "description": ""
             },
             {
                 "name": "name",
-                "type": "STRING"
+                "type": "STRING",
+                "description": ""
             },
             {
                 "name": "nonEmptyURIs",
-                "type": "BOOLEAN"
+                "type": "BOOLEAN",
+                "description": "True if the token has non empty uris."
             },
             {
                 "name": "whiteListedStorage",
-                "type": "BOOLEAN"
+                "type": "BOOLEAN",
+                "description": "True if the token has white-listed storage. An NFT/SFT has white-listed storage if the URI belongs to one of the allowed decentralized storage services, such as IPFS or Pinata."
             },
             {
                 "name": "royalties",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": ""
             },
             {
                 "name": "tags",
                 "mode": "REPEATED",
-                "type": "STRING"
+                "type": "STRING",
+                "description": ""
             },
             {
                 "name": "uris",
                 "mode": "REPEATED",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "A list of URIs."
             }
         ],
-        "type": "RECORD"
+        "type": "RECORD",
+        "description": "A structure that contains extra data about a token, such as the creator of an NFT."
     },
     {
         "name": "identifier",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The identifier field consists of `token` field and the `nonce` field hex encoded (example: `TOKEN-01abdc-01`)."
     },
     {
         "name": "properties",
-        "type": "STRING"
+        "type": "STRING",
+        "description": ""
     },
     {
         "name": "shardID",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp when the address balance was changed."
     },
     {
         "name": "token",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The name of the token."
     },
     {
         "name": "tokenNonce",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The sequence number of the token. This field is empty in the case of `FungibleESDT`."
     },
     {
         "name": "type",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The type of the ESDT token. It can be `FungibleESDT`, `NonFungibleESDT`, `SemiFungibleESDT`, or `MetaESDT`."
     },
     {
         "name": "frozen",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "The frozen field is set to true when the address possesses a current ESDT token that is in a frozen state."
     },
     {
         "name": "paused",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": ""
     }
 ]

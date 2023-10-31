@@ -1,11 +1,13 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "An opaque unique identifier."
     },
     {
         "name": "publicKeys",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A list of all validators' public keys from an epoch and a shard."
     }
 ]
