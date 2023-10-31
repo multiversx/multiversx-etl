@@ -18,15 +18,18 @@ def test_map_elastic_search_schema_to_bigquery_schema_basic():
     expected_output_schema = [
         {
             "name": "_id",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "foo",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "bar",
-            "type": "FLOAT"
+            "type": "FLOAT",
+            "description": ""
         }
     ]
 
@@ -50,12 +53,14 @@ def test_map_elastic_search_schema_to_bigquery_schema_with_repeated():
     expected_output_schema = [
         {
             "name": "_id",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "foo",
             "mode": "REPEATED",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         }
     ]
 
@@ -93,11 +98,13 @@ def test_map_elastic_search_schema_to_bigquery_schema_with_record():
             "fields": [
                 {
                     "name": "foo",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "description": ""
                 },
                 {
                     "name": "bar",
-                    "type": "FLOAT"
+                    "type": "FLOAT",
+                    "description": ""
                 }
             ],
             "type": "RECORD"
@@ -157,55 +164,68 @@ def test_map_elastic_search_schema_to_bigquery_schema_on_accounts():
     expected_output_schema = [
         {
             "name": "_id",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "address",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "userName",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "balance",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "balanceNum",
-            "type": "FLOAT"
+            "type": "FLOAT",
+            "description": ""
         },
         {
             "name": "nonce",
-            "type": "FLOAT"
+            "type": "FLOAT",
+            "description": ""
         },
         {
             "name": "shardID",
-            "type": "NUMERIC"
+            "type": "NUMERIC",
+            "description": ""
         },
         {
             "name": "timestamp",
-            "type": "TIMESTAMP"
+            "type": "TIMESTAMP",
+            "description": ""
         },
         {
             "name": "developerRewards",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "developerRewardsNum",
-            "type": "FLOAT"
+            "type": "FLOAT",
+            "description": ""
         },
         {
             "name": "totalBalanceWithStake",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         },
         {
             "name": "totalBalanceWithStakeNum",
-            "type": "FLOAT"
+            "type": "FLOAT",
+            "description": ""
         },
         {
             "name": "currentOwner",
-            "type": "STRING"
+            "type": "STRING",
+            "description": ""
         }
     ]
 
