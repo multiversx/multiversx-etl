@@ -47,7 +47,7 @@
     {
         "name": "hasLogs",
         "type": "BOOLEAN",
-        "description": "Whether the transaction has logs (and events)."
+        "description": "Whether the transaction has event logs."
     },
     {
         "name": "hasScResults",
@@ -77,7 +77,7 @@
     {
         "name": "nonce",
         "type": "NUMERIC",
-        "description": "The transaction sequence number of the sender address."
+        "description": "The transaction sequence number of the sender."
     },
     {
         "name": "operation",

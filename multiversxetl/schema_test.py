@@ -18,8 +18,7 @@ def test_map_elastic_search_schema_to_bigquery_schema_basic():
     expected_output_schema = [
         {
             "name": "_id",
-            "type": "STRING",
-            "description": ""
+            "type": "STRING"
         },
         {
             "name": "foo",
@@ -53,8 +52,7 @@ def test_map_elastic_search_schema_to_bigquery_schema_with_repeated():
     expected_output_schema = [
         {
             "name": "_id",
-            "type": "STRING",
-            "description": ""
+            "type": "STRING"
         },
         {
             "name": "foo",
@@ -107,7 +105,8 @@ def test_map_elastic_search_schema_to_bigquery_schema_with_record():
                     "description": ""
                 }
             ],
-            "type": "RECORD"
+            "type": "RECORD",
+            "description": ""
         }
     ]
 
@@ -164,8 +163,7 @@ def test_map_elastic_search_schema_to_bigquery_schema_on_accounts():
     expected_output_schema = [
         {
             "name": "_id",
-            "type": "STRING",
-            "description": ""
+            "type": "STRING"
         },
         {
             "name": "address",

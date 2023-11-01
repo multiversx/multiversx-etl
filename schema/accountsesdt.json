@@ -65,7 +65,7 @@
             {
                 "name": "royalties",
                 "type": "NUMERIC",
-                "description": "NFT royalties. Numeric value between 0 an 10000 (0 meaning 0% and 10000 meaning 100%)."
+                "description": "NFT royalties. Numeric value between 0 and 10000 (0 meaning 0% and 10000 meaning 100%)."
             },
             {
                 "name": "tags",

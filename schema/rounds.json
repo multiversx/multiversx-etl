@@ -22,7 +22,7 @@
     {
         "name": "shardId",
         "type": "NUMERIC",
-        "description": "The shard the round belongs to."
+        "description": "The shard ID of the round entry. Each round will ideally produce 4 entries in this index."
     },
     {
         "name": "signersIndexes",

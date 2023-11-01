@@ -7,7 +7,7 @@
     {
         "name": "address",
         "type": "STRING",
-        "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the log or the address of the receiver address of the transaction."
+        "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the log or the address of the transaction's receiver."
     },
     {
         "name": "events",
@@ -16,7 +16,7 @@
             {
                 "name": "address",
                 "type": "STRING",
-                "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the event or the address of the receiver address of the transaction."
+                "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the event or the address of the transaction's receiver."
             },
             {
                 "name": "data",

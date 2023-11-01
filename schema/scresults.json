@@ -42,7 +42,7 @@
     {
         "name": "hasLogs",
         "type": "BOOLEAN",
-        "description": "Whether the transaction has logs (and events)."
+        "description": "Whether the transaction has event logs."
     },
     {
         "name": "miniBlockHash",
