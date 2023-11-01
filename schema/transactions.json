@@ -12,12 +12,12 @@
     {
         "name": "fee",
         "type": "STRING",
-        "description": "The amount of EGLD the sender paid for the transaction."
+        "description": "The amount of EGLD the sender paid for the transaction, expressed in atomic units."
     },
     {
         "name": "feeNum",
         "type": "FLOAT",
-        "description": ""
+        "description": "See `fee` field."
     },
     {
         "name": "function",
@@ -82,7 +82,7 @@
     {
         "name": "operation",
         "type": "STRING",
-        "description": "The operation of the transaction based on the data field."
+        "description": "The operation of the transaction, given the data field."
     },
     {
         "name": "receiver",
