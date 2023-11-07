@@ -28,8 +28,8 @@ class BqClient:
         for table in tables:
             logging.info(f"Truncating {bq_dataset}.{table}...")
 
-            table_ref = self.client.dataset(bq_dataset).table(table)
-            self.client.delete_table(table_ref, not_found_ok=True)
+            query = f"TRUNCATE TABLE `{bq_dataset}.{table}`"
+            self.run_query([], query)
 
     def delete_newer_than(self, bq_dataset: str, table: str, timestamp: int) -> None:
         logging.info(f"Deleting records in {bq_dataset}.{table} newer than {timestamp}...")
