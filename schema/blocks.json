@@ -1,61 +1,75 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The block hash."
     },
     {
         "name": "accumulatedFees",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The accumulated fees that were payed in the block."
     },
     {
         "name": "developerFees",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The developer fees that were accumulated in the block."
     },
     {
         "name": "epoch",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The epoch when the block was proposed and executed."
     },
     {
         "name": "epochStartBlock",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the current block is an epoch-start block."
     },
     {
         "name": "epochStartInfo",
         "fields": [
             {
                 "name": "nodePrice",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "EGLD amount required to run a validator."
             },
             {
                 "name": "prevEpochStartHash",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The hash of the previous epoch start block."
             },
             {
                 "name": "prevEpochStartRound",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The round of the previous epoch start block."
             },
             {
                 "name": "rewardsForProtocolSustainability",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The amount of rewards for the protocol sustainability address."
             },
             {
                 "name": "rewardsPerBlock",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The amount of EGLD rewards per block."
             },
             {
                 "name": "totalNewlyMinted",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The amount of the newly minted EGLD."
             },
             {
                 "name": "totalSupply",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The EGLD supply."
             },
             {
                 "name": "totalToDistribute",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The amount of EGLD that will be distributed to validators/delegators."
             }
         ],
-        "type": "RECORD"
+        "type": "RECORD",
+        "description": "A structure with information about the new epoch."
     },
     {
         "name": "epochStartShardsData",
@@ -63,23 +77,28 @@
         "fields": [
             {
                 "name": "epoch",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The epoch number."
             },
             {
                 "name": "firstPendingMetaBlock",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The first pending metablock hash."
             },
             {
                 "name": "headerHash",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The hash of the epoch start block."
             },
             {
                 "name": "lastFinishedMetaBlock",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The last finished metablock hash."
             },
             {
                 "name": "nonce",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The sequence number (block height) of the epoch start block."
             },
             {
                 "name": "pendingMiniBlockHeaders",
@@ -87,61 +106,76 @@
                 "fields": [
                     {
                         "name": "hash",
-                        "type": "STRING"
+                        "type": "STRING",
+                        "description": "The miniblock hash."
                     },
                     {
                         "name": "receiverShard",
-                        "type": "NUMERIC"
+                        "type": "NUMERIC",
+                        "description": "The receiver shard."
                     },
                     {
                         "name": "senderShard",
-                        "type": "NUMERIC"
+                        "type": "NUMERIC",
+                        "description": "The sender shard."
                     },
                     {
                         "name": "timestamp",
-                        "type": "TIMESTAMP"
+                        "type": "TIMESTAMP",
+                        "description": "The timestamp of the miniblock."
                     },
                     {
                         "name": "type",
-                        "type": "STRING"
+                        "type": "STRING",
+                        "description": "The type of the miniblock."
                     }
                 ],
-                "type": "RECORD"
+                "type": "RECORD",
+                "description": "An array of structures with information about the pending miniblocks."
             },
             {
                 "name": "rootHash",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The root hash of the epoch start block."
             },
             {
                 "name": "round",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The first round of the epoch."
             },
             {
                 "name": "scheduledRootHash",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The 'scheduled' root hash of the epoch start block."
             },
             {
                 "name": "shardID",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The shard ID."
             }
         ],
-        "type": "RECORD"
+        "type": "RECORD",
+        "description": "An array of structures with information about the epoch start."
     },
     {
         "name": "gasPenalized",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The total gas that was penalized in the block."
     },
     {
         "name": "gasProvided",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The total gas that was provided in the block."
     },
     {
         "name": "gasRefunded",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The total gas that was refunded in the block."
     },
     {
         "name": "maxGasLimit",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The total gas that can be provided in the block."
     },
     {
         "name": "miniBlocksDetails",
@@ -149,140 +183,173 @@
         "fields": [
             {
                 "name": "firstProcessedTx",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The index of the first transaction that was processed in the miniblock."
             },
             {
                 "name": "lastProcessedTx",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The index of the last transaction that was processed in the miniblock."
             },
             {
                 "name": "senderShard",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The sender shard."
             },
             {
                 "name": "receiverShard",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The receiver shard."
             },
             {
                 "name": "mbIndex",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The index of the miniblock."
             },
             {
                 "name": "type",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The type of the miniblock."
             },
             {
                 "name": "procType",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The processing type of the miniblock."
             },
             {
                 "name": "txsHashes",
                 "mode": "REPEATED",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The hashes of the transactions that were included in the miniblock."
             },
             {
                 "name": "executionOrderTxsIndices",
                 "mode": "REPEATED",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": ""
             }
         ],
-        "type": "RECORD"
+        "type": "RECORD",
+        "description": "An array of structures with information about the miniblocks within the block."
     },
     {
         "name": "miniBlocksHashes",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "An array of the miniblock hashes (hexadecimal encoded) that were included in the block."
     },
     {
         "name": "nonce",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The sequence number of the block (block height)."
     },
     {
         "name": "notarizedBlocksHashes",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The hashes of the blocks that were notarized in the current block."
     },
     {
         "name": "notarizedTxsCount",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The number of transactions that were notarized in the block."
     },
     {
         "name": "prevHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The hash of the previous block."
     },
     {
         "name": "proposer",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The index of the validator that proposed the block."
     },
     {
         "name": "pubKeyBitmap",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The pub key bitmap."
     },
     {
         "name": "round",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The round when the block was proposed and executed."
     },
     {
         "name": "scheduledData",
         "fields": [
             {
                 "name": "accumulatedFees",
-                "type": "STRING"
+                "type": "STRING",
+                "description": ""
             },
             {
                 "name": "developerFees",
-                "type": "STRING"
+                "type": "STRING",
+                "description": ""
             },
             {
                 "name": "gasProvided",
-                "type": "FLOAT"
+                "type": "FLOAT",
+                "description": ""
             },
             {
                 "name": "gasRefunded",
-                "type": "FLOAT"
+                "type": "FLOAT",
+                "description": ""
             },
             {
                 "name": "penalized",
-                "type": "FLOAT"
+                "type": "FLOAT",
+                "description": ""
             },
             {
                 "name": "rootHash",
-                "type": "STRING"
+                "type": "STRING",
+                "description": ""
             }
         ],
-        "type": "RECORD"
+        "type": "RECORD",
+        "description": "A structure that contains data about the scheduled execution."
     },
     {
         "name": "searchOrder",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "shardId",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard this block belongs to."
     },
     {
         "name": "size",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The size of the block in bytes."
     },
     {
         "name": "sizeTxs",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The size of the block's transactions in bytes."
     },
     {
         "name": "stateRootHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The trie's state root hash when the block was proposed and executed."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp when the block was proposed and executed."
     },
     {
         "name": "txCount",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The number of transactions that were executed in the block."
     },
     {
         "name": "validators",
         "mode": "REPEATED",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "An array that contains the indices of the validators that signed the block."
     }
 ]

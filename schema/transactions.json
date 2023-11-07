@@ -1,159 +1,197 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The transaction hash."
     },
     {
         "name": "data",
-        "type": "STRING"
-    },
-    {
-        "name": "esdtValues",
-        "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "Additional information for a transaction. It can contain a simple message, a function call, an ESDT transfer payload, and so on."
     },
     {
         "name": "fee",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The amount of EGLD the sender paid for the transaction, expressed in atomic units."
     },
     {
         "name": "feeNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "See `fee` field."
     },
     {
         "name": "function",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The name of the function that is called in case of a smart contract call."
     },
     {
         "name": "gasLimit",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The maximum gas units the sender is willing to pay for."
     },
     {
         "name": "gasPrice",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The amount to be paid for each gas unit."
     },
     {
         "name": "gasUsed",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The amount of gas used by the transaction."
     },
     {
         "name": "hasOperations",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the transaction has smart contract results."
     },
     {
         "name": "hasLogs",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the transaction has event logs."
     },
     {
         "name": "hasScResults",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the transaction has smart contract results."
     },
     {
         "name": "initialPaidFee",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The initial amount of EGLD the sender paid for the transaction, before the refund."
     },
     {
         "name": "isRelayed",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the transaction is a relayed transaction."
     },
     {
         "name": "isScCall",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the transaction is a smart contract call."
     },
     {
         "name": "miniBlockHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The hash of the miniblock in which the transaction was included."
     },
     {
         "name": "nonce",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The transaction sequence number of the sender."
     },
     {
         "name": "operation",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The operation of the transaction, given the data field."
     },
     {
         "name": "receiver",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The destination address of the transaction."
     },
     {
         "name": "receiverShard",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard ID of the receiver address."
     },
     {
         "name": "receivers",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A list of receiver addresses in case of ESDTNFTTransfer or MultiESDTTransfer."
     },
     {
         "name": "receiversShardIDs",
         "mode": "REPEATED",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "A list of receiver addresses shard IDs."
     },
     {
         "name": "receiverUserName",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The username of the receiver address."
     },
     {
         "name": "round",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The round of the block when the transaction was executed."
     },
     {
         "name": "searchOrder",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": ""
     },
     {
         "name": "sender",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address of the transaction sender."
     },
     {
         "name": "senderShard",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard ID of the sender address."
     },
     {
         "name": "senderUserName",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The username of the sender address."
     },
     {
         "name": "signature",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The signature of the transaction, hex-encoded."
     },
     {
         "name": "status",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The status of the transaction."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp of the block in which the transaction was executed."
+    },
+    {
+        "name": "value",
+        "type": "STRING",
+        "description": "The amount of EGLD transferred by the transaction, in atomic units. E.g. '1500000000000000000' means 1.5 EGLD."
+    },
+    {
+        "name": "version",
+        "type": "NUMERIC",
+        "description": "The version of the transaction."
+    },
+    {
+        "name": "valueNum",
+        "type": "FLOAT",
+        "description": "See `value` field. This value is expressed in EGLD."
     },
     {
         "name": "tokens",
         "mode": "REPEATED",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A list of ESDT tokens that are transferred by the transaction."
     },
     {
-        "name": "value",
-        "type": "STRING"
-    },
-    {
-        "name": "version",
-        "type": "NUMERIC"
-    },
-    {
-        "name": "valueNum",
-        "type": "FLOAT"
+        "name": "esdtValues",
+        "mode": "REPEATED",
+        "type": "STRING",
+        "description": "A list of ESDT values that are transferred by the transaction. Values are expressed in atomic units."
     },
     {
         "name": "esdtValuesNum",
         "mode": "REPEATED",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "See `esdtValues` field."
     },
     {
         "name": "guardian",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The guardian address, if the sender has a guardian."
     },
     {
         "name": "guardianSignature",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The signature of the guardian."
     }
 ]

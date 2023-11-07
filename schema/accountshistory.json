@@ -1,30 +1,37 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A unique identifier (opaque)."
     },
     {
         "name": "address",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address in bech32 encoding."
     },
     {
         "name": "balance",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The (historical) EGLD balance, in atomic units. E.g. '1500000000000000000' means 1.5 EGLD."
     },
     {
         "name": "isSender",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the account was the sender (of the EGLD) when the balance changed."
     },
     {
         "name": "isSmartContract",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the account is a smart contract."
     },
     {
         "name": "shardID",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard of the account."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp when the address balance was changed."
     }
 ]

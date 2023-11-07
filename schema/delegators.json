@@ -1,27 +1,33 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A unique identifier (opaque)."
     },
     {
         "name": "activeStake",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The EGLD amount of the active stake (not undelegated nor unbondable)."
     },
     {
         "name": "activeStakeNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The EGLD amount of the active stake (not undelegated nor unbondable), in a numeric format. Example: 1.5."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The last moment of an interaction with the delegation contract."
     },
     {
         "name": "address",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address in bech32 encoding of the delegator."
     },
     {
         "name": "contract",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The bech32 encoded address of the staking provider contract to whom it was delegated to."
     },
     {
         "name": "unDelegateInfo",
@@ -29,21 +35,26 @@
         "fields": [
             {
                 "name": "id",
-                "type": "STRING"
+                "type": "STRING",
+                "description": ""
             },
             {
                 "name": "timestamp",
-                "type": "TIMESTAMP"
+                "type": "TIMESTAMP",
+                "description": "The timestamp when the unDelegation operation was done."
             },
             {
                 "name": "value",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The EGLD amount that was undelegated."
             },
             {
                 "name": "valueNum",
-                "type": "FLOAT"
+                "type": "FLOAT",
+                "description": "The EGLD amount that was undelegated, in a numeric format (example: 1.5)."
             }
         ],
-        "type": "RECORD"
+        "type": "RECORD",
+        "description": "The unDelegateInfo contains a list with data about the unDelegated values."
     }
 ]

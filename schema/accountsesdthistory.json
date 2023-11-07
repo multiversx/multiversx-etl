@@ -1,42 +1,52 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A unique identifier (opaque)."
     },
     {
         "name": "address",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address in bech32 encoding."
     },
     {
         "name": "balance",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The (historical) ESDT balance, in atomic units."
     },
     {
         "name": "identifier",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The identifier field is composed of the `token` field and the `nonce` field, hex encoded."
     },
     {
         "name": "isSender",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the account was the sender (of the ESDT) when the balance changed."
     },
     {
         "name": "isSmartContract",
-        "type": "BOOLEAN"
+        "type": "BOOLEAN",
+        "description": "Whether the address is a smart contract address."
     },
     {
         "name": "shardID",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard of the account."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp when the address balance was changed."
     },
     {
         "name": "token",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The token name of the token."
     },
     {
         "name": "tokenNonce",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The sequence number of the token. This field can be empty in the case of `FungibleESDT`."
     }
 ]

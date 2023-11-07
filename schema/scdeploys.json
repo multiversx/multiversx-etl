@@ -1,19 +1,23 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address of the smart contract."
     },
     {
         "name": "deployTxHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The deployTxHash holds the hex encoded hash of the transaction that deployed the smart contract."
     },
     {
         "name": "deployer",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address in bech32 encoding of the smart contract deployer."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp of the block in which the smart contract was deployed."
     },
     {
         "name": "upgrades",
@@ -21,17 +25,21 @@
         "fields": [
             {
                 "name": "timestamp",
-                "type": "TIMESTAMP"
+                "type": "TIMESTAMP",
+                "description": "The timestamp of the block in which the smart contract was upgraded."
             },
             {
                 "name": "upgradeTxHash",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The hex encoded hash of the contract upgrade transaction."
             },
             {
                 "name": "upgrader",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The bech32 encoded address of the sender of the contract upgrade transaction."
             }
         ],
-        "type": "RECORD"
+        "type": "RECORD",
+        "description": "A list with details about the upgrades of the smart contract."
     }
 ]

@@ -1,11 +1,13 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The unique identifier of the object that generated the log (transaction, smart contract result)."
     },
     {
         "name": "address",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the log or the address of the transaction's receiver."
     },
     {
         "name": "events",
@@ -13,34 +15,42 @@
         "fields": [
             {
                 "name": "address",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the event or the address of the transaction's receiver."
             },
             {
                 "name": "data",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The data field can contain information added by the smart contract that generated the event."
             },
             {
                 "name": "identifier",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "The identifier of the event."
             },
             {
                 "name": "topics",
                 "mode": "REPEATED",
-                "type": "STRING"
+                "type": "STRING",
+                "description": "A list with extra information. They don't have a specific order because the smart contract is free to log anything that could be helpful."
             },
             {
                 "name": "order",
-                "type": "NUMERIC"
+                "type": "NUMERIC",
+                "description": "The index of the event indicating the execution order."
             }
         ],
-        "type": "RECORD"
+        "type": "RECORD",
+        "description": "A list of events."
     },
     {
         "name": "originalTxHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The hash of the initial transaction."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp of the block in which the log was generated."
     }
 ]

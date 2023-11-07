@@ -1,54 +1,67 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address of the account, in bech32 encoding. Same as `address`."
     },
     {
         "name": "address",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address in bech32 encoding. Should be equal to the `_id` field."
     },
     {
         "name": "userName",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The herotag the address possesses."
     },
     {
         "name": "balance",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The EGLD balance, in atomic units. E.g. '1500000000000000000' means 1.5 EGLD."
     },
     {
         "name": "balanceNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "See `balance`. This value is expressed in EGLD."
     },
     {
         "name": "nonce",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "The sequence number of the address."
     },
     {
         "name": "shardID",
-        "type": "NUMERIC"
+        "type": "NUMERIC",
+        "description": "The shard of the account."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The last moment when the address balance was changed."
     },
     {
         "name": "developerRewards",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The developer rewards (for smart contract calls), in atomic units of EGLD. E.g. '1500000000000000000' means 1.5 EGLD."
     },
     {
         "name": "developerRewardsNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "See `developerRewards`. This value is expressed in EGLD."
     },
     {
         "name": "totalBalanceWithStake",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "Total balance of the account, including the staked amount, in atomic units of EGLD. E.g. '1500000000000000000' means 1.5 EGLD."
     },
     {
         "name": "totalBalanceWithStakeNum",
-        "type": "FLOAT"
+        "type": "FLOAT",
+        "description": "See `totalBalanceWithStake`. This value is expressed in EGLD."
     },
     {
         "name": "currentOwner",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The address in a bech32 format of the current owner of the smart contract. This field is populated only for the smart contract addresses."
     }
 ]

@@ -1,26 +1,32 @@
 [
     {
         "name": "_id",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The receipt hash."
     },
     {
         "name": "data",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "A message with the reason why the receipt was generated."
     },
     {
         "name": "sender",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The sender of the transaction that generated the receipt."
     },
     {
         "name": "timestamp",
-        "type": "TIMESTAMP"
+        "type": "TIMESTAMP",
+        "description": "The timestamp of the block in which the receipt was generated."
     },
     {
         "name": "txHash",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The hash of the transaction that generated the receipt."
     },
     {
         "name": "value",
-        "type": "STRING"
+        "type": "STRING",
+        "description": "The amount of EGLD that was refunded/penalized from the transaction fee."
     }
 ]
