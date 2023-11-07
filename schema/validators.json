@@ -2,7 +2,7 @@
     {
         "name": "_id",
         "type": "STRING",
-        "description": "A unique identifier (opaque)."
+        "description": "A unique identifier (somehow opaque). Composed as `{shard}_{epoch}`."
     },
     {
         "name": "publicKeys",
