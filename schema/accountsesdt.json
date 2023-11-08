@@ -12,12 +12,12 @@
     {
         "name": "balance",
         "type": "STRING",
-        "description": "The amount of ESDT token the address possesses. It includes the number of decimals."
+        "description": "The ESDT balance, in atomic units."
     },
     {
         "name": "balanceNum",
         "type": "FLOAT",
-        "description": "The amount of ESDT tokens the address possesses, in a numeric format."
+        "description": "See `balance`."
     },
     {
         "name": "currentOwner",
