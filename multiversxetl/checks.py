@@ -70,17 +70,9 @@ def _do_check_loaded_data_for_table(
         raise CountsMismatchError(f"Data is missing in BigQuery for table '{table}'. Delta = {counts_delta}.")
 
     if counts_delta < 0:
-        logging.warning(f"More records in BigQuery than in indexer. Will attempt to de-duplicate.")
-
-        # We do not perform a duplication check (most probably a positive anyway), we directly de-duplicate, to save costs.
-        _deduplicate_table(bq_client, bq_dataset, table)
-
-        # Check counts again.
-        count_in_bq = _get_num_records_in_interval(bq_client, bq_dataset, table, start_timestamp, end_timestamp)
-        counts_delta = count_in_indexer - count_in_bq
-
-        if counts_delta != 0:
-            raise CountsMismatchError(f"Counts do not match even after deduplication: indexer = {count_in_indexer}, bq = {count_in_bq}, delta = {counts_delta}.")
+        # We do not automatically perform de-duplication, because the operation is quite expensive.
+        # Instead, we stop the flow. At restart, duplicated records would be removed (due to the rewind step).
+        raise CountsMismatchError(f"Counts do not match, there may be duplicated data in BigQuery, table '{table}': indexer = {count_in_indexer}, bq = {count_in_bq}, delta = {counts_delta}.")
 
 
 def _get_num_records_in_interval(bq_client: IBqClient, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
@@ -103,19 +95,3 @@ def _create_query_parameters_for_interval(start_timestamp: int, end_timestamp: i
         bigquery.ScalarQueryParameter("start_timestamp", "INT64", start_timestamp),
         bigquery.ScalarQueryParameter("end_timestamp", "INT64", end_timestamp),
     ]
-
-
-def _deduplicate_table(bq_client: IBqClient, bq_dataset: str, table: str):
-    logging.info(f"Deduplicating table: {table}")
-
-    query = _create_query_for_deduplicate_tabel(bq_dataset, table)
-    bq_client.run_query([], query, into_table=f"{bq_dataset}.{table}")
-
-
-def _create_query_for_deduplicate_tabel(dataset: str, table: str):
-    return f"""
-    SELECT * EXCEPT(`row_number`)
-    FROM (
-    SELECT *, ROW_NUMBER() OVER (PARTITION BY `_id`) `row_number` FROM `{dataset}.{table}`)
-    WHERE `row_number` = 1
-    """
