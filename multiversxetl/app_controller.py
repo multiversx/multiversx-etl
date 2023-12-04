@@ -60,13 +60,15 @@ class AppController:
         _ = self._plan_and_consume_bulk(
             indices_config=indices_config,
             initial_start_timestamp=self.worker_config.genesis_timestamp,
-            initial_end_timestamp=now
+            initial_end_timestamp=now,
+            use_global_counts_for_bq_when_checking_loaded_data=True
         )
 
     def process_append_only_indices(self):
         indices_config = self.worker_config.append_only_indices
 
         now = int(_get_now().timestamp())
+        is_time_partition_start_at_genesis = indices_config.time_partition_start == self.worker_config.genesis_timestamp
         max_initial_end_timestamp = now - END_TIME_DELTA
 
         initial_end_timestamp = min(
@@ -81,7 +83,8 @@ class AppController:
             latest_checkpoint_timestamp = self._plan_and_consume_bulk(
                 indices_config=indices_config,
                 initial_start_timestamp=(self.worker_state.latest_checkpoint_timestamp or indices_config.time_partition_start),
-                initial_end_timestamp=initial_end_timestamp
+                initial_end_timestamp=initial_end_timestamp,
+                use_global_counts_for_bq_when_checking_loaded_data=is_time_partition_start_at_genesis
             )
 
             if latest_checkpoint_timestamp is None:
@@ -96,7 +99,8 @@ class AppController:
         self,
         indices_config: IndicesConfig,
         initial_start_timestamp: int,
-        initial_end_timestamp: int
+        initial_end_timestamp: int,
+        use_global_counts_for_bq_when_checking_loaded_data: bool
     ) -> Optional[int]:
         latest_planned_interval_end_time = self.tasks_dashboard.plan_bulk(
             bq_dataset=indices_config.bq_dataset,
@@ -135,6 +139,7 @@ class AppController:
             tables=indices_config.indices,
             start_timestamp=indices_config.time_partition_start,
             end_timestamp=latest_planned_interval_end_time,
+            use_global_counts_for_bq=use_global_counts_for_bq_when_checking_loaded_data,
             should_fail_on_counts_mismatch=indices_config.should_fail_on_counts_mismatch,
             skip_counts_check_for_indices=indices_config.skip_counts_check_for_indices
         )
@@ -200,6 +205,7 @@ class AppController:
             tables=indices,
             start_timestamp=self.worker_config.append_only_indices.time_partition_start,
             end_timestamp=checkpoint_timestamp,
+            use_global_counts_for_bq=False,
             should_fail_on_counts_mismatch=True,
             skip_counts_check_for_indices=[]
         )

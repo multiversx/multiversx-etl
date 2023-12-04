@@ -126,6 +126,7 @@ def _do_find_latest_good_checkpoint(args: Any):
                 tables=controller.worker_config.append_only_indices.indices,
                 start_timestamp=start_timestamp,
                 end_timestamp=end_timestamp,
+                use_global_counts_for_bq=False,
                 should_fail_on_counts_mismatch=True,
                 skip_counts_check_for_indices=[],
             )
