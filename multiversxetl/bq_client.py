@@ -97,6 +97,32 @@ class BqClient:
         for run in response.runs:
             logging.info(f"Started manual transfer: time = {run.run_time}, name = {run.name}")
 
+    def get_num_records(self, bq_dataset: str, table_name: str) -> int:
+        table_id = f"{bq_dataset}.{table_name}"
+        table: Any = self.client.get_table(table_id)
+        return table.num_rows
+
+    def get_num_records_in_interval(self, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
+        query = _create_query_for_get_num_records_in_interval(bq_dataset, table)
+        query_parameters = _create_query_parameters_for_interval(start_timestamp, end_timestamp)
+        records = self.run_query(query_parameters, query)
+        return records[0].count
+
+
+def _create_query_for_get_num_records_in_interval(dataset: str, table: str):
+    return f"""
+    SELECT COUNT(*) AS `count`
+    FROM `{dataset}.{table}`
+    WHERE `timestamp` >= TIMESTAMP_SECONDS(@start_timestamp) AND `timestamp` < TIMESTAMP_SECONDS(@end_timestamp)
+    """
+
+
+def _create_query_parameters_for_interval(start_timestamp: int, end_timestamp: int):
+    return [
+        bigquery.ScalarQueryParameter("start_timestamp", "INT64", start_timestamp),
+        bigquery.ScalarQueryParameter("end_timestamp", "INT64", end_timestamp),
+    ]
+
 
 class OneEachSecondsThrottler:
     def __init__(self, num_seconds: int) -> None:
