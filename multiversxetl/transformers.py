@@ -44,8 +44,11 @@ class LogsTransformer(Transformer):
 
         for event in events:
             topics = event.get("topics", []) or []
+            additional_data = event.get("additionalData", []) or []
+
             # Replace NULL values with empty strings, since BigQuery does not support NULL values in arrays (mode = REPEATED).
             event["topics"] = [topic if topic is not None else "" for topic in topics]
+            event["additionalData"] = [data_item if data_item is not None else "" for data_item in additional_data]
 
         # We've altered the data in-place.
         return data
