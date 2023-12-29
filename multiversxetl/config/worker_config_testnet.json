@@ -1,10 +1,10 @@
 {
     "gcp_project_id": "multiversx-blockchain-etl",
     "schema_folder": "./schema",
-    "indexer_url": "https://devnet-index.multiversx.com:443",
-    "genesis_timestamp": 1694000000,
+    "indexer_url": "https://testnet-index.multiversx.com:443",
+    "genesis_timestamp": 1700900000,
     "append_only_indices": {
-        "bq_dataset": "devnet_append_only_indices_staging",
+        "bq_dataset": "testnet_append_only_indices_staging",
         "bq_data_transfer_name": "",
         "indices": [
             "accountsesdthistory",
@@ -18,7 +18,7 @@
             "scresults",
             "transactions"
         ],
-        "time_partition_start": 1694000000,
+        "time_partition_start": 1700900000,
         "time_partition_end": 2000000000,
         "interval_size_in_seconds": 86400,
         "num_intervals_in_bulk": 1,
@@ -26,7 +26,7 @@
         "should_fail_on_counts_mismatch": true
     },
     "mutable_indices": {
-        "bq_dataset": "devnet_mutable_indices_staging",
+        "bq_dataset": "testnet_mutable_indices_staging",
         "bq_data_transfer_name": "",
         "indices": [
             "accounts",
