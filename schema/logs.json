@@ -24,6 +24,12 @@
                 "description": "The data field can contain information added by the smart contract that generated the event."
             },
             {
+                "name": "additionalData",
+                "mode": "REPEATED",
+                "type": "STRING",
+                "description": "Additional data captured by the event."
+            },
+            {
                 "name": "identifier",
                 "type": "STRING",
                 "description": "The identifier of the event."

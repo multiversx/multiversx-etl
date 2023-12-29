@@ -193,5 +193,15 @@
         "name": "guardianSignature",
         "type": "STRING",
         "description": "The signature of the guardian."
+    },
+    {
+        "name": "errorEvent",
+        "type": "BOOLEAN",
+        "description": ""
+    },
+    {
+        "name": "completedEvent",
+        "type": "BOOLEAN",
+        "description": ""
     }
 ]
