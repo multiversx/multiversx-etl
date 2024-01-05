@@ -17,6 +17,7 @@ class Transformer:
 class BlocksTransformer(Transformer):
     def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
         data.pop("pubKeyBitmap", None)
+        data.pop("reserved", None)
 
         # Remove "epochStartShardsData.pendingMiniBlockHeaders.reserved".
         for shard_data in data.get("epochStartShardsData", []):
