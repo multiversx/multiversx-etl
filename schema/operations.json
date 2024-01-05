@@ -247,11 +247,11 @@
     {
         "name": "errorEvent",
         "type": "BOOLEAN",
-        "description": ""
+        "description": "Whether the transaction has an event that indicates an error."
     },
     {
         "name": "completedEvent",
         "type": "BOOLEAN",
-        "description": ""
+        "description": "Whether the transaction has an event that indicates completion."
     }
 ]
