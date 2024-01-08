@@ -63,5 +63,20 @@
         "name": "currentOwner",
         "type": "STRING",
         "description": "The address in a bech32 format of the current owner of the smart contract. This field is populated only for the smart contract addresses."
+    },
+    {
+        "name": "codeHash",
+        "type": "STRING",
+        "description": "The current code hash of the smart contract."
+    },
+    {
+        "name": "rootHash",
+        "type": "STRING",
+        "description": "The root hash of the smart contract's data trie."
+    },
+    {
+        "name": "codeMetadata",
+        "type": "STRING",
+        "description": "The code metadata of the smart contract."
     }
 ]

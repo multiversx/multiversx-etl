@@ -41,5 +41,43 @@
         ],
         "type": "RECORD",
         "description": "A list with details about the upgrades of the smart contract."
+    },
+    {
+        "name": "currentOwner",
+        "type": "STRING",
+        "description": "The current owner of the smart contract."
+    },
+    {
+        "name": "initialCodeHash",
+        "type": "STRING",
+        "description": "The initial code hash of the smart contract."
+    },
+    {
+        "name": "codeHash",
+        "type": "STRING",
+        "description": "The current code hash of the smart contract."
+    },
+    {
+        "name": "owners",
+        "mode": "REPEATED",
+        "type": "RECORD",
+        "description": "An array of smart contract owners, as they changed over time.",
+        "fields": [
+            {
+                "name": "txHash",
+                "type": "STRING",
+                "description": "The 'change owner' transaction."
+            },
+            {
+                "name": "timestamp",
+                "type": "TIMESTAMP",
+                "description": "The timestamp of the 'change owner' transaction."
+            },
+            {
+                "name": "address",
+                "type": "STRING",
+                "description": "The address of the owner."
+            }
+        ]
     }
 ]

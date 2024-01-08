@@ -243,5 +243,15 @@
         "name": "guardianSignature",
         "type": "STRING",
         "description": "The signature of the guardian."
+    },
+    {
+        "name": "errorEvent",
+        "type": "BOOLEAN",
+        "description": "Whether the transaction has an event that indicates an error."
+    },
+    {
+        "name": "completedEvent",
+        "type": "BOOLEAN",
+        "description": "Whether the transaction has an event that indicates completion."
     }
 ]

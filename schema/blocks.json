@@ -351,5 +351,40 @@
         "mode": "REPEATED",
         "type": "NUMERIC",
         "description": "An array that contains the indices of the validators that signed the block."
+    },
+    {
+        "name": "signature",
+        "type": "STRING",
+        "description": "The block signature."
+    },
+    {
+        "name": "leaderSignature",
+        "type": "STRING",
+        "description": "The leader signature."
+    },
+    {
+        "name": "randSeed",
+        "type": "STRING",
+        "description": "The random seed."
+    },
+    {
+        "name": "prevRandSeed",
+        "type": "STRING",
+        "description": "The random seed of the previous block."
+    },
+    {
+        "name": "receiptsHash",
+        "type": "STRING",
+        "description": "The receipts hash."
+    },
+    {
+        "name": "softwareVersion",
+        "type": "STRING",
+        "description": "The software version."
+    },
+    {
+        "name": "chainID",
+        "type": "STRING",
+        "description": "The chain ID."
     }
 ]
