@@ -9,6 +9,7 @@ import requests
 from google.cloud import bigquery
 from google.cloud.bigquery_datatransfer_v1 import (
     DataTransferServiceClient, StartManualTransferRunsRequest)
+from google.cloud.exceptions import NotFound
 
 WRITE_DISPOSITION_APPEND = "WRITE_APPEND"
 
@@ -26,12 +27,29 @@ class BqClient:
 
     def truncate_tables(self, bq_dataset: str, tables: List[str]) -> None:
         for table in tables:
+            if not self._table_exists(bq_dataset, table):
+                logging.info(f"Table {bq_dataset}.{table} does not exist. Skipping truncate.")
+                continue
+
             logging.info(f"Truncating {bq_dataset}.{table}...")
 
             query = f"TRUNCATE TABLE `{bq_dataset}.{table}`"
             self.run_query([], query)
 
+    def _table_exists(self, bq_dataset: str, table: str) -> bool:
+        table_id = f"{bq_dataset}.{table}"
+
+        try:
+            self.client.get_table(table_id)
+            return True
+        except NotFound:
+            return False
+
     def delete_newer_than(self, bq_dataset: str, table: str, timestamp: int) -> None:
+        if not self._table_exists(bq_dataset, table):
+            logging.info(f"Table {bq_dataset}.{table} does not exist. Skipping delete.")
+            return
+
         logging.info(f"Deleting records in {bq_dataset}.{table} newer than {timestamp}...")
 
         query = f"DELETE FROM `{bq_dataset}.{table}` WHERE timestamp > TIMESTAMP_SECONDS(@timestamp)"
@@ -103,6 +121,9 @@ class BqClient:
         return table.num_rows
 
     def get_num_records_in_interval(self, bq_dataset: str, table: str, start_timestamp: int, end_timestamp: int) -> int:
+        if not self._table_exists(bq_dataset, table):
+            return 0
+
         query = _create_query_for_get_num_records_in_interval(bq_dataset, table)
         query_parameters = _create_query_parameters_for_interval(start_timestamp, end_timestamp)
         records = self.run_query(query_parameters, query)

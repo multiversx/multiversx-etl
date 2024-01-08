@@ -4,8 +4,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Protocol
 
 from multiversxetl.task import Task
-from multiversxetl.transformers import (BlocksTransformer, LogsTransformer,
-                                        TokensTransformer, Transformer)
+from multiversxetl.transformers import TransformersRegistry
 
 
 class IIndexer(Protocol):
@@ -36,11 +35,7 @@ class TasksRunner:
         self.indexer = indexer
         self.file_storage = file_storage
         self.schema_folder = schema_folder
-        self.transformers: Dict[str, Transformer] = {
-            "blocks": BlocksTransformer(),
-            "tokens": TokensTransformer(),
-            "logs": LogsTransformer()
-        }
+        self.transformers_registry = TransformersRegistry()
 
     def run(self, task: Task) -> None:
         self._do_extract(task)
@@ -85,7 +80,7 @@ class TasksRunner:
     def _do_transform(self, task: Task):
         logging.debug(f"_do_transform: {task}")
 
-        transformer = self.transformers.get(task.index_name, Transformer())
+        transformer = self.transformers_registry.get_transformer(task.index_name)
         input_filename = self.file_storage.get_extracted_path(task.get_filename_friendly_description())
         output_filename = self.file_storage.get_transformed_path(task.get_filename_friendly_description())
 
@@ -99,10 +94,11 @@ class TasksRunner:
         logging.debug(f"_do_load: {task}")
 
         file_path = self.file_storage.get_load_path(task.get_filename_friendly_description())
+        schema_path = self.schema_folder / f"{task.index_name}.json"
 
         self.bq_client.load_data(
             bq_dataset=task.bq_dataset,
             table_name=task.index_name,
-            schema_path=self.schema_folder / f"{task.index_name}.json",
+            schema_path=schema_path,
             data_path=file_path
         )
