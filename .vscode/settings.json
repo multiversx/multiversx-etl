@@ -10,5 +10,10 @@
     },
     "[python]": {
         "editor.defaultFormatter": "ms-python.autopep8"
-    }
+    },
+    "python.testing.pytestArgs": [
+        "multiversxetl"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

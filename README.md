@@ -4,7 +4,7 @@ ETL (extract, transform and load) tools for publishing MultiversX blockchain dat
 
 ## Published data
 
- - [Mainnet](https://console.cloud.google.com/bigquery?page=dataset&d=crypto_multiversx_mainnet_eu&p=multiversx-blockchain-etl)
+ - [Mainnet](https://console.cloud.google.com/marketplace/product/bigquery-public-data/blockchain-analytics-multiversx-mainnet-eu)
 
 ## Setup virtual environment
 
@@ -31,7 +31,7 @@ This implementation copies the data from Elasticsearch in two parallel flows.
 
 One flow copies the append-only indices (e.g. blocks, transactions, logs, receipts, etc.) into a staging BQ dataset. This process is incremental, i.e. it only copies the new data since the last run, and it's executed more often than the second flow (every 1 hour, by default). Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility.
 
-The second flow copies the mutable indices (e.g. tokens, accounts, etc.) into a staging BQ dataset. This process is not incremental. Tables are truncated and reloaded on each run. Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility.
+The second flow copies the mutable indices (e.g. tokens, accounts, etc.) into a staging BQ dataset. This process is not incremental. Tables are truncated and reloaded on each run. Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility. This flow is executed less often than the first flow (every 24 hours, by default).
 
 In order to invoke the two processes, you can either use the Docker setup (see next section) or explicitly invoke the following commands:
 

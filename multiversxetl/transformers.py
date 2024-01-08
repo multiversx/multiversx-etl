@@ -3,6 +3,19 @@ import json
 from typing import Any, Dict
 
 
+class TransformersRegistry:
+    def __init__(self):
+        self.trivial_transformer = Transformer()
+        self.transformers: Dict[str, Transformer] = {
+            "blocks": BlocksTransformer(),
+            "tokens": TokensTransformer(),
+            "logs": LogsTransformer()
+        }
+
+    def get_transformer(self, index_name: str) -> 'Transformer':
+        return self.transformers.get(index_name, self.trivial_transformer)
+
+
 class Transformer:
     def transform_json(self, raw_json: str) -> str:
         data = json.loads(raw_json)
