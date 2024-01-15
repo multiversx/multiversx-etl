@@ -37,6 +37,11 @@
                 "name": "upgrader",
                 "type": "STRING",
                 "description": "The bech32 encoded address of the sender of the contract upgrade transaction."
+            },
+            {
+                "name": "codeHash",
+                "type": "STRING",
+                "description": "The new code hash of the smart contract."
             }
         ],
         "type": "RECORD",
