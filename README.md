@@ -4,7 +4,7 @@ ETL (extract, transform and load) tools for publishing MultiversX blockchain dat
 
 ## Published data
 
- - [Mainnet](https://console.cloud.google.com/marketplace/product/bigquery-public-data/blockchain-analytics-multiversx-mainnet-eu)
+[Mainnet](https://console.cloud.google.com/marketplace/product/bigquery-public-data/blockchain-analytics-multiversx-mainnet-eu)
 
 ## Setup virtual environment
 
@@ -31,7 +31,7 @@ This implementation copies the data from Elasticsearch in two parallel flows.
 
 One flow copies the append-only indices (e.g. blocks, transactions, logs, receipts, etc.) into a staging BQ dataset. This process is incremental, i.e. it only copies the new data since the last run, and it's executed more often than the second flow (every 1 hour, by default). Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility.
 
-The second flow copies the mutable indices (e.g. tokens, accounts, etc.) into a staging BQ dataset. This process is not incremental. Tables are truncated and reloaded on each run. Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility. This flow is executed less often than the first flow (every 24 hours, by default).
+The second flow copies the mutable indices (e.g. tokens, accounts, etc.) into a staging BQ dataset. This process is not incremental. Tables are truncated and reloaded on each run. Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility. This flow is executed less often than the first flow (every 4 hours, by default).
 
 In order to invoke the two processes, you can either use the Docker setup (see next section) or explicitly invoke the following commands:
 
@@ -110,8 +110,8 @@ bq update ${GCP_PROJECT_ID}:${BQ_DATASET}.tokens schema/tokens.json
 
 Below are a few links useful for managing the ETL process. They are only accessible to the MultiversX team.
 
- - [BigQuery Workspace](https://console.cloud.google.com/bigquery?project=multiversx-blockchain-etl): inspect and manage the BigQuery datasets and tables.
- - [Analytics Hub](https://console.cloud.google.com/bigquery/analytics-hub/exchanges?project=multiversx-blockchain-etl): create and publish data listings.
- - [Logs Explorer](https://console.cloud.google.com/logs/query?project=multiversx-blockchain-etl): inspect logs.
- - [Monitoring](https://console.cloud.google.com/bigquery/admin/monitoring?project=multiversx-blockchain-etl&region=eu): resource utilization and jobs explorer.
- - [Data Transfers](https://console.cloud.google.com/bigquery/transfers?project=multiversx-blockchain-etl): inspect and manage the data transfers.
+- [BigQuery Workspace](https://console.cloud.google.com/bigquery?project=multiversx-blockchain-etl): inspect and manage the BigQuery datasets and tables.
+- [Analytics Hub](https://console.cloud.google.com/bigquery/analytics-hub/exchanges?project=multiversx-blockchain-etl): create and publish data listings.
+- [Logs Explorer](https://console.cloud.google.com/logs/query?project=multiversx-blockchain-etl): inspect logs.
+- [Monitoring](https://console.cloud.google.com/bigquery/admin/monitoring?project=multiversx-blockchain-etl&region=eu): resource utilization and jobs explorer.
+- [Data Transfers](https://console.cloud.google.com/bigquery/transfers?project=multiversx-blockchain-etl): inspect and manage the data transfers.

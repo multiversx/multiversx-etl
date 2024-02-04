@@ -48,5 +48,5 @@ services:
         "--workspace",
         "/workspace",
         "--sleep-between-iterations",
-        "86400"
+        "14400"
       ]
