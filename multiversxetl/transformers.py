@@ -7,6 +7,7 @@ class TransformersRegistry:
     def __init__(self):
         self.trivial_transformer = Transformer()
         self.transformers: Dict[str, Transformer] = {
+            "accounts": AccountsTransformer(),
             "blocks": BlocksTransformer(),
             "tokens": TokensTransformer(),
             "logs": LogsTransformer()
@@ -24,6 +25,17 @@ class Transformer:
         return output
 
     def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        return data
+
+
+class AccountsTransformer(Transformer):
+    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        for key in list(data.keys()):
+            is_volatile_field_api = key.startswith("api_")
+
+            if is_volatile_field_api:
+                data.pop(key)
+
         return data
 
 
