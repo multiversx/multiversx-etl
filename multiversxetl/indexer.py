@@ -3,8 +3,8 @@ from typing import Any, Dict, Iterable, Optional
 import elasticsearch.helpers
 from elasticsearch import Elasticsearch
 
-from multiversxetl.constants import (ELASTICSEARCH_MAX_RETRIES,
-                                     ELASTICSEARCH_MAX_SIZE)
+from multiversxetl.constants import (ELASTICSEARCH_CONNECTIONS_PER_NODE,
+                                     ELASTICSEARCH_MAX_RETRIES)
 
 SCROLL_CONSISTENCY_TIME = "10m"
 SCAN_BATCH_SIZE = 7500
@@ -16,7 +16,7 @@ class Indexer:
             url,
             max_retries=ELASTICSEARCH_MAX_RETRIES,
             retry_on_timeout=True,
-            maxsize=ELASTICSEARCH_MAX_SIZE
+            connections_per_node=ELASTICSEARCH_CONNECTIONS_PER_NODE
         )
 
     def count_records(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int:
