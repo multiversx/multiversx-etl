@@ -9,7 +9,7 @@ from multiversxetl.indexer import Indexer
 
 @pytest.mark.integration
 def test_count_records():
-    start_timestamp, end_timestamp = _get_test_time_slice(24 * 60 * 60)
+    start_timestamp, end_timestamp = _make_recent_time_slice(24 * 60 * 60)
 
     indexer = Indexer("https://index.multiversx.com")
     count = indexer.count_records("transactions", start_timestamp, end_timestamp)
@@ -27,19 +27,19 @@ def test_count_records():
 @pytest.mark.integration
 def test_get_records():
     indexer = Indexer("https://index.multiversx.com")
-    records = indexer.get_records("transactions", *_get_test_time_slice(60))
+    records = indexer.get_records("transactions", *_make_recent_time_slice(60))
     assert any(records)
 
     indexer = Indexer("https://devnet-index.multiversx.com")
-    records = indexer.get_records("transactions", *_get_test_time_slice(60 * 60))
+    records = indexer.get_records("transactions", *_make_recent_time_slice(60 * 60))
     assert any(records)
 
     indexer = Indexer("https://testnet-index.multiversx.com")
-    records = indexer.get_records("transactions", *_get_test_time_slice(24 * 60 * 60))
+    records = indexer.get_records("transactions", *_make_recent_time_slice(24 * 60 * 60))
     assert any(records)
 
 
-def _get_test_time_slice(duration_in_seconds: int) -> Tuple[int, int]:
+def _make_recent_time_slice(duration_in_seconds: int) -> Tuple[int, int]:
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     now_timestamp = int(now.timestamp())
     some_time_ago = (now - datetime.timedelta(seconds=duration_in_seconds))
