@@ -59,8 +59,8 @@ class Indexer:
             "query": {
                 "range": {
                     "timestamp": {
-                        "gte": start_timestamp,
-                        "lt": end_timestamp,
+                        "gte": str(start_timestamp),
+                        "lt": str(end_timestamp),
                     },
                 }
             }
