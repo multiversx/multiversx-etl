@@ -5,17 +5,19 @@ import sys
 import threading
 import traceback
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from multiversxetl.bq_client import BqClient
 from multiversxetl.checks import check_loaded_data
 from multiversxetl.constants import END_TIME_DELTA
+from multiversxetl.data_validator import DataValidator
 from multiversxetl.errors import SomeTasksFailedError, UsageError
 from multiversxetl.file_storage import FileStorage
 from multiversxetl.indexer import Indexer
 from multiversxetl.logger import CloudLogger
 from multiversxetl.tasks_dashboard import TasksDashboard
 from multiversxetl.tasks_runner import TasksRunner
+from multiversxetl.transformers import TransformersRegistry
 from multiversxetl.worker_config import IndicesConfig, WorkerConfig
 from multiversxetl.worker_state import WorkerState
 
@@ -196,7 +198,7 @@ class AppController:
         logging.info(f"Rewinding to checkpoint {checkpoint_timestamp}...")
 
         for table in indices:
-            self.bq_client.delete_newer_than(bq_dataset, table, checkpoint_timestamp)
+            self.bq_client.delete_on_or_after_timestamp(bq_dataset, table, checkpoint_timestamp)
 
         check_loaded_data(
             bq_client=self.bq_client,

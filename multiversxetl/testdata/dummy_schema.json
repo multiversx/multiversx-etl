@@ -1,0 +1,14 @@
+[
+    {
+        "name": "a",
+        "type": "STRING"
+    },
+    {
+        "name": "b",
+        "type": "STRING"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP"
+    }
+]
