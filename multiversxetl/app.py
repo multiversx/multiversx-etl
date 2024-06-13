@@ -14,11 +14,6 @@ from multiversxetl.constants import SECONDS_IN_DAY, SECONDS_IN_ONE_HOUR
 from multiversxetl.errors import CountsMismatchError, KnownError
 from multiversxetl.schema import map_elastic_search_schema_to_bigquery_schema
 
-logging.basicConfig(level=logging.INFO, format="[%(asctime)s] [%(levelname)s] [%(threadName)s] [%(module)s]: %(message)s")
-# Suppress some logging from Elasticsearch.
-logging.getLogger("elasticsearch.helpers").setLevel(logging.WARNING)
-logging.getLogger("elastic_transport.transport").setLevel(logging.WARNING)
-
 
 def main(args: List[str]) -> int:
     # See: https://github.com/grpc/grpc/issues/28557
@@ -39,6 +34,8 @@ def _do_main(args: List[str]):
     parser = ArgumentParser()
 
     subparsers = parser.add_subparsers()
+
+    parser.add_argument("--verbose", action="store_true", default=False)
 
     subparser = subparsers.add_parser("process-append-only-indices", help="Do ETL for append-only indices (continuously).")
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
@@ -65,7 +62,20 @@ def _do_main(args: List[str]):
     subparser.set_defaults(func=_do_regenerate_schema)
 
     parsed_args = parser.parse_args(args)
+
+    _setup_logging(parsed_args.verbose)
+
     parsed_args.func(parsed_args)
+
+
+def _setup_logging(verbose: bool):
+    log_level = logging.DEBUG if verbose else logging.INFO
+
+    logging.basicConfig(level=log_level, format="[%(asctime)s] [%(levelname)s] [%(threadName)s] [%(module)s]: %(message)s")
+
+    # Suppress some logging from Elasticsearch.
+    logging.getLogger("elasticsearch.helpers").setLevel(logging.WARNING)
+    logging.getLogger("elastic_transport.transport").setLevel(logging.WARNING)
 
 
 def _process_append_only_indices(args: Any):
