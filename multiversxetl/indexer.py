@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 import elasticsearch.helpers
 from elasticsearch import Elasticsearch
@@ -11,12 +11,13 @@ SCAN_BATCH_SIZE = 7500
 
 
 class Indexer:
-    def __init__(self, url: str):
+    def __init__(self, url: str, basic_auth: Optional[Tuple[str, str]] = None):
         self.elastic_search_client = Elasticsearch(
             url,
             max_retries=ELASTICSEARCH_MAX_RETRIES,
             retry_on_timeout=True,
-            connections_per_node=ELASTICSEARCH_CONNECTIONS_PER_NODE
+            connections_per_node=ELASTICSEARCH_CONNECTIONS_PER_NODE,
+            basic_auth=basic_auth
         )
 
     def count_records(self, index_name: str, start_timestamp: int, end_timestamp: int) -> int:
