@@ -5,7 +5,7 @@ import sys
 import threading
 import traceback
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from multiversxetl.bq_client import BqClient
 from multiversxetl.checks import check_loaded_data
