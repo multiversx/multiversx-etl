@@ -106,6 +106,24 @@ At times, the **load** step could fail for some tables due to, say, new fields a
 bq update ${GCP_PROJECT_ID}:${BQ_DATASET}.tokens schema/tokens.json
 ```
 
+## Running integration tests
+
+Generally speaking, the current integration tests should be ran locally (in the future, they might be added in the CI pipeline).
+
+First, connect to the Google Cloud Platform as follows:
+
+```
+gcloud auth application-default login
+gcloud config set project multiversx-blockchain-etl
+gcloud auth application-default set-quota-project multiversx-blockchain-etl
+```
+
+Then, run the integration tests:
+
+```
+pytest -m "integration"
+```
+
 ## Management (Google Cloud Console)
 
 Below are a few links useful for managing the ETL process. They are only accessible to the MultiversX team.

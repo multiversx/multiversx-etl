@@ -196,7 +196,7 @@ class AppController:
         logging.info(f"Rewinding to checkpoint {checkpoint_timestamp}...")
 
         for table in indices:
-            self.bq_client.delete_newer_than(bq_dataset, table, checkpoint_timestamp)
+            self.bq_client.delete_on_or_after_timestamp(bq_dataset, table, checkpoint_timestamp)
 
         check_loaded_data(
             bq_client=self.bq_client,

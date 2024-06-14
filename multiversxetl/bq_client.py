@@ -45,14 +45,14 @@ class BqClient:
         except NotFound:
             return False
 
-    def delete_newer_than(self, bq_dataset: str, table: str, timestamp: int) -> None:
+    def delete_on_or_after_timestamp(self, bq_dataset: str, table: str, timestamp: int) -> None:
         if not self._table_exists(bq_dataset, table):
             logging.info(f"Table {bq_dataset}.{table} does not exist. Skipping delete.")
             return
 
-        logging.info(f"Deleting records in {bq_dataset}.{table} newer than {timestamp}...")
+        logging.info(f"Deleting records in {bq_dataset}.{table} on or after {timestamp}...")
 
-        query = f"DELETE FROM `{bq_dataset}.{table}` WHERE timestamp > TIMESTAMP_SECONDS(@timestamp)"
+        query = f"DELETE FROM `{bq_dataset}.{table}` WHERE timestamp >= TIMESTAMP_SECONDS(@timestamp)"
         self.run_query([bigquery.ScalarQueryParameter("timestamp", "INT64", timestamp)], query)
 
     def run_query(
