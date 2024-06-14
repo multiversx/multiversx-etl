@@ -16,7 +16,6 @@ from multiversxetl.indexer import Indexer
 from multiversxetl.logger import CloudLogger
 from multiversxetl.tasks_dashboard import TasksDashboard
 from multiversxetl.tasks_runner import TasksRunner
-from multiversxetl.transformers import TransformersRegistry
 from multiversxetl.worker_config import IndicesConfig, WorkerConfig
 from multiversxetl.worker_state import WorkerState
 
@@ -210,6 +209,63 @@ class AppController:
             should_fail_on_counts_mismatch=True,
             skip_counts_check_for_indices=[]
         )
+
+    def validate_indexer_data_against_schema(self):
+        validator = DataValidator()
+        append_only_indices_config = self.worker_config.append_only_indices
+        mutable_indices_config = self.worker_config.mutable_indices
+        genesis_timestamp = self.worker_config.genesis_timestamp
+        transformers_registry = TransformersRegistry()
+
+        # for index_name in set(indices_config.indices) - set(indices_config.indices_without_timestamp):
+        #     start_timestamp = genesis_timestamp
+        #
+        #     for i in range(0, 10):
+        #         end_timestamp = start_timestamp + indices_config.interval_size_in_seconds
+
+        #         start_time = datetime.datetime.fromtimestamp(start_timestamp, tz=datetime.timezone.utc) if start_timestamp else None
+        #         end_time = datetime.datetime.fromtimestamp(end_timestamp, tz=datetime.timezone.utc) if end_timestamp else None
+
+        #         records = self.indexer.get_records(index_name, start_timestamp, end_timestamp)
+        #         records = list(records)
+        #         records_payloads: List[Dict[str, Any]] = [record["_source"] for record in records]
+
+        #         transformer = transformers_registry.get_transformer(index_name)
+        #         records_payloads_transformed = [transformer.transform(record_payload) for record_payload in records_payloads]
+        #         print(i, index_name, start_time, end_time, len(records))
+
+        #         validator.validate(index_name, records_payloads_transformed)
+
+        #         start_timestamp = end_timestamp
+
+        #         if start_timestamp > int(_get_now().timestamp()):
+        #             break
+
+        for index_name in ["blocks"]:
+            start_timestamp = self.worker_state.latest_checkpoint_timestamp
+
+            for i in range(0, 10):
+                print(i, index_name)
+
+                end_timestamp = start_timestamp + append_only_indices_config.interval_size_in_seconds * 1
+
+                start_time = datetime.datetime.fromtimestamp(start_timestamp, tz=datetime.timezone.utc) if start_timestamp else None
+                end_time = datetime.datetime.fromtimestamp(end_timestamp, tz=datetime.timezone.utc) if end_timestamp else None
+
+                records = self.indexer.get_records(index_name, start_timestamp, end_timestamp)
+                records = list(records)
+                records_payloads: List[Dict[str, Any]] = [record["_source"] for record in records]
+
+                transformer = transformers_registry.get_transformer(index_name)
+                records_payloads_transformed = [transformer.transform(record_payload) for record_payload in records_payloads]
+                print(i, index_name, start_time, end_time, len(records))
+
+                validator.validate(index_name, records_payloads_transformed)
+
+                start_timestamp = end_timestamp
+
+                if start_timestamp > int(_get_now().timestamp()):
+                    break
 
 
 def _get_now() -> datetime.datetime:
