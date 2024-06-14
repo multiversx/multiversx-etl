@@ -10,7 +10,6 @@ from typing import Any, Dict, List, Optional
 from multiversxetl.bq_client import BqClient
 from multiversxetl.checks import check_loaded_data
 from multiversxetl.constants import END_TIME_DELTA
-from multiversxetl.data_validator import DataValidator
 from multiversxetl.errors import SomeTasksFailedError, UsageError
 from multiversxetl.file_storage import FileStorage
 from multiversxetl.indexer import Indexer
