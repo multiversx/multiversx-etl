@@ -79,6 +79,11 @@ def _do_check_loaded_data_for_table(
     if not should_fail_on_counts_mismatch:
         return
 
+    erratum = counts_checks_erratum.get_erratum(table)
+    if erratum:
+        counts_delta += erratum
+        logging.warning(f"Applied counts erratum for table '{table}': {erratum}. New delta = {counts_delta}.")
+
     if counts_delta > 0:
         raise CountsMismatchError(f"Data is missing in BigQuery for table '{table}'. Delta = {counts_delta}.")
 
