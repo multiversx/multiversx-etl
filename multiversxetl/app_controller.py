@@ -35,7 +35,13 @@ class AppController:
         worker_id = socket.gethostname()
 
         self.bq_client = BqClient(self.worker_config.gcp_project_id)
-        self.indexer = Indexer(self.worker_config.indexer_url)
+
+        self.indexer = Indexer(
+            url=self.worker_config.indexer_url,
+            username=self.worker_config.indexer_username,
+            password=self.worker_config.indexer_password
+        )
+
         self.cloud_logger = CloudLogger(self.worker_config.gcp_project_id, worker_id)
         self.tasks_dashboard = TasksDashboard()
         file_storage = FileStorage(workspace)

@@ -9,6 +9,8 @@ class WorkerConfig:
             gcp_project_id: str,
             schema_folder: Path,
             indexer_url: str,
+            indexer_username: str,
+            indexer_password: str,
             genesis_timestamp: int,
             append_only_indices: 'IndicesConfig',
             mutable_indices: 'IndicesConfig'
@@ -16,6 +18,8 @@ class WorkerConfig:
         self.gcp_project_id = gcp_project_id
         self.schema_folder = schema_folder
         self.indexer_url = indexer_url
+        self.indexer_username = indexer_username
+        self.indexer_password = indexer_password
         self.genesis_timestamp = genesis_timestamp
         self.append_only_indices = append_only_indices
         self.mutable_indices = mutable_indices
@@ -31,6 +35,8 @@ class WorkerConfig:
             gcp_project_id=data["gcp_project_id"],
             schema_folder=Path(data["schema_folder"]),
             indexer_url=data["indexer_url"],
+            indexer_username=data.get("indexer_username", ""),
+            indexer_password=data.get("indexer_password", ""),
             genesis_timestamp=data["genesis_timestamp"],
             append_only_indices=IndicesConfig.load_from_dict(data["append_only_indices"]),
             mutable_indices=IndicesConfig.load_from_dict(data["mutable_indices"])

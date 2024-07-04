@@ -11,7 +11,9 @@ SCAN_BATCH_SIZE = 7500
 
 
 class Indexer:
-    def __init__(self, url: str, basic_auth: Optional[Tuple[str, str]] = None):
+    def __init__(self, url: str, username: str = "", password: str = ""):
+        basic_auth = (username, password) if username and password else None
+
         self.elastic_search_client = Elasticsearch(
             url,
             max_retries=ELASTICSEARCH_MAX_RETRIES,
