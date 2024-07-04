@@ -5,6 +5,7 @@ from typing import Any, List, Optional, Protocol
 from google.cloud import bigquery
 
 from multiversxetl.errors import CountsMismatchError
+from multiversxetl.worker_config import CountChecksErratum
 
 
 class IIndexer(Protocol):
@@ -26,7 +27,8 @@ def check_loaded_data(
     end_timestamp: int,
     use_global_counts_for_bq: bool,
     should_fail_on_counts_mismatch: bool,
-    skip_counts_check_for_indices: List[str]
+    skip_counts_check_for_indices: List[str],
+    counts_checks_erratum: CountChecksErratum
 ):
     for table in tables:
         if table in skip_counts_check_for_indices:
@@ -40,7 +42,8 @@ def check_loaded_data(
             start_timestamp,
             end_timestamp,
             use_global_counts_for_bq,
-            should_fail_on_counts_mismatch
+            should_fail_on_counts_mismatch,
+            counts_checks_erratum
         )
 
 
@@ -52,7 +55,8 @@ def _do_check_loaded_data_for_table(
         start_timestamp: int,
         end_timestamp: int,
         use_global_counts_for_bq: bool,
-        should_fail_on_counts_mismatch: bool
+        should_fail_on_counts_mismatch: bool,
+        counts_checks_erratum: CountChecksErratum
 ):
     start_datetime = datetime.datetime.fromtimestamp(start_timestamp, tz=datetime.timezone.utc)
     end_datetime = datetime.datetime.fromtimestamp(end_timestamp, tz=datetime.timezone.utc)

@@ -23,7 +23,19 @@
         "interval_size_in_seconds": 86400,
         "num_intervals_in_bulk": 1,
         "num_threads": 4,
-        "should_fail_on_counts_mismatch": true
+        "should_fail_on_counts_mismatch": true,
+        "counts_checks_erratum": {
+            "accountsesdthistory": -20,
+            "accountshistory": 145,
+            "blocks": -7,
+            "logs": -12619,
+            "miniblocks": -53193,
+            "operations": -1,
+            "receipts": 0,
+            "rounds": 0,
+            "scresults": 8,
+            "transactions": -4
+        }
     },
     "mutable_indices": {
         "bq_dataset": "mainnet_mutable_indices_staging",
