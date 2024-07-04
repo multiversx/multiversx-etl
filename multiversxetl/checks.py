@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Protocol
 from google.cloud import bigquery
 
 from multiversxetl.errors import CountsMismatchError
-from multiversxetl.worker_config import CountChecksErratum
+from multiversxetl.worker_config import CountChecksErrata
 
 
 class IIndexer(Protocol):
@@ -28,7 +28,7 @@ def check_loaded_data(
     use_global_counts_for_bq: bool,
     should_fail_on_counts_mismatch: bool,
     skip_counts_check_for_indices: List[str],
-    counts_checks_erratum: CountChecksErratum
+    counts_checks_errata: CountChecksErrata
 ):
     for table in tables:
         if table in skip_counts_check_for_indices:
@@ -43,7 +43,7 @@ def check_loaded_data(
             end_timestamp,
             use_global_counts_for_bq,
             should_fail_on_counts_mismatch,
-            counts_checks_erratum
+            counts_checks_errata
         )
 
 
@@ -56,7 +56,7 @@ def _do_check_loaded_data_for_table(
         end_timestamp: int,
         use_global_counts_for_bq: bool,
         should_fail_on_counts_mismatch: bool,
-        counts_checks_erratum: CountChecksErratum
+        counts_checks_errata: CountChecksErrata
 ):
     start_datetime = datetime.datetime.fromtimestamp(start_timestamp, tz=datetime.timezone.utc)
     end_datetime = datetime.datetime.fromtimestamp(end_timestamp, tz=datetime.timezone.utc)
@@ -79,7 +79,7 @@ def _do_check_loaded_data_for_table(
     if not should_fail_on_counts_mismatch:
         return
 
-    erratum = counts_checks_erratum.get_erratum(table)
+    erratum = counts_checks_errata.get_erratum(table)
     if erratum:
         counts_delta += erratum
         logging.warning(f"Applied counts erratum for table '{table}': {erratum}. New delta = {counts_delta}.")

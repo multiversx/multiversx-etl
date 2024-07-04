@@ -140,7 +140,7 @@ def _do_find_latest_good_checkpoint(args: Any):
                 use_global_counts_for_bq=False,
                 should_fail_on_counts_mismatch=True,
                 skip_counts_check_for_indices=[],
-                counts_checks_erratum=indices_config.counts_checks_erratum
+                counts_checks_errata=indices_config.counts_checks_errata
             )
 
             logging.info(f"Latest good checkpoint: {end_timestamp}")

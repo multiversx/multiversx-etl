@@ -57,7 +57,7 @@ class IndicesConfig:
             num_threads: int,
             should_fail_on_counts_mismatch: bool,
             skip_counts_check_for_indices: List[str],
-            counts_checks_erratum: "CountChecksErratum"
+            counts_checks_errata: "CountChecksErrata"
     ) -> None:
         self.bq_dataset = bq_dataset
         self.bq_data_transfer_name = bq_data_transfer_name
@@ -70,7 +70,7 @@ class IndicesConfig:
         self.num_threads = num_threads
         self.should_fail_on_counts_mismatch = should_fail_on_counts_mismatch
         self.skip_counts_check_for_indices = skip_counts_check_for_indices
-        self.counts_checks_erratum = counts_checks_erratum
+        self.counts_checks_errata = counts_checks_errata
 
     @classmethod
     def load_from_dict(cls, data: Dict[str, Any]) -> "IndicesConfig":
@@ -86,16 +86,16 @@ class IndicesConfig:
             num_threads=data["num_threads"],
             should_fail_on_counts_mismatch=data["should_fail_on_counts_mismatch"],
             skip_counts_check_for_indices=data.get("skip_counts_check_for_indices", []),
-            counts_checks_erratum=CountChecksErratum.load_from_dict(data.get("counts_checks_erratum", {}))
+            counts_checks_errata=CountChecksErrata.load_from_dict(data.get("counts_checks_errata", {}))
         )
 
 
-class CountChecksErratum:
+class CountChecksErrata:
     def __init__(self, data: Dict[str, int]) -> None:
         self.data: Dict[str, int] = data
 
     @classmethod
-    def load_from_dict(cls, data: Dict[str, Any]) -> "CountChecksErratum":
+    def load_from_dict(cls, data: Dict[str, Any]) -> "CountChecksErrata":
         return cls(
             data=data
         )
