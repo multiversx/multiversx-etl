@@ -35,7 +35,13 @@ class AppController:
         worker_id = socket.gethostname()
 
         self.bq_client = BqClient(self.worker_config.gcp_project_id)
-        self.indexer = Indexer(self.worker_config.indexer_url)
+
+        self.indexer = Indexer(
+            url=self.worker_config.indexer_url,
+            username=self.worker_config.indexer_username,
+            password=self.worker_config.indexer_password
+        )
+
         self.cloud_logger = CloudLogger(self.worker_config.gcp_project_id, worker_id)
         self.tasks_dashboard = TasksDashboard()
         file_storage = FileStorage(workspace)
@@ -141,7 +147,8 @@ class AppController:
             end_timestamp=latest_planned_interval_end_time,
             use_global_counts_for_bq=use_global_counts_for_bq_when_checking_loaded_data,
             should_fail_on_counts_mismatch=indices_config.should_fail_on_counts_mismatch,
-            skip_counts_check_for_indices=indices_config.skip_counts_check_for_indices
+            skip_counts_check_for_indices=indices_config.skip_counts_check_for_indices,
+            counts_checks_errata=indices_config.counts_checks_errata
         )
 
         return latest_planned_interval_end_time
@@ -189,8 +196,9 @@ class AppController:
         """
         From the BQ tables corresponding to append-only indices, deletes records newer than the latest checkpoint.
         """
-        bq_dataset = self.worker_config.append_only_indices.bq_dataset
-        indices = self.worker_config.append_only_indices.indices
+        indices_config = self.worker_config.append_only_indices
+        bq_dataset = indices_config.bq_dataset
+        indices = indices_config.indices
         checkpoint_timestamp = self.worker_state.latest_checkpoint_timestamp
 
         logging.info(f"Rewinding to checkpoint {checkpoint_timestamp}...")
@@ -203,11 +211,12 @@ class AppController:
             bq_dataset=bq_dataset,
             indexer=self.indexer,
             tables=indices,
-            start_timestamp=self.worker_config.append_only_indices.time_partition_start,
+            start_timestamp=indices_config.time_partition_start,
             end_timestamp=checkpoint_timestamp,
             use_global_counts_for_bq=False,
             should_fail_on_counts_mismatch=True,
-            skip_counts_check_for_indices=[]
+            skip_counts_check_for_indices=[],
+            counts_checks_errata=indices_config.counts_checks_errata
         )
 
 

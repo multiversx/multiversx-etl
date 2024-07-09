@@ -124,21 +124,23 @@ def _do_find_latest_good_checkpoint(args: Any):
     controller = AppController(workspace)
     search_step = args.search_step
 
-    start_timestamp = controller.worker_config.append_only_indices.time_partition_start
+    indices_config = controller.worker_config.append_only_indices
+    start_timestamp = indices_config.time_partition_start
     now = int(_get_now().timestamp())
 
     for end_timestamp in range(now, start_timestamp, -search_step):
         try:
             check_loaded_data(
                 bq_client=controller.bq_client,
-                bq_dataset=controller.worker_config.append_only_indices.bq_dataset,
+                bq_dataset=indices_config.bq_dataset,
                 indexer=controller.indexer,
-                tables=controller.worker_config.append_only_indices.indices,
+                tables=indices_config.indices,
                 start_timestamp=start_timestamp,
                 end_timestamp=end_timestamp,
                 use_global_counts_for_bq=False,
                 should_fail_on_counts_mismatch=True,
                 skip_counts_check_for_indices=[],
+                counts_checks_errata=indices_config.counts_checks_errata
             )
 
             logging.info(f"Latest good checkpoint: {end_timestamp}")
