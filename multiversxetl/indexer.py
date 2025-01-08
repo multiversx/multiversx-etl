@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterable, Optional, Tuple
+from typing import Any, Dict, Iterable, Optional
 
 import elasticsearch.helpers
 from elasticsearch import Elasticsearch
