@@ -1,8 +1,14 @@
 
 ```
+# Mainnet (staging)
 export GCP_PROJECT_ID=multiversx-blockchain-etl
 export BQ_DATASET_APPEND_ONLY=mainnet_append_only_indices_staging
 export BQ_DATASET_MUTABLE=mainnet_mutable_indices_staging
+
+# Mainnet
+export GCP_PROJECT_ID=multiversx-blockchain-etl
+export BQ_DATASET_APPEND_ONLY=crypto_multiversx_mainnet_eu
+export BQ_DATASET_MUTABLE=crypto_multiversx_mainnet_eu
 
 bq update --description "ESDTs of accounts (with history)." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.accountsesdthistory schema/accountsesdthistory.json
 bq update --description "Accounts data (with history)." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.accountshistory schema/accountshistory.json

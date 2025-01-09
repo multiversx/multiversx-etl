@@ -14,6 +14,12 @@ bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.rece
 bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.rounds
 bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.scresults
 bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.transactions
+
+bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.accounts
+bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.accountsesdt
+bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.delegators
+bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.scdeploys
+bq update --clustering_fields=timestamp mainnet_append_only_indices_staging.tokens
 ```
 
 Cluster all rows according to the new clustering specification:
