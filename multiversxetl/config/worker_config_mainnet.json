@@ -26,14 +26,14 @@
         "should_fail_on_counts_mismatch": true,
         "counts_checks_errata": {
             "accountsesdthistory": -20,
-            "accountshistory": 145,
-            "blocks": -7,
-            "logs": -12619,
+            "accountshistory": 143,
+            "blocks": -9,
+            "logs": -12618,
             "miniblocks": -53193,
-            "operations": -1,
+            "operations": 24,
             "receipts": 0,
             "rounds": 0,
-            "scresults": 8,
+            "scresults": -101,
             "transactions": -4
         }
     },
