@@ -203,5 +203,20 @@
         "name": "completedEvent",
         "type": "BOOLEAN",
         "description": "Whether the transaction has an event that indicates completion."
+    },
+    {
+        "name": "relayer",
+        "type": "STRING",
+        "description": "The address of the relayer."
+    },
+    {
+        "name": "relayerSignature",
+        "type": "STRING",
+        "description": "The signature of the relayer."
+    },
+    {
+        "name": "hadRefund",
+        "type": "BOOLEAN",
+        "description": "Whether the transaction has a refund."
     }
 ]
