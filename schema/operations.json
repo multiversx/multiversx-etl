@@ -253,5 +253,10 @@
         "name": "completedEvent",
         "type": "BOOLEAN",
         "description": "Whether the transaction has an event that indicates completion."
+    },
+    {
+        "name": "hadRefund",
+        "type": "BOOLEAN",
+        "description": "Whether the transaction has a refund."
     }
 ]
