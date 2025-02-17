@@ -153,5 +153,15 @@
         "mode": "REPEATED",
         "type": "FLOAT",
         "description": "See `esdtValues` field."
+    },
+    {
+        "name": "epoch",
+        "type": "NUMERIC",
+        "description": "The epoch the scresult belongs to."
+    },
+    {
+        "name": "uuid",
+        "type": "STRING",
+        "description": "Unique identifier used for ES queries."
     }
 ]
