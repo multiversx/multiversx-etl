@@ -386,5 +386,10 @@
         "name": "chainID",
         "type": "STRING",
         "description": "The chain ID."
+    },
+    {
+        "name": "uuid",
+        "type": "STRING",
+        "description": "Unique identifier used for ES queries."
     }
 ]

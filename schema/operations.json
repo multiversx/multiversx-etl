@@ -268,5 +268,15 @@
         "name": "hadRefund",
         "type": "BOOLEAN",
         "description": "Whether the transaction has a refund."
+    },
+    {
+        "name": "epoch",
+        "type": "NUMERIC",
+        "description": "The epoch the operation belongs to."
+    },
+    {
+        "name": "uuid",
+        "type": "STRING",
+        "description": "Unique identifier used for ES queries."
     }
 ]
