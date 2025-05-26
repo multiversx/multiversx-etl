@@ -391,5 +391,10 @@
         "name": "uuid",
         "type": "STRING",
         "description": "Unique identifier used for ES queries."
+    },
+    {
+        "name": "proposerBlsKey",
+        "type": "STRING",
+        "description": "The BlsKey of the proposer."
     }
 ]
