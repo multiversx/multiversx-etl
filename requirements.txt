@@ -1,5 +1,5 @@
 six
-elasticsearch
+elasticsearch==8.14.0
 google-cloud-bigquery
 google-cloud-bigquery-datatransfer
 google-cloud-firestore
