@@ -396,5 +396,51 @@
         "name": "proposerBlsKey",
         "type": "STRING",
         "description": "The BlsKey of the proposer."
+    },
+    {   "name": "proof",
+        "type": "RECORD",
+        "description": "A structure containing the header proof.",
+        "fields": [
+            {
+                "name": "pubKeysBitmap",
+                "type": "STRING",
+                "description": "Bitmap of public keys that signed the header."
+            },
+            {
+                "name": "aggregatedSignature",
+                "type": "STRING",
+                "description": "Aggregated signature of the header."
+            },
+            {
+                "name": "headerHash",
+                "type": "STRING",
+                "description": "Hash of the header."
+            },
+            {
+                "name": "headerEpoch",
+                "type": "NUMERIC",
+                "description": "Epoch number of the header."
+            },
+            {
+                "name": "headerNonce",
+                "type": "NUMERIC",
+                "description": "Nonce (block height) of the header."
+            },
+            {
+                "name": "headerShardId",
+                "type": "NUMERIC",
+                "description": "Shard ID of the header."
+            },
+            {
+                "name": "headerRound",
+                "type": "NUMERIC",
+                "description": "Round of the header."
+            },
+            {
+                "name": "isStartOfEpoch",
+                "type": "BOOLEAN",
+                "description": "Indicates if the header is the start of an epoch."
+            }
+        ]
     }
 ]
