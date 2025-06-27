@@ -1,5 +1,4 @@
 import datetime
-import json
 import logging
 import os
 import sys
@@ -12,7 +11,6 @@ from multiversxetl.app_controller import AppController
 from multiversxetl.checks import check_loaded_data
 from multiversxetl.constants import SECONDS_IN_DAY, SECONDS_IN_ONE_HOUR
 from multiversxetl.errors import CountsMismatchError, KnownError
-from multiversxetl.schema import map_elastic_search_schema_to_bigquery_schema
 
 
 def main(args: List[str]) -> int:
@@ -55,11 +53,6 @@ def _do_main(args: List[str]):
     subparser.add_argument("--workspace", required=True, help="Workspace path.")
     subparser.add_argument("--search-step", type=int, default=SECONDS_IN_DAY, help="Search step (search precision).")
     subparser.set_defaults(func=_do_find_latest_good_checkpoint)
-
-    subparser = subparsers.add_parser("regenerate-schema", help="Re-generates BQ schema files from ES schema files.")
-    subparser.add_argument("--input-folder", type=str, help="The path to 'input' schema files. E.g. 'elasticreindexer/cmd/indices-creator/config/noKibana'.")
-    subparser.add_argument("--output-folder", type=str, help="The path to 'output' schema files (generated).")
-    subparser.set_defaults(func=_do_regenerate_schema)
 
     parsed_args = parser.parse_args(args)
 
@@ -148,30 +141,6 @@ def _do_find_latest_good_checkpoint(args: Any):
         except CountsMismatchError:
             logging.info("Will try again with an earlier checkpoint...")
             continue
-
-
-def _do_regenerate_schema(args: Any):
-    input_folder = Path(args.input_folder).expanduser().resolve()
-    output_folder = Path(args.output_folder).expanduser().resolve()
-
-    input_folder_path = Path(input_folder)
-    input_files = list(input_folder_path.glob("*.json"))
-
-    print(f"Found {len(input_files)} input files in {input_folder_path}")
-
-    output_folder_path = Path(output_folder)
-    output_folder_path.mkdir(parents=True, exist_ok=True)
-
-    for input_file in input_files:
-        input_schema = json.loads(input_file.read_text())
-        output_schema = map_elastic_search_schema_to_bigquery_schema(input_schema)
-
-        if not output_schema:
-            print("No schema, skipping file:", input_file)
-            continue
-
-        output_file_path = output_folder_path / input_file.name
-        output_file_path.write_text(json.dumps(output_schema, indent=4) + "\n")
 
 
 def _get_now() -> datetime.datetime:

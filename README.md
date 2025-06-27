@@ -90,22 +90,6 @@ docker compose --file ./docker/docker-compose.yml \
     --project-name multiversx-etl-testnet up --detach
 ```
 
-## Generate schema files
-
-Maintainers of this repository should trigger a re-generation of the BigQuery schema files whenever the Elasticsearch schema is updated. This is done by running the following command (make sure to check out [mx-chain-tools-go](https://github.com/multiversx/mx-chain-tools-go) in advance):
-
-```
-python3 -m multiversxetl.app regenerate-schema --input-folder=~/mx-chain-tools-go/elasticreindexer/cmd/indices-creator/config/noKibana/ --output-folder=./schema
-```
-
-The resulting files should be committed to this repository.
-
-At times, the **load** step could fail for some tables due to, say, new fields added to Elasticsearch indices (of which the BigQuery schema was not aware). If so, then re-generate the schema files (see above), update the BigQuery with the `bq` command (example below is for the `tokens` table), and restart the ETL flow:
-
-```
-bq update ${GCP_PROJECT_ID}:${BQ_DATASET}.tokens schema/tokens.json
-```
-
 ## Running integration tests
 
 Generally speaking, the current integration tests should be ran locally (in the future, they might be added in the CI pipeline).
