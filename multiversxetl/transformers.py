@@ -10,7 +10,8 @@ class TransformersRegistry:
             "accounts": AccountsTransformer(),
             "blocks": BlocksTransformer(),
             "tokens": TokensTransformer(),
-            "logs": LogsTransformer()
+            "logs": LogsTransformer(),
+            "events": EventsTransformer(),
         }
 
     def get_transformer(self, index_name: str) -> 'Transformer':
@@ -77,4 +78,16 @@ class LogsTransformer(Transformer):
             event["additionalData"] = [data_item if data_item is not None else "" for data_item in additional_data]
 
         # We've altered the data in-place.
+        return data
+
+
+class EventsTransformer(Transformer):
+    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        topics = data.get("topics", []) or []
+        additional_data = data.get("additionalData", []) or []
+
+        # Replace NULL values with empty strings, since BigQuery does not support NULL values in arrays (mode = REPEATED).
+        data["topics"] = [topic if topic is not None else "" for topic in topics]
+        data["additionalData"] = [data_item if data_item is not None else "" for data_item in additional_data]
+
         return data
