@@ -18,11 +18,29 @@ pip install -r ./requirements.txt --upgrade
 pip install -r ./requirements-dev.txt --upgrade
 ```
 
-## Run the tests
+## Running the unit tests
 
 ```
 export PYTHONPATH=.
 pytest -m "not integration"
+```
+
+## Running the integration tests
+
+Generally speaking, the current integration tests should be ran locally (in the future, they might be added in the CI pipeline).
+
+First, connect to the Google Cloud Platform as follows:
+
+```
+gcloud auth application-default login
+gcloud config set project multiversx-blockchain-etl
+gcloud auth application-default set-quota-project multiversx-blockchain-etl
+```
+
+Then, run the integration tests:
+
+```
+pytest -m "integration"
 ```
 
 ## Quickstart
@@ -88,24 +106,6 @@ docker compose --file ./docker/docker-compose.yml \
 docker compose --file ./docker/docker-compose.yml \
     --env-file ./docker/env/testnet.env \
     --project-name multiversx-etl-testnet up --detach
-```
-
-## Running integration tests
-
-Generally speaking, the current integration tests should be ran locally (in the future, they might be added in the CI pipeline).
-
-First, connect to the Google Cloud Platform as follows:
-
-```
-gcloud auth application-default login
-gcloud config set project multiversx-blockchain-etl
-gcloud auth application-default set-quota-project multiversx-blockchain-etl
-```
-
-Then, run the integration tests:
-
-```
-pytest -m "integration"
 ```
 
 ## Management (Google Cloud Console)
