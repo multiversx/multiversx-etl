@@ -16,7 +16,8 @@
             "receipts",
             "rounds",
             "scresults",
-            "transactions"
+            "transactions",
+            "events"
         ],
         "time_partition_start": 1694000000,
         "time_partition_end": 2000000000,
@@ -37,19 +38,13 @@
             "tokens",
             "validators"
         ],
-        "indices_without_timestamp": [
-            "epochinfo",
-            "validators"
-        ],
+        "indices_without_timestamp": ["epochinfo", "validators"],
         "time_partition_start": 0,
         "time_partition_end": 0,
         "interval_size_in_seconds": 7776000,
         "num_intervals_in_bulk": 65535,
         "num_threads": 8,
         "should_fail_on_counts_mismatch": false,
-        "skip_counts_check_for_indices": [
-            "epochinfo",
-            "validators"
-        ]
+        "skip_counts_check_for_indices": ["epochinfo", "validators"]
     }
 }
