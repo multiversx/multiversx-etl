@@ -64,5 +64,10 @@
         "name": "txOrder",
         "type": "NUMERIC",
         "description": "Ordering index."
+    },
+    {
+        "name": "uuid",
+        "type": "STRING",
+        "description": "Unique identifier used for ES queries."
     }
 ]
