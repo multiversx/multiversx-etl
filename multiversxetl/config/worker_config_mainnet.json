@@ -16,7 +16,8 @@
             "receipts",
             "rounds",
             "scresults",
-            "transactions"
+            "transactions",
+            "events"
         ],
         "time_partition_start": 1596117600,
         "time_partition_end": 2000000000,
@@ -34,7 +35,8 @@
             "receipts": 0,
             "rounds": 0,
             "scresults": -101,
-            "transactions": -4
+            "transactions": -4,
+            "events": 0
         }
     },
     "mutable_indices": {

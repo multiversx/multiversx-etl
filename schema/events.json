@@ -1,0 +1,73 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING",
+        "description": "The unique identifier of the object that generated the log (transaction, smart contract result)."
+    },
+    {
+        "name": "shardID",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "txHash",
+        "type": "STRING",
+        "description": "The hash of the transaction."
+    },
+    {
+        "name": "originalTxHash",
+        "type": "STRING",
+        "description": "The hash of the initial transaction."
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP",
+        "description": "The timestamp of the block in which the log was generated."
+    },
+    {
+        "name": "logAddress",
+        "type": "STRING",
+        "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the log or the address of the transaction's receiver."
+    },
+    {
+        "name": "address",
+        "type": "STRING",
+        "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the event or the address of the transaction's receiver."
+    },
+    {
+        "name": "identifier",
+        "type": "STRING",
+        "description": "The identifier of the event."
+    },
+    {
+        "name": "data",
+        "type": "STRING",
+        "description": "The data field can contain information added by the smart contract that generated the event."
+    },
+    {
+        "name": "additionalData",
+        "mode": "REPEATED",
+        "type": "STRING",
+        "description": "Additional data captured by the event."
+    },
+    {
+        "name": "topics",
+        "mode": "REPEATED",
+        "type": "STRING",
+        "description": "A list with extra information. They don't have a specific order because the smart contract is free to log anything that could be helpful."
+    },
+    {
+        "name": "order",
+        "type": "NUMERIC",
+        "description": "Ordering index."
+    },
+    {
+        "name": "txOrder",
+        "type": "NUMERIC",
+        "description": "Ordering index."
+    },
+    {
+        "name": "uuid",
+        "type": "STRING",
+        "description": "Unique identifier used for ES queries."
+    }
+]
