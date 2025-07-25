@@ -203,6 +203,11 @@
         "description": "The timestamp of the block in which the transaction was executed."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the block in which the transaction was executed, in milliseconds."
+    },
+    {
         "name": "tokens",
         "mode": "REPEATED",
         "type": "STRING",

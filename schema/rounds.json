@@ -34,5 +34,10 @@
         "name": "timestamp",
         "type": "TIMESTAMP",
         "description": "The timestamp of the round."
+    },
+    {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the round, in milliseconds."
     }
 ]

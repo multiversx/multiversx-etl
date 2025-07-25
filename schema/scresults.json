@@ -127,6 +127,11 @@
         "description": "The timestamp of the block in which the smart contract result was executed."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the block in which the smart contract result was executed, in milliseconds."
+    },
+    {
         "name": "value",
         "type": "STRING",
         "description": "The amount of EGLD transferred by the contract result, in atomic units. E.g. '1500000000000000000' means 1.5 EGLD."

@@ -20,6 +20,11 @@
         "description": "The timestamp of the block in which the receipt was generated."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the block in which the receipt was generated, in milliseconds."
+    },
+    {
         "name": "txHash",
         "type": "STRING",
         "description": "The hash of the transaction that generated the receipt."

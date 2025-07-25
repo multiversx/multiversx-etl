@@ -33,5 +33,10 @@
         "name": "timestamp",
         "type": "TIMESTAMP",
         "description": "The timestamp when the address balance was changed."
+    },
+    {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp when the address balance was changed, in milliseconds."
     }
 ]

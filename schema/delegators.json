@@ -20,6 +20,11 @@
         "description": "The last moment of an interaction with the delegation contract."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The last moment of an interaction with the delegation contract, in milliseconds."
+    },
+    {
         "name": "address",
         "type": "STRING",
         "description": "The address in bech32 encoding of the delegator."
@@ -42,6 +47,11 @@
                 "name": "timestamp",
                 "type": "TIMESTAMP",
                 "description": "The timestamp when the unDelegation operation was done."
+            },
+            {
+                "name": "timestampMs",
+                "type": "INTEGER",
+                "description": "The timestamp when the unDelegation operation was done, in milliseconds."
             },
             {
                 "name": "value",

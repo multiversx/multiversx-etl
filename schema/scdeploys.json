@@ -20,6 +20,11 @@
         "description": "The timestamp of the block in which the smart contract was deployed."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the block in which the smart contract was deployed, in milliseconds."
+    },
+    {
         "name": "upgrades",
         "mode": "REPEATED",
         "fields": [
@@ -27,6 +32,11 @@
                 "name": "timestamp",
                 "type": "TIMESTAMP",
                 "description": "The timestamp of the block in which the smart contract was upgraded."
+            },
+            {
+                "name": "timestampMs",
+                "type": "INTEGER",
+                "description": "The timestamp of the block in which the smart contract was upgraded, in milliseconds."
             },
             {
                 "name": "upgradeTxHash",
@@ -77,6 +87,11 @@
                 "name": "timestamp",
                 "type": "TIMESTAMP",
                 "description": "The timestamp of the 'change owner' transaction."
+            },
+            {
+                "name": "timestampMs",
+                "type": "INTEGER",
+                "description": "The timestamp of the 'change owner' transaction, in milliseconds."
             },
             {
                 "name": "address",
