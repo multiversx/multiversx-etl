@@ -24,6 +24,11 @@
         "description": "The timestamp of the block in which the log was generated."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the block in which the log was generated, in milliseconds."
+    },
+    {
         "name": "logAddress",
         "type": "STRING",
         "description": "The address in bech32 encoding. It can be the address of the smart contract that generated the log or the address of the transaction's receiver."

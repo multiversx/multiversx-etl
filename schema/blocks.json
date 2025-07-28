@@ -125,6 +125,11 @@
                         "description": "The timestamp of the miniblock."
                     },
                     {
+                        "name": "timestampMs",
+                        "type": "INTEGER",
+                        "description": "The timestamp of the miniblock, in milliseconds."
+                    },
+                    {
                         "name": "type",
                         "type": "STRING",
                         "description": "The type of the miniblock."
@@ -340,6 +345,11 @@
         "name": "timestamp",
         "type": "TIMESTAMP",
         "description": "The timestamp when the block was proposed and executed."
+    },
+    {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp when the block was proposed and executed, in milliseconds."
     },
     {
         "name": "txCount",

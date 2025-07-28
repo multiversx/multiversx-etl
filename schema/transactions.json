@@ -152,6 +152,11 @@
         "description": "The timestamp of the block in which the transaction was executed."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the block in which the transaction was executed, in milliseconds."
+    },
+    {
         "name": "value",
         "type": "STRING",
         "description": "The amount of EGLD transferred by the transaction, in atomic units. E.g. '1500000000000000000' means 1.5 EGLD."

@@ -60,6 +60,11 @@
         "description": "The timestamp of the block in which the log was generated."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the block in which the log was generated, in milliseconds."
+    },
+    {
         "name": "uuid",
         "type": "STRING",
         "description": "Unique identifier used for ES queries."

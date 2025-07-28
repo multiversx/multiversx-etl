@@ -45,6 +45,11 @@
         "description": "The timestamp of the block in which the miniblock was executed."
     },
     {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp of the block in which the miniblock was executed, in milliseconds."
+    },
+    {
         "name": "type",
         "type": "STRING",
         "description": "The type of the miniblock. It can be `TxBlock` (if it contains transactions) or `SmartContractResultBlock` (if it contains smart contracts results)."
