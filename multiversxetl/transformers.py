@@ -10,7 +10,6 @@ class TransformersRegistry:
             "accounts": AccountsTransformer(),
             "blocks": BlocksTransformer(),
             "tokens": TokensTransformer(),
-            "logs": LogsTransformer(),
             "events": EventsTransformer(),
         }
 
@@ -62,22 +61,6 @@ class TokensTransformer(Transformer):
             if is_volatile_field_nft or is_volatile_field_api:
                 data.pop(key)
 
-        return data
-
-
-class LogsTransformer(Transformer):
-    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        events = data.get("events", []) or []
-
-        for event in events:
-            topics = event.get("topics") or []
-            additional_data = event.get("additionalData") or []
-
-            # Replace NULL values with empty strings, since BigQuery does not support NULL values in arrays (mode = REPEATED).
-            event["topics"] = [topic if topic is not None else "" for topic in topics]
-            event["additionalData"] = [data_item if data_item is not None else "" for data_item in additional_data]
-
-        # We've altered the data in-place.
         return data
 
 
