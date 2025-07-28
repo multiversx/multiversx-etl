@@ -10,13 +10,10 @@
             "accountsesdthistory",
             "accountshistory",
             "blocks",
-            "logs",
             "miniblocks",
             "operations",
             "receipts",
             "rounds",
-            "scresults",
-            "transactions",
             "events"
         ],
         "time_partition_start": 1694000000,

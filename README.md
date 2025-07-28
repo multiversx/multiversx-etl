@@ -47,7 +47,7 @@ pytest -m "integration"
 
 This implementation copies the data from Elasticsearch in two parallel flows.
 
-One flow copies the append-only indices (e.g. blocks, transactions, logs, receipts, etc.) into a staging BQ dataset. This process is incremental, i.e. it only copies the new data since the last run, and it's executed more often than the second flow (every 1 hour, by default). Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility.
+One flow copies the append-only indices (e.g. blocks, operations, events, receipts, etc.) into a staging BQ dataset. This process is incremental, i.e. it only copies the new data since the last run, and it's executed more often than the second flow (every 1 hour, by default). Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility.
 
 The second flow copies the mutable indices (e.g. tokens, accounts, etc.) into a staging BQ dataset. This process is not incremental. Tables are truncated and reloaded on each run. Once the staging database is loaded, the data is transferred to the main BQ dataset, using the _Big Query Data Transfers_ facility. This flow is executed less often than the first flow (every 4 hours, by default).
 

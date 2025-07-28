@@ -13,14 +13,11 @@ export BQ_DATASET_MUTABLE=crypto_multiversx_mainnet_eu
 bq update --description "ESDTs of accounts (with history)." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.accountsesdthistory schema/accountsesdthistory.json
 bq update --description "Accounts data (with history)." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.accountshistory schema/accountshistory.json
 bq update --description "Blocks." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.blocks schema/blocks.json
-bq update --description "Transaction logs." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.logs schema/logs.json
 bq update --description "Transaction events." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.events schema/events.json
 bq update --description "Miniblocks (sub-components of blocks)." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.miniblocks schema/miniblocks.json
 bq update --description "Operations (transactions and transactions results)." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.operations schema/operations.json
 bq update --description "Transaction receipts." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.receipts schema/receipts.json
 bq update --description "Rounds info." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.rounds schema/rounds.json
-bq update --description "Smart contract results." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.scresults schema/scresults.json
-bq update --description "Transactions." ${GCP_PROJECT_ID}:${BQ_DATASET_APPEND_ONLY}.transactions schema/transactions.json
 
 bq update --description "Accounts data." ${GCP_PROJECT_ID}:${BQ_DATASET_MUTABLE}.accounts schema/accounts.json
 bq update --description "ESDTs of accounts." ${GCP_PROJECT_ID}:${BQ_DATASET_MUTABLE}.accountsesdt schema/accountsesdt.json
