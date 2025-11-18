@@ -25,7 +25,7 @@
         "counts_checks_errata": {
             "accountsesdthistory": -20,
             "accountshistory": 143,
-            "blocks": -9,
+            "blocks": -13,
             "miniblocks": -53193,
             "operations": 24,
             "receipts": 0,
