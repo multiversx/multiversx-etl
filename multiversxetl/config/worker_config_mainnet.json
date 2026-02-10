@@ -24,12 +24,12 @@
         "should_fail_on_counts_mismatch": true,
         "counts_checks_errata": {
             "accountsesdthistory": -20,
-            "accountshistory": 143,
+            "accountshistory": 83,
             "blocks": -13,
-            "miniblocks": -53193,
-            "operations": 24,
+            "miniblocks": -53195,
+            "operations": 13,
             "receipts": 0,
-            "rounds": 0,
+            "rounds": 40,
             "events": 0
         }
     },
