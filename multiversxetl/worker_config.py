@@ -57,6 +57,7 @@ class IndicesConfig:
             num_threads: int,
             should_fail_on_counts_mismatch: bool,
             skip_counts_check_for_indices: List[str],
+            ignored_fields: List[str],
             counts_checks_errata: "CountChecksErrata"
     ) -> None:
         self.bq_dataset = bq_dataset
@@ -70,6 +71,7 @@ class IndicesConfig:
         self.num_threads = num_threads
         self.should_fail_on_counts_mismatch = should_fail_on_counts_mismatch
         self.skip_counts_check_for_indices = skip_counts_check_for_indices
+        self.ignored_fields = ignored_fields
         self.counts_checks_errata = counts_checks_errata
 
     @classmethod
@@ -86,6 +88,7 @@ class IndicesConfig:
             num_threads=data["num_threads"],
             should_fail_on_counts_mismatch=data["should_fail_on_counts_mismatch"],
             skip_counts_check_for_indices=data.get("skip_counts_check_for_indices", []),
+            ignored_fields=data.get("ignored_fields", []),
             counts_checks_errata=CountChecksErrata.load_from_dict(data.get("counts_checks_errata", {}))
         )
 

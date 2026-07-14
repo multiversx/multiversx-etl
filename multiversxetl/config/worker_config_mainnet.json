@@ -52,6 +52,10 @@
         "num_intervals_in_bulk": 65535,
         "num_threads": 8,
         "should_fail_on_counts_mismatch": false,
-        "skip_counts_check_for_indices": ["epochinfo", "validators"]
+        "skip_counts_check_for_indices": ["epochinfo", "validators"],
+        "ignored_fields": [
+            "fang_write_test",
+            "test_field"
+        ]
     }
 }

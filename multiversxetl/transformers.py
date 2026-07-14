@@ -1,6 +1,6 @@
 
 import json
-from typing import Any, Dict
+from typing import Any, Dict, Iterable
 
 
 class TransformersRegistry:
@@ -18,9 +18,13 @@ class TransformersRegistry:
 
 
 class Transformer:
-    def transform_json(self, raw_json: str) -> str:
+    def transform_json(self, raw_json: str, ignored_fields: Iterable[str] = ()) -> str:
         data = json.loads(raw_json)
         data = self.transform(data)
+
+        for field in ignored_fields:
+            data.pop(field, None)
+
         output = json.dumps(data)
         return output
 

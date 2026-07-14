@@ -37,9 +37,9 @@ class TasksRunner:
         self.schema_folder = schema_folder
         self.transformers_registry = TransformersRegistry()
 
-    def run(self, task: Task) -> None:
+    def run(self, task: Task, ignored_fields: Iterable[str] = ()) -> None:
         self._do_extract(task)
-        self._do_transform(task)
+        self._do_transform(task, ignored_fields)
         self._do_load(task)
 
         self.file_storage.remove_extracted_file(task.get_filename_friendly_description())
@@ -77,7 +77,7 @@ class TasksRunner:
         as_json = json.dumps(data)
         return as_json
 
-    def _do_transform(self, task: Task):
+    def _do_transform(self, task: Task, ignored_fields: Iterable[str] = ()):
         logging.debug(f"_do_transform: {task}")
 
         transformer = self.transformers_registry.get_transformer(task.index_name)
@@ -87,7 +87,7 @@ class TasksRunner:
         with open(input_filename) as file:
             with open(output_filename, "w") as output_file:
                 for line in file:
-                    transformed_line = transformer.transform_json(line)
+                    transformed_line = transformer.transform_json(line, ignored_fields)
                     output_file.write(transformed_line + "\n")
 
     def _do_load(self, task: Task) -> None:

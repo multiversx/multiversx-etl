@@ -126,6 +126,7 @@ class AppController:
 
         self._consume_tasks_in_parallel(
             num_threads=indices_config.num_threads,
+            ignored_fields=indices_config.ignored_fields,
         )
 
         failed_tasks = self.tasks_dashboard.get_failed_tasks()
@@ -153,7 +154,7 @@ class AppController:
 
         return latest_planned_interval_end_time
 
-    def _consume_tasks_in_parallel(self, num_threads: int):
+    def _consume_tasks_in_parallel(self, num_threads: int, ignored_fields: List[str]):
         # If an error happens in any thread, we stop all threads.
         event_has_encountered_an_error: threading.Event = threading.Event()
         threads: List[threading.Thread] = []
@@ -163,7 +164,8 @@ class AppController:
                 name=f"consume-task-{thread_index}",
                 target=self._consume_tasks_thread,
                 args=[
-                    event_has_encountered_an_error
+                    event_has_encountered_an_error,
+                    ignored_fields,
                 ]
             )
 
@@ -174,7 +176,11 @@ class AppController:
             if thread.is_alive():
                 thread.join()
 
-    def _consume_tasks_thread(self, external_or_internal_event_has_encountered_an_error: threading.Event):
+    def _consume_tasks_thread(
+        self,
+        external_or_internal_event_has_encountered_an_error: threading.Event,
+        ignored_fields: List[str]
+    ):
         while True:
             if external_or_internal_event_has_encountered_an_error.is_set():
                 break
@@ -184,7 +190,7 @@ class AppController:
                 break
 
             try:
-                self.tasks_runner.run(task)
+                self.tasks_runner.run(task, ignored_fields)
                 self.tasks_dashboard.on_task_finished(task)
             except Exception as error:
                 logging.error(f"Error while consuming task {task}.")
