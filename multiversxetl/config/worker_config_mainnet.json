@@ -55,7 +55,11 @@
         "skip_counts_check_for_indices": ["epochinfo", "validators"],
         "ignored_fields": [
             "fang_write_test",
-            "test_field"
+            "test_field",
+            "test_len",
+            "test_map",
+            "test_ts",
+            "probe"
         ]
     }
 }
