@@ -12,6 +12,10 @@ def test_mainnet_mutable_indices_ignored_fields():
     assert config.mutable_indices.ignored_fields == [
         "fang_write_test",
         "test_field",
+        "test_len",
+        "test_map",
+        "test_ts",
+        "probe"
     ]
 
 
