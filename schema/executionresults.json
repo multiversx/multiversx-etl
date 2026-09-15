@@ -1,0 +1,153 @@
+[
+    {
+        "name": "_id",
+        "type": "STRING",
+        "description": "The execution result header hash."
+    },
+    {
+        "name": "accumulatedFees",
+        "type": "STRING",
+        "description": "The accumulated fees that were payed in the execution result."
+    },
+    {
+        "name": "developerFees",
+        "type": "STRING",
+        "description": "The developer fees that were accumulated in the execution result."
+    },
+    {
+        "name": "epoch",
+        "type": "NUMERIC",
+        "description": "The epoch when the execution result was produced."
+    },
+    {
+        "name": "gasPenalized",
+        "type": "NUMERIC",
+        "description": "The total gas penalized in the execution result."
+    },
+    {
+        "name": "gasProvided",
+        "type": "NUMERIC",
+        "description": "The total gas provided in the execution result."
+    },
+    {
+        "name": "gasRefunded",
+        "type": "NUMERIC",
+        "description": "The total gas refunded in the execution result."
+    },
+    {
+        "name": "gasUsed",
+        "type": "NUMERIC",
+        "description": "The total gas used in the execution result."
+    },
+    {
+        "name": "maxGasLimit",
+        "type": "NUMERIC",
+        "description": "The maximum gas limit allowed for the execution result."
+    },
+    {
+        "name": "miniBlocksDetails",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "name": "firstProcessedTx",
+                "type": "NUMERIC",
+                "description": "The index of the first transaction that was processed in the miniblock."
+            },
+            {
+                "name": "lastProcessedTx",
+                "type": "NUMERIC",
+                "description": "The index of the last transaction that was processed in the miniblock."
+            },
+            {
+                "name": "senderShard",
+                "type": "NUMERIC",
+                "description": "The sender shard."
+            },
+            {
+                "name": "receiverShard",
+                "type": "NUMERIC",
+                "description": "The receiver shard."
+            },
+            {
+                "name": "mbIndex",
+                "type": "NUMERIC",
+                "description": "The index of the miniblock."
+            },
+            {
+                "name": "type",
+                "type": "STRING",
+                "description": "The type of the miniblock."
+            },
+            {
+                "name": "procType",
+                "type": "STRING",
+                "description": "The processing type of the miniblock."
+            },
+            {
+                "name": "txsHashes",
+                "mode": "REPEATED",
+                "type": "STRING",
+                "description": "The hashes of the transactions that were included in the miniblock."
+            },
+            {
+                "name": "executionOrderTxsIndices",
+                "mode": "REPEATED",
+                "type": "NUMERIC",
+                "description": ""
+            }
+        ],
+        "type": "RECORD",
+        "description": "An array of structures with information about the miniblocks within the execution result."
+    },
+    {
+        "name": "miniBlocksHashes",
+        "mode": "REPEATED",
+        "type": "STRING",
+        "description": "An array of the miniblock hashes (hexadecimal encoded) that were included in the execution result."
+    },
+    {
+        "name": "nonce",
+        "type": "NUMERIC",
+        "description": "The sequence number of the execution result header."
+    },
+    {
+        "name": "notarizedInBlockHash",
+        "type": "STRING",
+        "description": "The hash of the block in which the execution result was notarized."
+    },
+    {
+        "name": "rootHash",
+        "type": "STRING",
+        "description": "The state root hash after applying the execution result."
+    },
+    {
+        "name": "round",
+        "type": "NUMERIC",
+        "description": "The round when the execution result was produced."
+    },
+    {
+        "name": "shardId",
+        "type": "NUMERIC",
+        "description": "The shard this execution result belongs to."
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP",
+        "description": "The timestamp when the execution result was produced. Derived from `timestampMs`, which is the only timestamp provided by the indexer for this index."
+    },
+    {
+        "name": "timestampMs",
+        "type": "INTEGER",
+        "description": "The timestamp when the execution result was produced, in milliseconds."
+    },
+    {
+        "name": "txCount",
+        "type": "NUMERIC",
+        "description": "The number of transactions that were executed in the execution result."
+    },
+    {
+        "name": "uuid",
+        "type": "STRING",
+        "description": "Unique identifier used for ES queries."
+    }
+]

@@ -14,8 +14,10 @@
             "operations",
             "receipts",
             "rounds",
-            "events"
+            "events",
+            "executionresults"
         ],
+        "indices_with_millisecond_timestamp": ["executionresults"],
         "time_partition_start": 1596117600,
         "time_partition_end": 2000000000,
         "interval_size_in_seconds": 86400,
@@ -30,7 +32,8 @@
             "operations": 13,
             "receipts": 0,
             "rounds": 40,
-            "events": 0
+            "events": 0,
+            "executionresults": 0
         }
     },
     "mutable_indices": {

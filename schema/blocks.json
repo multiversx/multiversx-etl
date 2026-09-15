@@ -452,5 +452,21 @@
                 "description": "Indicates if the header is the start of an epoch."
             }
         ]
+    },
+    {
+        "name": "executionResultBlockHashes",
+        "mode": "REPEATED",
+        "type": "STRING",
+        "description": "The hashes (hexadecimal encoded) of the execution result headers carried by the block."
+    },
+    {
+        "name": "lastExecutionResultHash",
+        "type": "STRING",
+        "description": "The hash (hexadecimal encoded) of the last execution result header referenced by the block."
+    },
+    {
+        "name": "lastExecutionResultNonce",
+        "type": "NUMERIC",
+        "description": "The nonce (block height) of the last execution result header referenced by the block."
     }
 ]

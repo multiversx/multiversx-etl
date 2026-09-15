@@ -1,4 +1,6 @@
-from multiversxetl.transformers import AccountsTransformer, EventsTransformer
+from multiversxetl.transformers import (AccountsTransformer, EventsTransformer,
+                                        ExecutionResultsTransformer,
+                                        TransformersRegistry)
 
 
 def test_accounts_transformer():
@@ -32,3 +34,37 @@ def test_events_transformer():
         "topics": ["foo", "", "bar"],
         "additionalData": ["bar", "", "foo"]
     }
+
+
+def test_execution_results_transformer_derives_timestamp_from_timestamp_ms():
+    transformer = ExecutionResultsTransformer()
+
+    transformed = transformer.transform({
+        "_id": "abba",
+        "timestampMs": 1789158274200,
+    })
+
+    assert transformed == {
+        "_id": "abba",
+        "timestampMs": 1789158274200,
+        # Truncated to seconds (not rounded).
+        "timestamp": 1789158274,
+    }
+
+
+def test_execution_results_transformer_without_timestamp_ms():
+    transformer = ExecutionResultsTransformer()
+
+    transformed = transformer.transform({
+        "_id": "abba",
+    })
+
+    assert transformed == {
+        "_id": "abba",
+    }
+
+
+def test_execution_results_transformer_is_registered():
+    registry = TransformersRegistry()
+
+    assert isinstance(registry.get_transformer("executionresults"), ExecutionResultsTransformer)
