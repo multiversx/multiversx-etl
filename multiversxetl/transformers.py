@@ -11,6 +11,7 @@ class TransformersRegistry:
             "blocks": BlocksTransformer(),
             "tokens": TokensTransformer(),
             "events": EventsTransformer(),
+            "executionresults": ExecutionResultsTransformer(),
         }
 
     def get_transformer(self, index_name: str) -> 'Transformer':
@@ -60,6 +61,19 @@ class TokensTransformer(Transformer):
 
             if is_volatile_field_nft or is_volatile_field_api:
                 data.pop(key)
+
+        return data
+
+
+class ExecutionResultsTransformer(Transformer):
+    def transform(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        # The "executionresults" index is the only one that does not hold a "timestamp" field,
+        # it only holds "timestampMs". We derive "timestamp" (in seconds), since the rest of the
+        # pipeline depends on it: BigQuery partitioning and clustering, the counts checks and the rewinds.
+        timestamp_ms = data.get("timestampMs")
+
+        if timestamp_ms is not None:
+            data["timestamp"] = timestamp_ms // 1000
 
         return data
 

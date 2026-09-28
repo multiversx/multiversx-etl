@@ -50,6 +50,7 @@ class IndicesConfig:
             bq_data_transfer_name: str,
             indices: List[str],
             indices_without_timestamp: List[str],
+            indices_with_millisecond_timestamp: List[str],
             time_partition_start: int,
             time_partition_end: int,
             interval_size_in_seconds: int,
@@ -63,6 +64,7 @@ class IndicesConfig:
         self.bq_data_transfer_name = bq_data_transfer_name
         self.indices = indices
         self.indices_without_timestamp = indices_without_timestamp
+        self.indices_with_millisecond_timestamp = indices_with_millisecond_timestamp
         self.time_partition_start = time_partition_start
         self.time_partition_end = time_partition_end
         self.interval_size_in_seconds = interval_size_in_seconds
@@ -79,6 +81,7 @@ class IndicesConfig:
             bq_data_transfer_name=data.get("bq_data_transfer_name", ""),
             indices=data["indices"],
             indices_without_timestamp=data.get("indices_without_timestamp", []),
+            indices_with_millisecond_timestamp=data.get("indices_with_millisecond_timestamp", []),
             time_partition_start=data["time_partition_start"],
             time_partition_end=data["time_partition_end"],
             interval_size_in_seconds=data["interval_size_in_seconds"],

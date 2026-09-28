@@ -36,10 +36,14 @@ class AppController:
 
         self.bq_client = BqClient(self.worker_config.gcp_project_id)
 
+        indices_with_millisecond_timestamp = list(self.worker_config.append_only_indices.indices_with_millisecond_timestamp)
+        indices_with_millisecond_timestamp.extend(self.worker_config.mutable_indices.indices_with_millisecond_timestamp)
+
         self.indexer = Indexer(
             url=self.worker_config.indexer_url,
             username=self.worker_config.indexer_username,
-            password=self.worker_config.indexer_password
+            password=self.worker_config.indexer_password,
+            indices_with_millisecond_timestamp=indices_with_millisecond_timestamp
         )
 
         self.cloud_logger = CloudLogger(self.worker_config.gcp_project_id, worker_id)
